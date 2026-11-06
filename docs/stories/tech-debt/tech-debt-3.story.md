@@ -128,9 +128,9 @@ Story 1.1, 1.2, `bug-2`, `tech-debt-1`은 선행이 아니다. 이 일은 그 St
 - [x] Task 1: Story 1.3 Dev 기록의 두 문장 정정 (AC: #1, #2, #3, 그리고 회귀 기준)
   - 접근: `verification-only`. 제품과 시험 지원의 동작을 바꾸지 않고 기록만 더하므로 TDD RED가 없다. 기록만 바꾸는 SubTask여서 Independent Cleaner review 없이 Dev 자신의 점검을 기록한다(`.bmad-core/data/development-quality.md` 섹션 Independent Cleaner review).
   - [x] 1.1 표 1, 표 2의 값을 저장소에서 다시 내어 확인하고, 이 Story의 Completion Notes에 두 문장의 정정 항목을, `docs/story-records/tech-debt-3/dev-1.1.md`에 그 근거를 적는다. 시나리오: tech-debt-3-INSP-001, tech-debt-3-INSP-002, tech-debt-3-INSP-003, tech-debt-3-INSP-004, tech-debt-3-INT-001. 완료 점검: 다섯 시나리오의 기대 결과. 커밋 제목: `[story-tech-debt-3] Task 1.1: Story 1.3 Dev 기록의 두 문장 정정`
-- [ ] Task 2: Architecture 정렬 (의무 출처: `.bmad-core/tasks/architecture-align.md`, `docs/architecture.md`)
+- [x] Task 2: Architecture 정렬 (의무 출처: `.bmad-core/tasks/architecture-align.md`, `docs/architecture.md`)
   - 접근: `verification-only`. 제품과 시험의 동작을 바꾸지 않는다. 기록만 바꾸는 SubTask다.
-  - [ ] 2.1 누적 변경을 `docs/architecture.md`의 기술 구성, 소스 트리, 설계 원칙, `README.md`와 대조하고, 고칠 문서가 없으면 검토 범위와 까닭을 no-change로 `docs/story-records/tech-debt-3/dev-2.1.md`에 기록한다. 시나리오: tech-debt-3-INSP-005, tech-debt-3-INSP-004. 커밋 제목: `[story-tech-debt-3] Task 2.1: Architecture 정렬`
+  - [x] 2.1 누적 변경을 `docs/architecture.md`의 기술 구성, 소스 트리, 설계 원칙, `README.md`와 대조하고, 고칠 문서가 없으면 검토 범위와 까닭을 no-change로 `docs/story-records/tech-debt-3/dev-2.1.md`에 기록한다. 시나리오: tech-debt-3-INSP-005, tech-debt-3-INSP-004. 커밋 제목: `[story-tech-debt-3] Task 2.1: Architecture 정렬`
 
 ## Dev Notes
 
@@ -418,6 +418,7 @@ test_design:
 | 2026-11-07 | 0.1 | Story 초안 작성 | SM (Bob) |
 | 2026-11-07 | 0.2 | PO 검증 1회 반영: AC 3, "파일 위치", tech-debt-3-INSP-004의 경로 집합을 맞춤(PO1-B1), PO1-N2 ~ PO1-N5 적용 | SM (Bob) |
 | 2026-11-07 | 0.3 | Story 1.3 Dev 기록의 두 문장 정정(SubTask 1.1) | Dev (James) |
+| 2026-11-07 | 0.4 | Architecture 정렬 no-change(SubTask 2.1) | Dev (James) |
 
 ## PO Validation
 
@@ -483,6 +484,7 @@ Dev 하위 세션 James(Full Stack Developer), 모델 `claude-sonnet-5-5`(시스
 ### Debug Log References
 
 - 1.1: 표 1, 표 2, 표 3의 값을 다시 낸 명령과 출력, 저장된 정정 항목을 "판정 방법"의 두 기준으로 읽은 대조, 바뀐 경로와 해시, 회귀 점검, Dev 자신의 점검: [dev-1.1](../../story-records/tech-debt-3/dev-1.1.md)
+- 2.1: 대조한 문서와 항목별 결과, 바뀐 경로와 해시의 다시 실행: [dev-2.1](../../story-records/tech-debt-3/dev-2.1.md)
 
 ### Completion Notes List
 
@@ -490,16 +492,18 @@ Issue: #24
 
 - 시작: 2026-11-07 06:49 +0900(시작 커밋 `2e86847`의 시각 06:49:16). `local-story-start.md`를 따랐다. 구현 브랜치 `story/tech-debt-3-story-1-3-dev`, 기준 브랜치 `main`, 기준선 HEAD `20256e4defbc36ab3d1e7cbce224a265e4121034`(`main`의 20256e4이고 `origin/main`과 같다). 슬롯 없는 run이고 원래 checkout에서 시작했다. 이 Story와 기록 문서는 커밋하지 않은 초안이어서 시작 커밋이 Story 브랜치에 더한다. 실행 요청 줄은 PO Validation의 `Run authorization: through Done remote`다. 시작 점검: `check-stage.sh start`, `check-stage.sh records`, `check-stage.sh po-record`(Validation: GO, Round: 2, Collection: complete)가 종료 상태 0이고, 선행 Story 1.3은 `check-merge.sh status 1.3 main`이 `merged`(병합 커밋 937f21c `[Story 1.3] 계산기 화면`, Done 커밋은 archive ref의 6b1b780)를 냈다. 이슈는 `publish.sh issue main story/tech-debt-3-story-1-3-dev`가 새로 만들었다(`issue 24 created`).
 - 시작 시 기준 통과: 프로젝트 루트의 `node --test` 76개 통과(실패 0, 취소와 건너뜀 0), `node ci/screen-rule.check.mjs` 종료 상태 0. Draft가 적은 관찰과 같다.
-- 1.1: 완료. 접근 `verification-only`(제품과 시험의 동작을 바꾸지 않고 기록만 더해 RED가 없다). tech-debt-3-INSP-001은 `refs/archive/story/1.3`이 있는 이 checkout에서 돌았고 표 1 ~ 표 3의 값이 낸 값과 모두 같았다: 지운 줄 넷과 더한 줄 29, 글이 다른 섹션 셋과 같은 여덟, 기록 문서 11개와 더한 다섯, 세 개정 `8579e5a`, `6701dcd`, `main` 6188a27에서 같은 네 줄(줄마다 40 하나), 48의 두 상수, 앞선 기록 두 파일의 해시. 정정은 아래 별도 항목이다. 저장된 항목을 "판정 방법"의 두 기준으로 읽었고(tech-debt-3-INSP-002, tech-debt-3-INSP-003) 받는 글의 요소를 모두 채웠으며 거부하는 글에 드는 것이 없었다. tech-debt-3-INSP-004는 기준선 `20256e4`와 비교해 바뀐 경로가 모두 Dev Notes "파일 위치"의 "바꾸는 경로" 행의 경로이고, 시작 커밋 뒤 `sm-`, `po-` 문서의 수정과 삭제가 없으며, 표 3의 해시가 같았다(잰 범위는 Git이 보는 경로). tech-debt-3-INT-001은 프로젝트 루트의 `node --test` 76개 통과(실패 0, 취소와 건너뜀 0), `node ci/screen-rule.check.mjs` 종료 상태 0이다. Cleaner 검토자는 기록만 바꾸는 SubTask여서 시작하지 않고 Dev 자신의 점검을 기록했다. 시작 줄의 시각 06:50은 시작 커밋의 시각 06:49:16과 맞지 않아 06:49로 고쳤다. 한계: 정정이 Story 1.3의 파일에 없어 그 두 문장만 읽는 사람은 정정으로 가는 링크를 보지 못한다(N-1, PO1-N1), 정정 글의 참과 잰 범위는 agent-review의 읽기가 판정했다, 표 2의 검색은 Dev Notes부터 다음 `## ` 앞까지만 잰다. 기록: [dev-1.1](../../story-records/tech-debt-3/dev-1.1.md). 커밋은 다음 Dev 기록 갱신이 적는다.
+- 1.1: 완료. 접근 `verification-only`(제품과 시험의 동작을 바꾸지 않고 기록만 더해 RED가 없다). tech-debt-3-INSP-001은 `refs/archive/story/1.3`이 있는 이 checkout에서 돌았고 표 1 ~ 표 3의 값이 낸 값과 모두 같았다: 지운 줄 넷과 더한 줄 29, 글이 다른 섹션 셋과 같은 여덟, 기록 문서 11개와 더한 다섯, 세 개정 `8579e5a`, `6701dcd`, `main` 6188a27에서 같은 네 줄(줄마다 40 하나), 48의 두 상수, 앞선 기록 두 파일의 해시. 정정은 아래 별도 항목이다. 저장된 항목을 "판정 방법"의 두 기준으로 읽었고(tech-debt-3-INSP-002, tech-debt-3-INSP-003) 받는 글의 요소를 모두 채웠으며 거부하는 글에 드는 것이 없었다. tech-debt-3-INSP-004는 기준선 `20256e4`와 비교해 바뀐 경로가 모두 Dev Notes "파일 위치"의 "바꾸는 경로" 행의 경로이고, 시작 커밋 뒤 `sm-`, `po-` 문서의 수정과 삭제가 없으며, 표 3의 해시가 같았다(잰 범위는 Git이 보는 경로). tech-debt-3-INT-001은 프로젝트 루트의 `node --test` 76개 통과(실패 0, 취소와 건너뜀 0), `node ci/screen-rule.check.mjs` 종료 상태 0이다. Cleaner 검토자는 기록만 바꾸는 SubTask여서 시작하지 않고 Dev 자신의 점검을 기록했다. 시작 줄의 시각 06:50은 시작 커밋의 시각 06:49:16과 맞지 않아 06:49로 고쳤다. 한계: 정정이 Story 1.3의 파일에 없어 그 두 문장만 읽는 사람은 정정으로 가는 링크를 보지 못한다(N-1, PO1-N1), 정정 글의 참과 잰 범위는 agent-review의 읽기가 판정했다, 표 2의 검색은 Dev Notes부터 다음 `## ` 앞까지만 잰다. 기록: [dev-1.1](../../story-records/tech-debt-3/dev-1.1.md). 커밋 `26a42cd`.
 - 정정(Story 1.3 Dev 기록의 두 문장, 단위 1.1): 앞선 기록 `docs/story-records/1.3/dev-dod-2.md`와 `docs/story-records/1.3/dev-qa-r2.md`는 고쳐 쓰지 않고 이 항목에서 정정한다. 이 정정은 Story 1.3의 파일이 아니라 이 Story의 Completion Notes에 있다(Scope and Dependencies의 "정정을 담는 자리"). 두 파일의 `git hash-object` 값은 정정을 쓴 때의 작업 트리에서 `18eb39bc4ecbc7956f3d164bd3990bf739551591`과 `058eb6c45a1ffafc2c3d8fc277777e9ab7a08d25`로 표 3과 같고, 코드와 시험은 바꾸지 않았다. 아래의 값은 `refs/archive/story/1.3`이 가진 커밋 `e71238d`, `6701dcd`, `8579e5a`와 `main` 6188a27에서 이 Story의 Dev가 다시 낸 것이고, 명령과 출력은 [dev-1.1](../../story-records/tech-debt-3/dev-1.1.md)에 있다.
   - 첫째 문장. 자리는 `docs/story-records/1.3/dev-dod-2.md`의 섹션 "프로젝트 정책 점검", 행 "현재 작업과 사실, 편집 이력은 지정된 기록에"다. 그 행은 "Story를 이 라운드 시작 전의 `e71238d`와 섹션별로 비교해 바뀐 섹션이 Change Log와 Dev Agent Record뿐이고 지운 줄이 없음을 확인했다."라고 적고, 이어서 "Status는 Review 전환에서 바꾼다"라고 적는다. 틀린 곳은 "지운 줄이 없음"이다. `git diff e71238d 6701dcd -- docs/stories/1.3.story.md`의 지운 줄은 넷이다(`git diff --numstat`은 더한 줄 29, 지운 줄 4). 하나는 Status의 `InProgress`이고 셋은 File List의 줄이다. 셋은 `src/screen.js`의 `(새 파일)` 줄, `test/screen.test.js`의 `(새 파일)` 줄, 그리고 "바꾸지 않음(기준 `40e1a6b`와 차이 없음을 `git diff`로 확인)"으로 시작하는 줄이며, 각각 다른 글로 고쳐 쓰였다. 앞의 둘은 같은 경로에 "QA 수정 단위" 설명이 붙은 줄이 대신하고 셋째는 "바뀌지 않음(기준 tip `d90c99e`와 차이 없음을 `git diff`로 확인)"으로 시작하는 줄이 대신한다. Status 줄은 그 행이 다음 문장 "Status는 Review 전환에서 바꾼다"로 따로 말한 곳이어서 어긋남이 아니다. 그 행이 쓴 비교는 섹션마다 같음과 바뀜만 가렸고 지운 줄을 세지 않아 File List의 세 줄을 놓쳤다. 섹션 비교로는 글이 다른 섹션이 Status, Change Log, Dev Agent Record 셋이고 다른 여덟 섹션은 같다. 그 행이 말하려던 사실 "앞선 기록을 고쳐 쓰지 않았다"가 참인 범위는 다음과 같다. 기록 문서에서는 `git ls-tree --name-only e71238d docs/story-records/1.3/`의 기록 문서 11개가 `git diff --name-status e71238d 6701dcd -- docs/story-records/1.3`에 나오지 않아 하나도 바뀌지 않았고, 그 출력은 더한 문서(`A`) 다섯 `dev-3.1.md`, `dev-3.2.md`, `dev-3.3.md`, `dev-dod-2.md`, `dev-qa-r2.md`뿐이다. Story에서는 위 넷(Status의 한 줄과 File List의 세 줄)을 뺀 범위에서 참이다. File List의 세 줄의 고침은 Dev의 권한 안이다(`docs/qa/gates/1.3.yml`의 DOC-001).
   - 둘째 문장. 자리는 `docs/story-records/1.3/dev-qa-r2.md`의 섹션 "REQ-002 Story의 수용된 결정과 계획의 글이 사용자의 결정과 어긋난다"의 `확인`이다. 그 `확인`은 "현재 계획의 글(Dev Notes, Testing, 표)에는 40이 없다"라고 적는다. 잰 범위는 `docs/stories/1.3.story.md`의 `## Dev Notes`부터 다음 `## ` 앞까지의 글이고 Testing과 그 표는 이 안에 있다. 이 범위에서 앞에 숫자와 점이 없고 뒤에 숫자나 영문자가 없는 값 40은 네 곳이며 줄마다 하나다. P-1은 Dev Notes "폭 결정을 코드에 옮기는 일"의 1번 "이 커밋 전의 트리에서는 규칙이 40이어서"로 `Story Base` 병합 커밋 전 트리의 옛 규칙의 값이다. P-2는 같은 절의 2번 "`src/screen.js must export SCREEN_WIDTH = 48, got 40`"로 실패 메시지의 값이다. P-3은 Testing "기준 tip에서 관찰한 사실"의 같은 메시지 "`src/screen.js must export SCREEN_WIDTH = 48, got 40`"로 실패 메시지의 값이다. P-4는 Testing의 1.3-INT-001 행 "`Story Base` 병합 커밋 전 트리의 규칙 40으로 낸 결과도 증거가 아니다"로 병합 커밋 전 트리의 옛 규칙의 값이다. 이 범위의 글은 그 문장을 더한 `8579e5a`, `6701dcd`와 `main` 6188a27에서 같다. Scope and Dependencies, SM Draft Checklist, PO Validation, QA Results는 재지 않았다. 계획이 요구하는 값은 48이다. `ci/screen-rule.check.mjs`의 `EXPECTED_WIDTH`와 `src/screen.js`의 `SCREEN_WIDTH`가 48이다. 네 곳의 40은 계획이 요구하는 값이 아니라 옛 규칙의 값이거나 실패 메시지의 값이다.
+- 2.1: 완료. 접근 `verification-only`, 시나리오 tech-debt-3-INSP-005, tech-debt-3-INSP-004. 누적 변경(기준선 `20256e4`에서 HEAD까지 이 Story의 Story 파일과 기록 문서 여섯의 추가뿐)을 `docs/architecture.md`의 기술 구성, 소스 트리, 설계 원칙, `README.md`, 결정 기록 `docs/planning/decisions.md`의 D-1, D-2와 대어 어긋난 곳이 없었고 바꾼 문서는 없다(no-change). 설계 원칙 다섯은 실행되는 코드를 바꾸지 않아 이 변경에 닿지 않는다. 소스 트리 표가 `ci/`와 워크플로를 말하지 않는 기존 틈은 이 Story의 변경이 만든 것이 아니고 future-work 파일의 항목 "CI 규칙이 계획 문서에 없음"이 이미 든다. tech-debt-3-INSP-004를 다시 돌려 바뀐 경로가 모두 "바꾸는 경로" 행에 있고 표 3의 해시가 같았다. 기록: [dev-2.1](../../story-records/tech-debt-3/dev-2.1.md). 커밋은 다음 Dev 기록 갱신이 적는다.
 
 ### File List
 
 - `docs/stories/tech-debt/tech-debt-3.story.md` (새 파일로 시작 커밋이 더했고, 그 뒤 Tasks / Subtasks 체크박스, Dev Agent Record, Change Log, Status가 바뀜)
 - `docs/story-records/tech-debt-3/sm-1.md`, `sm-2.md`, `po-r1.md`, `po-r2.md` (새 파일로 시작 커밋이 더함. SM과 PO의 기록이다)
 - `docs/story-records/tech-debt-3/dev-1.1.md` (새 파일. SubTask 1.1의 값 다시 내기, 정정 항목의 읽기, 경로와 해시, 회귀 점검)
+- `docs/story-records/tech-debt-3/dev-2.1.md` (새 파일. 바꾼 문서가 없다는 no-change 기록)
 - 바뀌지 않음(기준선 `20256e4`와 차이 없음을 `git diff --name-only`로 확인): `docs/story-records/1.3/` 아래 모든 파일, `docs/stories/1.3.story.md`, `docs/qa/`, `src/`, `test/`, `ci/`, `.github/`, `package.json`, `README.md`, `docs/prd.md`, `docs/architecture.md`, `docs/planning/`
 
 ### In-Flight Comments Ledger
