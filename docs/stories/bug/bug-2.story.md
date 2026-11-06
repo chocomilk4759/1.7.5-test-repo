@@ -2,7 +2,7 @@
 
 ## Status
 
-Review
+Done
 
 ## Story
 
@@ -673,3 +673,33 @@ Review — 승인된 WAIVED이고 활성 지적은 Optional 둘뿐이다. Done �
 
 Gate: WAIVED → docs/qa/gates/bug-2.yml
 Round: 1
+
+### Completion Date: 2026-11-07
+
+### Completed By: Quinn(QA 하위 세션, `claude-opus-5-5`, effort `max`), `*run-story bug-2 remote to Done` run의 역할 작업, 회차 1의 세션을 잇지 않은 새 세션. 점검을 이 세션이 직접 실행했고 추가 검토자는 없다
+
+### Completion Inputs and Result
+
+브랜치 `story/bug-2`, HEAD 3e61df8, 커밋하지 않은 변경 없음, 기준선 9aea191(`main`과 `origin/main`이 같고 fetch하지 않았다). 회차 1이 검토한 head 4c7fb2f와 HEAD 사이에 바뀐 경로는 gate, Story, qa-r1, dev-qa-r1뿐이고 `src/`, `test/`는 구현 개정 4a69ac7과 같다. Story에서 바뀐 섹션은 회차 1이 더한 QA Results와 Dev가 더한 Change Log, Dev Agent Record뿐이고 지운 줄이 없다. 기록만의 변경이어서 회차 1의 검토 근거가 그대로이고 새 회차가 필요 없다.
+
+결과는 Done이다. `tasks/local-story-done.md`의 조건을 현재 파일과 실행 결과로 모두 확인했다.
+
+- 판정: gate WAIVED(회차 1), 활성 Required와 Recommended 지적 없음. 활성 지적은 처리 결정이 있는 Optional 둘이다. `comment_hygiene.status`는 PASS이고 후보 검색을 다시 실행해 일치가 없다.
+- 면제: ARCH-001(Required, 심각도 medium, `verdict: WAIVED`)뿐이다. 승인은 사용자의 글 "조사 없이 이 설계를 수용"(2026-11-07)과 그 설명이고 범위는 이 Story의 이 설계다. 그 글이 Story, gate, qa-r1, 이어가기 로그에서 같고 `evaluate`는 면제가 검토한 구현과 같아 범위가 그대로다. 조사 요건은 채워지지 않았고 이 기록도 채웠다고 적지 않는다. AC, 부모 요구, 필수 점검은 면제가 덮지 않으며 따로 통과했다.
+- 점검: Status 변경 전 `check-done.sh` 종료 상태 0, `check-gate.sh`, `check-stage.sh records`, `qa-record`, `po-record`, `future --story bug-2` 종료 상태 0, 프로젝트 루트의 `node --test` 76개 통과(실패 0, Node.js v24.22.1), `node ci/screen-rule.check.mjs` 종료 상태 0, bug-2-INSP-002 종료 상태 0. bug-2-INSP-001, bug-2-INSP-003을 `src/engine.js`, `docs/architecture.md`, `README.md`를 읽어 다시 확인했다. 변이 30개와 탐침은 회차 1이 같은 코드와 시험으로 실행했고 그 입력이 바뀌지 않아 결과를 잇는다.
+- 기록: Task와 SubTask의 체크박스가 모두 닫혔고 QA 수정 단위가 없으며 File List에 빠진 Dev 경로가 없다. 없는 경로는 QA 자신의 gate, qa-r1, qa-done이다. Dev의 기록 커밋 3e61df8은 구현이 없는 기록 인계이고 회차 1이 보지 않은 입력이어서, TEST-001과 DOC-001의 값(빈 까닭의 변형 76개 통과, 제안한 단언의 사본에서 실패 1, 첫 RED 02:07:12, 검토자의 변형 여섯)과 세 파일의 객체를 저장소와 사본에서 직접 다시 내어 모두 같음을 확인했다.
+- 처리 결정: TEST-001(Optional, 심각도 low, 계약 안, 소유자 Dev)과 DOC-001(Optional, 심각도 low, 계약 안, 소유자 Dev)의 마지막 처리 줄이 `future`이고, 지적과 출처, 적용하지 않는 까닭, 필요한 일을 적은 future 기록이 Completion Notes에 있다. 권한은 `tasks/run-story.md`가 실행 요청에 둔 "recording the Optional and future findings that the Story does not apply as future records in the Story"다. 둘 다 전달된 코드의 잘못된 결과가 아니고 현재 의무를 가리지 않는다. 병합 뒤 PO 점검이 두 기록을 PO1-N1 ~ PO1-N6, PO2-N1과 함께 future-work 항목으로 옮긴다.
+- 허락: PO Validation 1회 항목의 실행 요청 줄의 단계 `through Done remote`가 Done을 덮는다. 사용자의 글: "이번 호출은 이 Story의 Done과 요청까지이고 병합은 하지 않습니다."
+- 임시 자료: 이어가기 로그의 이 Story 항목을 실제 파일과 양쪽으로 대조했고 기록된 자료는 아무것도 지우지 않았다. 항목이 덮지 않던 파일은 이 완료 점검의 파일뿐이고 로그에 더했다. 이 Story의 것이 아닌 다섯 파일은 그대로 두고 메인 세션에 보고했다.
+- 전달 점검: 수용된 문서에 배포나 환경의 의무가 없어 이어 갈 일이 없다. CI의 두 명령은 로컬에서 실행했고 서비스의 결과는 이 작업이 읽지 않았다.
+- 한계: CRAP은 `quality.crap.commands`가 비어 측정하지 않았고 이것은 통과도 차단도 아니며 측정 제안은 기존 항목 "[Tech-Debt] CRAP 측정 경로"가 든다. 이 작업은 네트워크를 쓰지 않아 이슈 #17과 호스팅 서비스의 CI를 읽지 않았다. 스택 크기를 바꾼 실행과 다른 런타임은 이번에 재지 않았고 사용자가 이 위험을 받았다.
+
+Merge risk: revertible — squash는 src/engine.js, test/engine.test.js, test/screen.test.js를 바꾸고 Story 파일, gate, 기록 문서 10개를 새로 더한다. 바뀌는 동작은 처리할 수 없는 깊이의 식에서 evaluate가 던지는 오류와 그 결과인 renderScreen의 오류 줄뿐이고, 의존성, 설정, CI, 데이터, 저장 형식의 변경과 제품의 외부 부작용이 없으며 엔진은 입출력 없는 순수 함수다. 되돌리면 트리가 기준선과 같아지고 그 식에서 RangeError가 돌아온다. 병합 뒤 PO 점검이 Story 파일에 줄을 더한 뒤라면 되돌리기는 그 파일 하나의 충돌을 풀어야 하고 그 점검의 future-work 항목은 남는다
+
+### Status Action
+
+Done — 이 작업은 push, fetch, 요청, 병합을 하지 않았다. 다음은 메인 세션이 별도의 Dev 작업으로 시작하는 `*publish-story bug-2`(`tasks/publish-story.md`)로, Done 커밋의 push와 ready 요청이다. 이번 호출의 단계는 Done이어서 서버 병합은 없고, 병합은 사용자가 지시하는 Dev `*merge-story bug-2 remote`다. 그 확인 뒤에 PO의 병합 뒤 점검과 임시 자료 정리가 뒤따른다. `docs/planning/future-work.md`에 지금 트리아지를 기다리는 항목은 없다. 완료 점검은 끝난 일이며 새 개발 요청이 아니다.
+
+### Record
+
+[qa-done](../../story-records/bug-2/qa-done.md)
