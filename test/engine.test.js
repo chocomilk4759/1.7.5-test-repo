@@ -5,13 +5,15 @@ import assert from "node:assert/strict";
 
 import { CalculationError, evaluate } from "../src/engine.js";
 
+// A long expression is named by a label, the optional third element of a case,
+// instead of being copied into a message.
 function assertValues(cases) {
-  for (const [expression, expected] of cases) {
-    assert.equal(
-      evaluate(expression),
-      expected,
-      `evaluate(${JSON.stringify(expression)})`,
-    );
+  for (const [
+    expression,
+    expected,
+    label = JSON.stringify(expression),
+  ] of cases) {
+    assert.equal(evaluate(expression), expected, `evaluate(${label})`);
   }
 }
 
@@ -22,10 +24,18 @@ const LARGEST_POWER_OF_TEN = `1${"0".repeat(308)}`;
 const OVERFLOW_POWER_OF_TEN = `${LARGEST_POWER_OF_TEN}0`;
 
 // Candidate positions are the 0-based character positions the message may
-// name; null accepts any position from 0 up to the expression length.
-function assertRejected(expression, candidates) {
+// name; null accepts any position from 0 up to the expression length. A long
+// expression is named by a label instead of being copied into a message.
+function assertRejected(
+  expression,
+  candidates,
+  label = JSON.stringify(expression),
+) {
   const accepted =
     candidates ?? Array.from({ length: expression.length + 1 }, (_, i) => i);
+  const acceptedText = candidates
+    ? `${candidates}`
+    : `0 to ${expression.length}`;
   assert.throws(
     () => evaluate(expression),
     (error) => {
@@ -33,26 +43,39 @@ function assertRejected(expression, candidates) {
       const reported = (error.message.match(/\d+/g) ?? []).map(Number);
       assert.ok(
         accepted.some((position) => reported.includes(position)),
-        `message "${error.message}" names none of the positions ${accepted}`,
+        `message "${error.message}" names none of the positions ${acceptedText}`,
       );
       return true;
     },
-    `evaluate(${JSON.stringify(expression)}) must throw`,
+    `evaluate(${label}) must throw`,
   );
 }
 
-function messageOf(expression) {
+function errorOf(expression, label = JSON.stringify(expression)) {
   try {
     evaluate(expression);
   } catch (error) {
-    return error.message;
+    return error;
   }
-  return assert.fail(`evaluate(${JSON.stringify(expression)}) must throw`);
+  return assert.fail(`evaluate(${label}) must throw`);
+}
+
+// The value of the expression, or the error that evaluate throws.
+function outcomeOf(expression) {
+  try {
+    return evaluate(expression);
+  } catch (error) {
+    return error;
+  }
+}
+
+function messageOf(expression, label) {
+  return errorOf(expression, label).message;
 }
 
 // The message without its numbers, so that only the stated reason is left.
-function reasonOf(expression) {
-  return messageOf(expression).replace(/\d+/g, "");
+function reasonOf(expression, label) {
+  return messageOf(expression, label).replace(/\d+/g, "");
 }
 
 function assertAllRejected(cases) {
@@ -60,6 +83,40 @@ function assertAllRejected(cases) {
     assertRejected(expression, candidates);
   }
 }
+
+// The number of levels of the deeply nested expressions below. It is a choice
+// of input, well beyond the depth at which the recursion of evaluate runs out
+// of stack, and no limit of the engine.
+const NESTING_LEVELS = 100000;
+
+// A number, 1 unless given, inside the given number of parentheses.
+function parenthesized(levels, number = "1") {
+  return `${"(".repeat(levels)}${number}${")".repeat(levels)}`;
+}
+
+// One number behind the given number of unary minus signs.
+function negated(levels) {
+  return `${"-".repeat(levels)}1`;
+}
+
+// The given number of opening parentheses and a number; none is closed.
+function unclosed(levels) {
+  return `${"(".repeat(levels)}1`;
+}
+
+const TOO_DEEP_EXPRESSIONS = [
+  ["parentheses around a number", parenthesized(NESTING_LEVELS)],
+  ["unary minus signs before a number", negated(NESTING_LEVELS)],
+  ["opening parentheses that are never closed", unclosed(NESTING_LEVELS)],
+  [
+    "a sum that ends in nested parentheses",
+    `1 + ${parenthesized(NESTING_LEVELS)}`,
+  ],
+  [
+    "nested parentheses followed by an unknown character",
+    `${parenthesized(NESTING_LEVELS)} + a`,
+  ],
+];
 
 test("evaluates a single number and each of the four operations", () => {
   assertValues([
@@ -138,12 +195,7 @@ test("answers other spacing with the value or a CalculationError", () => {
     ["- (2 + 1)", -3],
   ];
   for (const [expression, value] of cases) {
-    let outcome;
-    try {
-      outcome = evaluate(expression);
-    } catch (error) {
-      outcome = error;
-    }
+    const outcome = outcomeOf(expression);
     assert.ok(
       outcome === value || outcome instanceof CalculationError,
       `evaluate(${JSON.stringify(expression)}) gave ${outcome}`,
@@ -348,16 +400,20 @@ test("gives a different reason in the message for different problems", () => {
     "7 $",
     "",
     `1 / (${LARGEST_POWER_OF_TEN} * 10)`,
+    OVERFLOW_POWER_OF_TEN,
   ];
-  const reasons = expressions.map(reasonOf);
+  const reasons = [
+    ...expressions.map((expression) => reasonOf(expression)),
+    reasonOf(parenthesized(NESTING_LEVELS), "parentheses around a number"),
+  ];
   for (const reason of reasons) {
     assert.notEqual(
       reason.trim(),
       "",
-      "the message holds more than a position",
+      "the message holds more than numbers",
     );
   }
-  assert.equal(new Set(reasons).size, expressions.length, reasons.join(" | "));
+  assert.equal(new Set(reasons).size, reasons.length, reasons.join(" | "));
 });
 
 test("throws a CalculationError that is an Error with a text message", () => {
@@ -393,4 +449,106 @@ test("keeps no state between calls, also after an error", () => {
   assert.equal(evaluate("1 + 2"), 3);
   assert.throws(() => evaluate("7 + a"), CalculationError);
   assert.equal(evaluate("7 + 1"), 8);
+});
+
+test("throws a CalculationError for an expression nested too deeply", () => {
+  for (const [label, expression] of TOO_DEEP_EXPRESSIONS) {
+    const error = errorOf(expression, label);
+    assert.ok(
+      error instanceof CalculationError,
+      `evaluate(${label}) throws a CalculationError, not ${error}`,
+    );
+  }
+});
+
+test("names a position inside an expression that is nested too deeply", () => {
+  // The number is larger than the length of the expression, so that a message
+  // which repeats the expression names no position.
+  const expression = parenthesized(NESTING_LEVELS, "9999999");
+  assertRejected(expression, null, "nested parentheses around a large number");
+});
+
+// Calls the function with the given number of extra frames on the call stack.
+function withExtraFrames(frames, call) {
+  return frames === 0 ? call() : withExtraFrames(frames - 1, call);
+}
+
+const EXTRA_FRAMES = 200;
+
+test("gives the same message for an expression nested too deeply on repeated calls and with more frames on the call stack", () => {
+  for (const [label, expression] of TOO_DEEP_EXPRESSIONS) {
+    const messages = [0, 0, 0, EXTRA_FRAMES].map((frames) =>
+      withExtraFrames(frames, () => messageOf(expression, label)),
+    );
+    assert.equal(new Set(messages).size, 1, `${label}: ${messages.join(" | ")}`);
+  }
+});
+
+// Sizes of inputs that the engine holds: a nesting depth that a fresh process
+// handles, the number of terms of a sum and the number of spaces in a row.
+const FITTING_LEVELS = 1000;
+const LONG_SUM_TERMS = 200000;
+const LONG_SPACE_RUN = 100000;
+
+// A number inside the given number of parentheses, each behind a unary minus
+// sign. An even number of minus signs leaves the number as it is.
+function negatedParenthesized(levels) {
+  return `${"-(".repeat(levels)}1${")".repeat(levels)}`;
+}
+
+test("evaluates deeply nested and very long expressions that fit", () => {
+  assertValues([
+    [parenthesized(FITTING_LEVELS), 1, `${FITTING_LEVELS} parentheses`],
+    [negated(FITTING_LEVELS), 1, `${FITTING_LEVELS} unary minus signs`],
+    [
+      negatedParenthesized(FITTING_LEVELS / 2),
+      1,
+      `${FITTING_LEVELS / 2} negated parentheses`,
+    ],
+    [`1${" + 1".repeat(LONG_SUM_TERMS - 1)}`, LONG_SUM_TERMS, "a long sum"],
+    [`1${" ".repeat(LONG_SPACE_RUN)}+ 2`, 3, "a long run of spaces"],
+  ]);
+});
+
+// The depth at which the call stack runs out depends on how much of it is in
+// use, so near that depth the same expression gets its value in one call and a
+// CalculationError in another. The depths below surround the measured limits.
+const NEAR_LIMIT_FIRST_LEVELS = 2000;
+const NEAR_LIMIT_LAST_LEVELS = 20000;
+const NEAR_LIMIT_STEP = 1000;
+
+test("answers an expression near the depth the recursion can hold with its value or a CalculationError", () => {
+  for (
+    let levels = NEAR_LIMIT_FIRST_LEVELS;
+    levels <= NEAR_LIMIT_LAST_LEVELS;
+    levels += NEAR_LIMIT_STEP
+  ) {
+    // An even number of unary minus signs leaves the value 1; parentheses
+    // that are never closed have no value.
+    const cases = [
+      [`${levels} parentheses`, parenthesized(levels), true],
+      [`${levels} unary minus signs`, negated(levels), true],
+      [`${levels} unclosed parentheses`, unclosed(levels), false],
+    ];
+    for (const [label, expression, hasValue] of cases) {
+      const outcome = outcomeOf(expression);
+      assert.ok(
+        outcome instanceof CalculationError || (hasValue && outcome === 1),
+        `evaluate(${label}) gave ${outcome}`,
+      );
+    }
+  }
+});
+
+test("evaluates the next expression after one that is nested too deeply", () => {
+  errorOf(parenthesized(NESTING_LEVELS), "parentheses around a number");
+  assert.equal(evaluate("1 + 2"), 3);
+});
+
+test("keeps the overflow of the call stack as the cause of the error for an expression nested too deeply", () => {
+  const error = errorOf(
+    parenthesized(NESTING_LEVELS),
+    "parentheses around a number",
+  );
+  assert.ok(error.cause instanceof RangeError, `the cause is ${error.cause}`);
 });
