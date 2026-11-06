@@ -98,9 +98,13 @@ Source Story: 1.1
 - 처리와 까닭: Story는 `src/screen.js`를 만들지 않아 영향이 없고 이 점검은 필수 점검이 아니다. 이 Story의 범위 밖이고 계약 밖이다.
 - 필요한 일: Story 1.3 초안 전에 `docs/architecture.md`에 코딩 표준 절과 Change Log 절을 두고, `SCREEN_WIDTH`와 그 폭을 넘는 줄의 처리를 Story 1.3의 범위에 넣을지 정한다. Story 1.3이 `SCREEN_WIDTH`를 모르면 `node ci/screen-rule.check.mjs`에서 실패한다.
 - 책임: Architect, PM
+- 더한 출처: Story 1.2 PO 검증 1회(2026-11-06)의 PO1-N7, SM N-7. `docs/stories/1.2.story.md`의 PO Validation, `docs/story-records/1.2/po-r1.md`의 섹션 "Q7, SM N-7, PO1-N7: Architecture의 코딩 표준 절과 Change Log 절"
+- 더한 내용: 같은 틈을 Story 1.2도 든다. 문서를 바꿀 일이 생기면 개정 이력을 둘 곳이 없다. Story 1.2는 SubTask 2.1이 no-change여서(`docs/story-records/1.2/dev-2.1.md`의 섹션 "결론") 이 틈에 닿지 않았고 적용하지 않았다. 계약 밖이다.
+- 더한 사실: `main`의 `ci/screen-rule.check.mjs`는 커밋 cb50c3c(`[Chore] 화면 폭 규칙을 48로 올림`) 뒤로 `SCREEN_WIDTH`가 48이기를 요구한다. 위 내용의 40은 그 전의 값이다. `docs/prd.md`, `docs/architecture.md`, `docs/planning/decisions.md`에 `SCREEN_WIDTH`가 여전히 없고 폭의 뜻도 없다.
 
-Planning: unplanned
+Planning: undecided
 Source Story: 1.1
+Source Story: 1.2
 
 ## 위치 판정 방법의 문장과 {범위} 행
 
@@ -156,9 +160,13 @@ Source Story: 1.1
 - 처리와 까닭: Dev가 적용하지 않고 future로 기록했다. 수용 문서에 오류의 `name`이 없고 Story 1.3은 `message`만 쓰며, 적용하려면 계약이 침묵하는 속성과 시험이 더 필요해 범위를 넓힌다. QA 2회차와 3회차가 이 판단을 받아들였다.
 - 필요한 일: `CalculationError`에 이름을 줄지 정하고, 준다면 시험 한 행을 더한다. QA의 제안은 Story 1.3 초안 전에 정하는 것이다. 같은 결정이 `docs/architecture.md`의 소스 트리가 정한 `ConversionError`(Story 1.2)에도 닿는다.
 - 책임: Dev(gate의 제안 소유자)
+- 더한 출처: Story 1.2 PO 검증 1회(2026-11-06)의 PO1-N5, SM N-5. `docs/stories/1.2.story.md`의 PO Validation, `docs/story-records/1.2/po-r1.md`의 섹션 "Q5, SM N-5, PO1-N5: `ConversionError`의 `name`과 메시지"
+- 더한 내용: `new ConversionError("x").name`은 "Error"이고 `String`은 "Error: x"다. 메시지는 입력을 되풀이하지 않는 고정된 영어 문구이고(예: "unknown unit") 수용 문서에 없다. 시험 "throws a ConversionError that is also an Error with a text message"는 클래스와 `message`가 string인지만 본다.
+- 더한 처리: Story 1.2는 적용하지 않았다. 속성과 시험을 더하는 일이라 계약 밖이다. po-r1의 제안은 두 오류 클래스를 함께 정하는 것이고 소유자는 Dev와 PM이다. 준다면 `test/units.test.js`에도 한 행을 더한다.
 
-Planning: unplanned
+Planning: undecided
 Source Story: 1.1
+Source Story: 1.2
 
 ## [Tech-Debt] CRAP 측정 경로
 
@@ -192,3 +200,168 @@ Source Story: 1.1
 
 Planning: unplanned
 Source Story: 1.1
+
+## 변환 결과가 유한하지 않을 때
+
+- 출처: Story 1.2 PO 검증 1회(2026-11-06)의 PO1-N1, SM N-1. `docs/stories/1.2.story.md`의 PO Validation, `docs/story-records/1.2/po-r1.md`의 섹션 "Q1, SM N-1, PO1-N1: 결과가 유한하지 않은 변환"
+- 내용: AC 3의 "유한한 수가 아닌 값"과 D-2의 "값이 number 형이 아니거나 유한하지 않으면"은 입력을 말하는 것으로 읽히고, 참값이 배정밀도 범위를 넘는 변환의 결과는 정하지 않는다. Testing 표 3은 무한대와 `ConversionError`를 모두 받는다.
+- 병합 결과: `src/units.js`는 무한대를 고른다. `convert(Number.MAX_VALUE, "km", "mm")`는 `Infinity`이고 `convert`의 JSDoc이 이 동작을 적는다. 이 선택은 수용된 결정이 아니다. PO1-N1이 더한 관찰(참값은 유한한데 계산 순서로 넘치는 입력)은 QA의 REL-001로 고쳐져 `convert(1e308, "F", "C")`가 5.555555555555556e+307이다.
+- 처리와 까닭: Story는 적용하지 않았다. 표 3이 두 결과를 받아 합격 판정이 같고, 하나로 정하려면 새 결정이 필요해 계약 밖이다.
+- 필요한 일: 이 결과를 AC 보강이나 해석 결정으로 정한다. po-r1의 제안은 `ConversionError`다. 항목 "범위 끝의 반올림 오차 안에서 갈리는 결과"도 함께 정한다. 답이 무한대가 아니면 `src/units.js`와 JSDoc을 바꾸고, 시험 "answers a result that overflows with an infinity or a ConversionError"를 한 결과로 줄인다.
+- 책임: PM 또는 프로젝트 소유자
+
+Planning: undecided
+Source Story: 1.2
+
+## 기대 값이 0일 때의 같은 값 판정
+
+- 출처: Story 1.2 PO 검증 1회(2026-11-06)의 PO1-N2, SM N-2. `docs/stories/1.2.story.md`의 PO Validation, `docs/story-records/1.2/po-r1.md`의 섹션 "Q2, SM N-2, PO1-N2: 기대 값이 0일 때의 같은 값 판정"
+- 내용: D-2의 "상대 오차 1e-12 이내"는 기대 값이 0이면 허용 폭이 0이다. Testing의 "같은 값 판정"은 이것을 그대로 읽어 0이나 -0을 요구하고, 수용 문서는 이 경우를 따로 말하지 않는다.
+- 병합 결과: `test/units.test.js`의 `isSameValue`가 허용 폭 0으로 본다. `convert(32, "F", "C")`와 `convert(-459.67, "F", "K")`는 정확히 0이어서 통과한다.
+- 처리와 까닭: Story는 적용하지 않았다. 글을 그대로 읽은 것이고 결정 기록에 적는 일은 계약 밖이다.
+- 필요한 일: 결정 기록을 고칠 때 이 읽기를 적는다. po-r1의 제안은 "기대 값이 0이면 0 또는 -0"이다. 절대 허용 폭을 두기로 하면 `isSameValue`를 바꾼다.
+- 책임: 프로젝트 소유자
+
+Planning: undecided
+Source Story: 1.2
+
+## 절대 영도 판정의 엄밀함
+
+- 출처: Story 1.2 PO 검증 1회(2026-11-06)의 PO1-N3, SM N-3. `docs/stories/1.2.story.md`의 PO Validation, `docs/story-records/1.2/po-r1.md`의 섹션 "Q3, SM N-3, PO1-N3: 절대 영도 판정의 엄밀함"
+- 내용: D-2의 허용 오차가 절대 영도 경계의 판정에도 적용되는지 글로 정해져 있지 않다. Story는 그 문장을 시험의 값 비교로 읽어 경계에 허용 오차를 두지 않았다.
+- 병합 결과: `convert(-273.15000000000003, "C", "K")`, `convert(-459.67000000000007, "F", "K")`, `convert(-Number.MIN_VALUE, "K", "K")`는 `ConversionError`이고 -273.15 C, -459.67 F, 0 K는 받는다. 시험 "rejects a temperature below absolute zero in every unit"와 "accepts absolute zero written in each temperature unit"가 고정한다.
+- 처리와 까닭: Story는 적용하지 않았다. 수용 문서에 적는 일은 계약 밖이다.
+- 필요한 일: 이 읽기를 확인해 결정 기록에 적는다. 허용 폭을 두기로 하면 수용된 결정의 변경이고 `convert`와 위 시험을 바꾼다.
+- 책임: 프로젝트 소유자
+
+Planning: undecided
+Source Story: 1.2
+
+## 결과가 0에 가까울 때의 정밀도
+
+- 출처: Story 1.2 PO 검증 1회(2026-11-06)의 PO1-N4, SM N-4. `docs/stories/1.2.story.md`의 PO Validation, `docs/story-records/1.2/po-r1.md`의 섹션 "Q4, SM N-4, PO1-N4: 결과가 0에 가까울 때의 정밀도"
+- 내용: 결과가 0에 가까우면 D-2의 식 그대로도 상대 오차 1e-12를 넘는다. 입력을 배정밀도로 나타낼 때의 오차가 뺄셈으로 드러난 것이고, 수용 문서는 이 구간의 정밀도를 말하지 않는다.
+- 병합 결과: `convert(-273.149, "C", "K")`는 0.0009999999999763531이다(0.001과의 상대 오차 약 2.4e-11). Testing 표 1과 `test/units.test.js`는 이런 입력을 쓰지 않는다.
+- 처리와 까닭: Story는 적용하지 않았다. 합격 판정에 닿지 않고 정밀도를 정하는 일은 계약 밖이다.
+- 필요한 일: 이 구간의 정밀도를 약속할지 정한다. po-r1의 제안은 약속하지 않는다고 적는 것이고, 약속하려면 정밀 계산이 필요한 요구사항 변경이다. 항목 "같은 단위 반환을 지키는 시험이 없음"도 함께 정한다.
+- 책임: 프로젝트 소유자
+
+Planning: undecided
+Source Story: 1.2
+
+## 수용된 글을 그대로 읽은 해석
+
+- 출처: Story 1.2 PO 검증 1회(2026-11-06)의 PO1-N6, SM N-6. `docs/stories/1.2.story.md`의 PO Validation, `docs/story-records/1.2/po-r1.md`의 섹션 "Q6, SM N-6, PO1-N6: 수용된 글을 그대로 읽은 해석"
+- 내용: Story는 AC 1, AC 3, AC 4를 이렇게 읽었고 수용 문서에 이 문장들은 없다. 음수 길이와 압력은 변환한다. 글자가 아닌 단위와 종류는 모르는 단위와 종류다. D-2가 관계를 정하지 않는 `mm`, `cm`, `km`, `kPa`, `MPa`는 SI 접두어를 쓴다. `units`의 "목록"은 배열이다.
+- 병합 결과: 구현이 이대로이고 Testing의 L-3, P-3, U-1, E-3, E-5를 시험이 고정한다.
+- 처리와 까닭: Story는 적용하지 않았다. 수용 문서에 적는 일은 계약 밖이다.
+- 필요한 일: 이 읽기를 확인해 AC 보강이나 해석 결정으로 적는다. 다르게 정하면 수용된 결정의 변경이고 `src/units.js`와 `test/units.test.js`를 그 답에 맞춘다.
+- 책임: PM
+
+Planning: undecided
+Source Story: 1.2
+
+## 가져오기 검색이 놓치는 줄의 한계
+
+- 출처: Story 1.2 PO 검증 2회(2026-11-06)의 PO2-N1. `docs/stories/1.2.story.md`의 PO Validation, `docs/story-records/1.2/po-r2.md`의 섹션 "PO2-N1: 검색이 놓치는 줄의 한계가 Story에 없다"
+- 내용: Testing "가져오기 검색"의 패턴 앞머리 `^[^/*]*`는 같은 줄 앞쪽의 `/`와 `*`를 막는다. 그래서 `const a = 1 / require("./engine.js");`와 `/* lazy */ import("./engine.js");`는 종료 상태 1로 지나간다. `docs/story-records/1.2/sm-2.md`는 이 한계를 적었지만 Story의 섹션은 문자열의 한계만 적는다.
+- 병합 결과: `src/units.js`에 그런 줄이 없고 검색은 종료 상태 1이다. 1.2-INSP-002의 읽기에서도 보인다.
+- 처리와 까닭: Story는 적용하지 않았다. SM의 다음 수정이 없었다. 계약 안이다.
+- 필요한 일: po-r2의 수정안은 섹션 끝 문단에 "같은 줄 앞쪽에 `/`나 `*`가 있는 줄의 `import(`, `require(`는 보지 못한다"를 더하는 것이다.
+- 책임: SM
+
+Planning: undecided
+Source Story: 1.2
+
+## [Tech-Debt] 먼저 나누는 변형을 잡는 길이 행
+
+- 출처: Story 1.2 QA 2회(2026-11-06)의 TEST-003(Optional, 계약 안). `docs/qa/gates/1.2.yml`의 `top_issues`, `docs/stories/1.2.story.md`의 Completion Notes와 처리 줄 `TEST-003 future`, `docs/story-records/1.2/dev-qa-r2.md`의 섹션 "TEST-003 먼저 나누는 변이를 시험이 잡지 못한다"
+- 내용: `src/units.js`의 `convertTo`를 `(value / target.size) * size`로 바꾼 변형이 `test/units.test.js`의 시험 20개를 모두 통과한다. 이 변형은 `convert(1e307, "mm", "cm")`에서 `Infinity`인데 전달 코드는 1e+306이다. 시험 "converts a pressure that is out of range in pascals"는 목표 크기가 1보다 작은 단위(`mm`, `cm`, `in`, `ft`)를 들지 않는다.
+- 처리와 까닭: Dev가 적용하지 않고 future로 기록했다. 전달 코드는 맞고, gate PASS 뒤에 시험을 바꾸면 Done 전에 새 QA 회차가 필요했다.
+- 필요한 일: 길이 행 `{ mm: 1e307, cm: 1e306 }`과 `{ mm: 1e308, cm: 1e307, in: 1e308 / 25.4, ft: 1e308 / 304.8 }`을 시험에 더한다. 제품 코드는 바꿀 일이 없다. 변형이 그 행에서 실패하면 끝난다.
+- 책임: Dev
+
+Planning: undecided
+Source Story: 1.2
+
+## 같은 단위 반환을 지키는 시험이 없음
+
+- 출처: Story 1.2 Dev의 DEV-2. `docs/stories/1.2.story.md`의 Completion Notes와 처리 줄 `DEV-2 future`, `docs/story-records/1.2/dev-qa-r2.md`의 섹션 "DEV-2 같은 단위 반환의 분기를 지키는 시험이 없다", `docs/qa/gates/1.2.yml`의 `recommendations.future`
+- 내용: `convert`의 `if (source === target)` 분기를 지운 사본에서 시험 20개가 모두 통과한다. 그 사본의 `convert(1e-20, "K", "K")`는 0, `convert(0.0015, "F", "F")`는 0.0015000000000036096이어서 상대 오차 1e-12를 넘고, 전달 코드는 입력을 그대로 돌려준다. 어느 쪽도 잘못된 결과가 아니라고 QA가 판정했다.
+- 처리와 까닭: Dev가 적용하지 않고 future로 기록했다. 분기를 지키는 행은 결과가 0에 가까운 구간에서만 만들 수 있고 Dev Notes가 그 구간의 행을 쓰지 않는다고 정한다.
+- 필요한 일: 항목 "결과가 0에 가까울 때의 정밀도"를 정할 때 같은 단위 반환을 계약으로 유지할지 함께 정한다. 유지하면 지운 구현이 틀리는 입력의 행을 더하고, 유지하지 않으면 분기를 지워도 된다.
+- 책임: 프로젝트 소유자
+
+Planning: undecided
+Source Story: 1.2
+
+## 범위 끝의 반올림 오차 안에서 갈리는 결과
+
+- 출처: Story 1.2 Dev의 DEV-3. `docs/stories/1.2.story.md`의 Completion Notes와 처리 줄 `DEV-3 future`, `docs/story-records/1.2/dev-qa-r2.md`의 섹션 "DEV-3 범위 끝의 1 ulp 안에서 결과가 갈린다", `docs/qa/gates/1.2.yml`의 `recommendations.future`
+- 내용: 참값이 범위 끝의 1 ulp 안인 입력은 결과가 `Infinity`와 가장 큰 double 사이에서 올바른 반올림과 달라진다. `convert(1.2394657852469996e306, "MPa", "psi")`는 참값이 가장 큰 double보다 아래인데 `Infinity`이고, `convert(5.479368675060339e307, "m", "ft")`는 올바른 반올림이 `Infinity`인데 1.7976931348623157e+308이다. `convert`의 JSDoc이 이 동작을 적는다.
+- 처리와 까닭: Dev가 적용하지 않고 future로 기록했다. 수용 문서는 이 경계의 정확한 반올림을 정하지 않아 맞다 틀리다 할 수 없다.
+- 필요한 일: 항목 "변환 결과가 유한하지 않을 때"를 정할 때 이 구간에서 무엇을 약속할지도 함께 정한다. 정확한 반올림을 요구하는 답이면 `src/units.js`의 환산과 JSDoc을 바꾸고 시험을 더한다.
+- 책임: PM 또는 프로젝트 소유자
+
+Planning: undecided
+Source Story: 1.2
+
+## [Tech-Debt] 재발: 전달 시험이 틀린 변형을 잡지 못함
+
+- 출처: Story 1.2의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1과 대조한 재발. Story 1.1의 QA TEST-003, Cleaner F3, F4(`docs/qa/gates/1.1.yml`, `docs/story-records/1.1/dev-1.1.md`의 섹션 "지적과 처분"). Story 1.2의 QA TEST-003, Cleaner F3(`docs/qa/gates/1.2.yml`, `docs/story-records/1.2/dev-1.1.md`의 같은 섹션)
+- 내용: 기준은 `.bmad-core/data/development-quality.md`의 Cleaner 점검 목록 줄 "Tests that detect the intended defect and remain useful after an internal refactor"이고, gate 범주 TEST에서 결함도 같다. 제품은 맞는데 틀린 변형이 전달 시험을 통과한다.
+- 필요한 일: 막았을 첫 장치는 자동 점검이다. `testing.mutationCommands`가 비어 있어 두 Story 모두 Cleaner 검토자와 QA의 손 변이에서야 드러났다. `.bmad-core/data/quality-tooling.md`의 섹션 Mutation testing이 드는 도구는 외부 패키지여서 `docs/architecture.md`의 기술 구성과 먼저 조정한다. 설정된 명령이 `src/`의 변이를 돌리면 끝난다.
+- 책임: 프로젝트 소유자(도구의 승인), Architect
+
+Planning: undecided
+Source Story: 1.2
+
+## [Tech-Debt] 재발: 주석과 시험 이름이 실제와 다름
+
+- 출처: Story 1.2의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1과 대조한 재발. Story 1.1의 Cleaner F5, F6, F9(`docs/story-records/1.1/dev-1.1.md`의 섹션 "지적과 처분"). Story 1.2의 QA TEST-001(`docs/qa/gates/1.2.yml`의 `resolved_issues`), Cleaner F2, F3(`docs/story-records/1.2/dev-3.1.md`의 같은 섹션)
+- 내용: 기준은 CC-CMT-010 아래 문장 "Test names, headers and comments must describe what the test actually reaches and asserts"(Story 1.2 QA Results의 TEST-001이 든다)와 Cleaner 점검 목록의 주석 줄이다. 시험 이름이나 주석, JSDoc이 실제 단언이나 동작과 달랐다. 모두 각 Story에서 고쳤다.
+- 필요한 일: 막았을 첫 장치는 탐색 포인터다. 글의 참은 자동 점검이 가리지 못하고 규칙은 이미 있다. Dev는 `comments` 본문을 마지막 SubTask 뒤에야 읽으므로(`.bmad-core/tasks/develop-story.md`의 COMMENT HYGIENE COMPLETION CHECK) SM이 Dev Notes의 프로젝트 규칙 적용에 이 문장을 둔다.
+- 책임: SM
+
+Planning: undecided
+Source Story: 1.2
+
+## [Tech-Debt] 재발: 함께 바뀌어야 할 숫자를 여러 곳에 적음
+
+- 출처: Story 1.2의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1과 대조한 재발. Story 1.1의 Cleaner F7(`docs/story-records/1.1/dev-1.1.md`의 섹션 "지적과 처분"). Story 1.2의 QA TEST-002(`docs/qa/gates/1.2.yml`의 `resolved_issues`), Cleaner F1, F2, F7(`docs/story-records/1.2/dev-1.1.md`의 같은 섹션)
+- 내용: 기준은 CL-GLD-001의 Numeric literals 1단계다(Story 1.2 QA Results의 TEST-002가 든다). `308`과 `309`, 273.15 세 곳, 같은 입력 `1` 세 곳처럼 함께 바뀌어야 할 값을 따로 적었다. 모두 각 Story에서 고쳤다.
+- 필요한 일: 막았을 첫 장치는 자동 점검이다. 같은 파일에서 되풀이되는 숫자 리터럴을 후보로 내는 명령을 내장 모듈로 만들어 `testing.lintCommands`에 두면 Dev가 Cleaner와 QA 전에 본다. QA가 같은 파일의 다른 반복을 독립된 값으로 버렸듯이 후보의 판단은 사람이 한다.
+- 책임: Architect, 프로젝트 소유자(도구의 승인)
+
+Planning: undecided
+Source Story: 1.2
+
+## [Tech-Debt] 재발: 기록의 서술이 실제와 다름
+
+- 출처: Story 1.2의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1과 대조한 재발. Story 1.1의 QA DOC-001(`docs/qa/gates/1.1.yml`의 `resolved_issues`). Story 1.2의 Cleaner F4(`docs/story-records/1.2/dev-3.1.md`의 섹션 "지적과 처분"), QA DOC-001(`docs/qa/gates/1.2.yml`의 `resolved_issues`)
+- 내용: 기준은 CL-GLD-OPS-005와 CC-DOC-009, gate 범주 DOC이다. Dev 기록의 문장이 저장된 출력이나 실행과 달랐다. Story 1.1의 DOC-001은 Required였고, Story 1.2의 F4는 커밋 전에 고쳤으며 DOC-001은 사실은 맞고 표현만 부정확한 Optional이다.
+- 필요한 일: 막았을 첫 장치는 탐색 포인터다. 사실 주장의 참은 자동 점검이 가리지 못하고 규칙은 이미 있다. Story 1.2 Dev Notes "이전 Story"에 "기록은 실제 출력과 대조해 적는다"가 있었는데도 F4는 잰 범위 밖까지 말한 문장이었다. SM이 그 줄에 "모든 입력을 말하는 문장에는 잰 범위를 함께 적는다"를 더한다.
+- 책임: SM
+
+Planning: undecided
+Source Story: 1.2
+
+## [Tech-Debt] 재발: 죽은 코드
+
+- 출처: Story 1.2의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1과 대조한 재발. Story 1.1의 Cleaner F2(`docs/story-records/1.1/dev-1.1.md`의 섹션 "지적과 처분"). Story 1.2의 Cleaner F1(`docs/story-records/1.2/dev-3.1.md`의 같은 섹션)
+- 내용: 기준은 Cleaner 점검 목록 줄 "Unnecessary branches, nesting, duplication, dead code and speculative abstractions"의 죽은 코드다. `skipSpaces` 호출 4곳과 `temperature`의 `toCelsius` 속성은 지워도 시험이 모두 통과했다. 둘 다 Cleaner에서 고쳤다.
+- 필요한 일: 막았을 첫 장치는 자동 점검이다. 문장이나 속성을 지우는 변이를 내는 점검이면 항목 "[Tech-Debt] 재발: 전달 시험이 틀린 변형을 잡지 못함"의 명령으로 함께 드러난다. 그 도구를 고를 때 이 변이를 내는지 확인한다.
+- 책임: 프로젝트 소유자(도구의 승인), Architect
+
+Planning: undecided
+Source Story: 1.2
+
+## [Tech-Debt] 재발: 담은 것을 말하지 않는 이름
+
+- 출처: Story 1.2의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1과 대조한 재발. Story 1.1의 Cleaner F6, F12(`docs/story-records/1.1/dev-1.1.md`의 섹션 "지적과 처분"). Story 1.2의 Cleaner F8(`docs/story-records/1.2/dev-1.1.md`의 같은 섹션)
+- 내용: 기준은 Cleaner 점검 목록 줄 "Names that express domain meaning and functions with a coherent responsibility"다. 상수 이름이 사실과 달랐고, `open`은 위치를, `sourceKind`와 `targetKind`는 단위 목록을 담았다. 모두 Cleaner에서 고쳤다.
+- 필요한 일: 막았을 첫 장치는 탐색 포인터다. 이름의 뜻은 자동 점검이 가리지 못하고 기준은 이미 있다. SM이 Dev Notes의 프로젝트 규칙 적용에 이 줄을 가리키는 문장을 둔다.
+- 책임: SM
+
+Planning: undecided
+Source Story: 1.2

@@ -2,7 +2,7 @@
 import { existsSync } from "node:fs";
 
 const SCREEN_MODULE = new URL("../src/screen.js", import.meta.url);
-const EXPECTED_WIDTH = 40;
+const EXPECTED_WIDTH = 48;
 
 if (existsSync(SCREEN_MODULE)) {
   const { SCREEN_WIDTH } = await import(SCREEN_MODULE);
