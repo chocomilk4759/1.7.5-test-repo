@@ -24,11 +24,11 @@ const PASCALS_PER_UNIT = [
 ];
 
 // Nine Fahrenheit degrees span the same difference as five Celsius degrees. A
-// conversion multiplies by one span before it divides by the other: rounding
-// the quotient 5 / 9 first would turn -459.67 F into a Kelvin value just below
-// zero.
-const FAHRENHEIT_SPAN = 9;
-const CELSIUS_SPAN = 5;
+// conversion multiplies or divides by this ratio and never by its reciprocal:
+// rounding the quotient 5 / 9 would turn -459.67 F into a Kelvin value just
+// below zero. It never multiplies by 5 or 9 before it divides either, because
+// that product can leave the range of a double when the result does not.
+const FAHRENHEIT_PER_CELSIUS = 9 / 5;
 const FAHRENHEIT_AT_ZERO_CELSIUS = 32;
 const KELVIN_AT_ZERO_CELSIUS = 273.15;
 
@@ -39,32 +39,36 @@ const ABSOLUTE_ZERO_CELSIUS = -KELVIN_AT_ZERO_CELSIUS;
 const ABSOLUTE_ZERO_FAHRENHEIT = -459.67;
 const ABSOLUTE_ZERO_KELVIN = 0;
 
-// Units of one kind that are a fixed multiple of its reference unit.
+// Units of one kind that are a fixed multiple of one size. The value is
+// multiplied by the ratio of the two sizes: converting it to the base unit
+// first would leave the range of a double for a large value in a large unit,
+// although the result in another large unit is in the range.
 function scaledUnits(kind, sizes) {
   return sizes.map(([symbol, size]) => [
     symbol,
     {
       kind,
       minimum: Number.NEGATIVE_INFINITY,
-      toReference: (value) => value * size,
-      fromReference: (reference) => reference / size,
+      size,
+      convertTo: (value, target) => value * (size / target.size),
     },
   ]);
 }
 
+// Temperature units differ in their zero as well as their size, so a value
+// goes through the degree Celsius.
 function temperature(minimum, toCelsius, fromCelsius) {
   return {
     kind: "temperature",
     minimum,
-    toReference: toCelsius,
-    fromReference: fromCelsius,
+    fromCelsius,
+    convertTo: (value, target) => target.fromCelsius(toCelsius(value)),
   };
 }
 
-// Every unit has a kind, the lowest value it accepts, and the functions that
-// convert a value to and from the reference unit of its kind: the meter, the
-// pascal and the degree Celsius. The order of the entries within a kind is the
-// order in which `units` lists them.
+// Every unit has a kind, the lowest value it accepts, and a function that
+// converts a value of the unit to another unit of the same kind. The order of
+// the entries within a kind is the order in which `units` lists them.
 const UNITS = new Map([
   ...scaledUnits("length", METERS_PER_UNIT),
   ...scaledUnits("pressure", PASCALS_PER_UNIT),
@@ -80,10 +84,9 @@ const UNITS = new Map([
     "F",
     temperature(
       ABSOLUTE_ZERO_FAHRENHEIT,
-      (value) =>
-        ((value - FAHRENHEIT_AT_ZERO_CELSIUS) * CELSIUS_SPAN) / FAHRENHEIT_SPAN,
+      (value) => (value - FAHRENHEIT_AT_ZERO_CELSIUS) / FAHRENHEIT_PER_CELSIUS,
       (celsius) =>
-        (celsius * FAHRENHEIT_SPAN) / CELSIUS_SPAN + FAHRENHEIT_AT_ZERO_CELSIUS,
+        celsius * FAHRENHEIT_PER_CELSIUS + FAHRENHEIT_AT_ZERO_CELSIUS,
     ),
   ],
   [
@@ -106,8 +109,9 @@ function findUnit(symbol) {
 
 /**
  * Converts a value from one unit to another unit of the same kind. The result
- * is the unrounded double-precision value; a result beyond the range of a
- * double is an infinity.
+ * is the unrounded double-precision value. A true result beyond the range of a
+ * double is an infinity; within a rounding error of that limit the result can
+ * be an infinity or the largest double.
  *
  * @param {number} value A finite number; for a temperature, not below
  *   absolute zero in its unit.
@@ -130,10 +134,12 @@ export function convert(value, from, to) {
   if (value < source.minimum) {
     throw new ConversionError("value is below absolute zero");
   }
+  // Passing a temperature through the degree Celsius would round a small value
+  // in kelvin or in degrees Fahrenheit to zero, so the value is returned as is.
   if (source === target) {
     return value;
   }
-  return target.fromReference(source.toReference(value));
+  return source.convertTo(value, target);
 }
 
 /**

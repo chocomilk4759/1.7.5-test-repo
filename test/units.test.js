@@ -32,7 +32,7 @@ function assertSameValue(actual, expected, label) {
   );
 }
 
-// Each row gives one quantity in every unit of a kind. Converting between any
+// Each row gives one quantity in some units of one kind. Converting between any
 // two units of a row, a unit and itself included, must give the row's value in
 // the target unit.
 function assertAllPairs(rows) {
@@ -105,6 +105,23 @@ test("converts between temperature units with their different origins", () => {
     { C: 100, F: 212, K: 373.15 },
     { C: -40, F: -40, K: 233.15 },
     { C: 37, F: 98.6, K: 310.15 },
+  ]);
+});
+
+// This quantity has a finite value in each unit listed but not in pascals, so
+// a conversion that passes through pascals would answer an infinity.
+test("converts a pressure that is out of range in pascals", () => {
+  assertAllPairs([
+    { kPa: 1e306, MPa: 1e303, bar: 1e304, psi: 1.4503773773021682e305 },
+  ]);
+});
+
+// The Fahrenheit value is above a fifth and the Celsius and Kelvin values are
+// above a ninth of the largest double, so a conversion that multiplies by 5 or
+// by 9 before it divides would leave the range.
+test("converts a large temperature in every unit", () => {
+  assertAllPairs([
+    { C: 5.555555555555556e307, F: 1e308, K: 5.555555555555556e307 },
   ]);
 });
 
