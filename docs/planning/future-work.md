@@ -609,3 +609,10 @@ Source Story: bug-2
 ## Closed items
 
 - [Tech-Debt] Story 1.3 Dev 기록의 두 문장: 유형 Story `tech-debt-3`(`docs/stories/tech-debt/tech-debt-3.story.md`)에 배정, 2026-11-07
+- Story `tech-debt-3` "Story 1.3 Dev 기록의 두 문장 정정" 취소: 사용자의 결정, 사유 "이 기록 정정은 지금 가치가 없어 더 하지 않는다", 다시 정렬할 Story를 만들지 않음, 2026-11-07
+- Story tech-debt-3의 PO1-N1 병합된 기록에서 정정으로 가는 길: 사용자가 버림, 사유는 위 취소와 같음, 2026-11-07
+- Story tech-debt-3의 DOC-002 Review 인계가 기록 문서 넷을 덜 듦: 사용자가 버림, 사유는 위 취소와 같음, 2026-11-07
+- Story tech-debt-3의 DOC-003 소스 트리 표의 `ci/`와 워크플로 틈의 출처 표현: 사용자가 버림, 사유는 위 취소와 같음, 2026-11-07
+- Story tech-debt-3의 DOC-004 정정 항목이 재지 않은 곳에 Story 1.3의 Dev Agent Record를 들지 않음: 사용자가 버림, 사유는 위 취소와 같음, 2026-11-07
+- Story tech-debt-3의 DOC-005 문장 서수로 자리를 가리킴: 사용자가 버림, 사유는 위 취소와 같음, 2026-11-07
+- Story tech-debt-3의 QA monitor 비교 커밋이 이 checkout의 `refs/archive/story/1.3`에만 닿음: 사용자가 버림, 사유는 위 취소와 같음, 2026-11-07
