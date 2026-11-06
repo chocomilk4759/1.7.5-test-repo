@@ -5,7 +5,7 @@ import { formatNumber } from "./number-format.js";
 
 // The width of the display in characters. renderScreen does not cut or wrap
 // its line to this width.
-export const SCREEN_WIDTH = 40;
+export const SCREEN_WIDTH = 48;
 
 /**
  * Renders an expression and its result as one line of text: the expression,
