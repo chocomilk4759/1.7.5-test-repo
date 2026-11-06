@@ -156,7 +156,9 @@ test("returns an empty text for an empty expression and for spaces only", () => 
 
 test("reports an error at its position in the expression as received", () => {
   const withLeadingSpaces = ["  a", " 7 + a"];
-  assertErrorLines([...withLeadingSpaces, "7 + a  "]);
+  // The failure of "7 +  " is at its end, so the trailing spaces move the
+  // position; the failure of "7 + a  " is at "a", which they do not move.
+  assertErrorLines([...withLeadingSpaces, "7 + a  ", "7 +  "]);
   for (const expression of withLeadingSpaces) {
     assert.notEqual(
       errorLineOf(expression),
@@ -170,6 +172,7 @@ test("does not take white space other than a space for a space", () => {
   const expressions = [
     "1\t+ 2",
     "1\n+ 2",
+    "1\r+ 2",
     "1\u00a0+ 2",
     "\t1 + 2",
     "1 + 2\n",
@@ -177,7 +180,7 @@ test("does not take white space other than a space for a space", () => {
   assertErrorLines(expressions);
   for (const expression of expressions) {
     assert.ok(
-      !renderScreen(expression).includes("\n"),
+      !/[\r\n]/.test(renderScreen(expression)),
       `the line for ${JSON.stringify(expression)} has no line break`,
     );
   }
