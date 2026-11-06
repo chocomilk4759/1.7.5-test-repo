@@ -1,0 +1,272 @@
+# Story tech-debt-3 Story 1.3 Dev 기록의 두 문장 정정의 품질 게이트. 회차는 review_rounds 안의 데이터이고, 근거의 서술은 회차 기록 문서 qa-r1에 있다.
+
+# -- 현재 판정 --
+schema: 2
+story: "tech-debt-3"
+story_title: "Story 1.3 Dev 기록의 두 문장 정정"
+gate: "PASS"
+status_reason: "AC 1 ~ 3, 회귀 기준, Architecture 정렬의 시나리오 6개를 이 회차에 다시 실행하거나 읽어 모두 통과했고 활성 Required와 Recommended 지적이 없다. 활성 지적은 Dev 기록의 표현에 관한 Optional 넷이다."
+reviewer: "Quinn(QA 하위 세션, 모델 claude-opus-5-5, effort max는 실행 계획의 값), *run-story tech-debt-3 remote to Done run의 역할 작업, 구현을 쓰지 않은 주 검토자"
+updated: "2026-11-07T07:28:00+09:00"
+round: 1
+
+waiver:
+  active: false
+
+# -- 활성 지적 --
+top_issues:
+  - id: DOC-002
+    severity: low
+    disposition: optional
+    confidence: high
+    suggested_owner: dev
+    finding: "Completion Notes의 항목 'Review 인계'가 '이 Story의 변경은 Story 파일과 이 Story의 기록 문서(dev-1.1.md, dev-2.1.md, dev-dod-1.md)뿐이고'라고 적는데, `git diff --name-status 20256e4 HEAD`의 여덟 경로에는 sm-1.md, sm-2.md, po-r1.md, po-r2.md도 있다. 말하는 사실(코드와 시험이 아니라 Story 파일과 이 Story의 기록 문서만 바뀌었다)은 여덟 경로 모두에 맞고, 같은 섹션의 File List와 dev-dod-1은 일곱 문서를 모두 든다. 결정 순서: step 1 확인. step 2 이 Story가 쓴 글. step 3: '뿐'이 덮는 종류는 맞고 괄호의 나열만 넷을 덜 드는 덜 정확한 글이며, 이 나열에 기대는 Task, 점검, 기록이 없어(tech-debt-3-INSP-004는 Dev Notes `파일 위치`의 `바꾸는 경로` 행을 받는다) 기준이 아니다. Dev Notes의 '기록은 실제 출력과 대조해 적고, 모든 입력을 말하는 문장에는 잰 범위를 함께 적는다'는 `기술 제약`과 Risk Coverage가 정정 글에 대어 읽고 tech-debt-3-INSP-002, tech-debt-3-INSP-003이 그 글을 읽으므로, 이 인계 줄까지 덮는지를 계획이 정하지 않아 이 줄의 기준으로 읽지 않았다. step 4: 잘못된 결과가 없다. 비차단, 계약 안."
+    failure_scenario: "뒤의 검토자가 이 줄만 읽으면 sm-, po- 문서가 변경 집합에 없다고 읽는다. File List, tech-debt-3-INSP-004의 결과, 제품과 시험에는 닿지 않는다."
+    suggested_action: "Dev가 처리를 정해 Completion Notes에 처리 줄을 남긴다(`check-done.sh`가 활성 Optional마다 요구한다). 고치면 앞선 항목을 고쳐 쓰지 않고 다음 항목에서 Story 파일과 기록 문서 일곱으로 적는다. `future`면 지적, 출처, 적용하지 않는 까닭, 필요한 일을 적은 future 기록이 함께 있어야 한다. 시점: 병합 뒤 PO 점검이 항목 `[Tech-Debt] 재발: 기록의 서술이 실제와 다름`과 대조한다."
+    refs:
+      - "docs/stories/tech-debt/tech-debt-3.story.md, Dev Agent Record의 Completion Notes 항목 `Review 인계`, File List"
+      - "docs/story-records/tech-debt-3/dev-dod-1.md, 항목 `File List가 모든 바뀐 파일과 필요한 동반 파일을 담는다`"
+    first_round: 1
+    verification: "`git diff --name-status 20256e4 HEAD`를 실행해 A 여덟 줄을 읽었고 Story의 글, File List, dev-dod-1의 글과 대었다. 시작 커밋 `2e86847`이 sm-, po- 문서 넷을 더함을 `git diff --name-status 20256e4 2e86847`로 확인했다."
+  - id: DOC-003
+    severity: low
+    disposition: optional
+    confidence: high
+    suggested_owner: dev
+    finding: "dev-2.1의 '기존에 있던 어긋남', Completion Notes의 2.1 줄, dev-dod-1의 '최종 확인'이 소스 트리 표가 `ci/screen-rule.check.mjs`와 `.github/workflows/ci.yml`을 말하지 않는 틈을 future-work 항목 `CI 규칙이 계획 문서에 없음`이 든다고 적는다. 표의 틈은 맞다. 항목은 CI 규칙이 계획 문서에 없다는 더 넓은 틈을 들지만 소스 트리에 대해서는 `src/screen.js` 행의 내보내기만 말하고, 끝나는 조건 '문서의 값이 `EXPECTED_WIDTH`와 같고 `src/screen.js` 행이 내보내기를 모두 들면 끝난다'에 두 경로가 없다. 결정 순서: step 1 확인. step 2 이 Story가 쓴 글이고 틈 자체는 이 Story가 만들지 않았다. step 3: 표의 틈은 항목 제목이 말하는 넓은 틈 안에 있어 출처를 덜 정확하게 댄 글이고 거짓이 아니다. step 4: no-change 결론과 합격 판정에 닿지 않는다. 비차단, 계약 안."
+    failure_scenario: "뒤의 Architect나 PO가 이 글을 믿으면 그 항목을 끝낸 뒤에도 소스 트리 표에 두 경로가 없는 채로 남는다. 제품, 시험, 이 Story의 합격 판정에는 닿지 않는다."
+    suggested_action: "Dev가 처리를 정해 Completion Notes에 처리 줄을 남긴다. `future`면 future 기록이 표의 두 경로를 이름 들어 병합 뒤 PO 점검이 그 항목에 더하게 한다(더하면 그 항목은 트리아지로 돌아간다). 소스 트리 표를 고치는 일은 이 Story의 범위 밖이고 `docs/architecture.md`를 바꾸지 않는다."
+    refs:
+      - "docs/story-records/tech-debt-3/dev-2.1.md, 항목별 대조 뒤의 문단 `기존에 있던 어긋남`"
+      - "docs/stories/tech-debt/tech-debt-3.story.md, Completion Notes의 2.1 줄"
+      - "docs/story-records/tech-debt-3/dev-dod-1.md, 섹션 `최종 확인`의 `기술 부채와 남은 일`"
+      - "docs/planning/future-work.md, 항목 `CI 규칙이 계획 문서에 없음`의 `더한 일`"
+      - "docs/architecture.md, 섹션 `소스 트리`"
+    first_round: 1
+    verification: "`docs/architecture.md`의 소스 트리 표를 읽어 두 경로가 없음을 확인했다. 항목의 글에서 `소스 트리`와 `ci/`, `ci.yml`이 든 줄을 모두 읽었고 소스 트리를 말하는 줄은 `src/screen.js` 행과 내보내기에 관한 둘뿐이다."
+  - id: DOC-004
+    severity: low
+    disposition: optional
+    confidence: high
+    suggested_owner: dev
+    finding: "정정 항목의 둘째 문장이 'Scope and Dependencies, SM Draft Checklist, PO Validation, QA Results는 재지 않았다'고 적는데, 같은 패턴의 40이 있는 Dev Agent Record를 들지 않는다. `docs/stories/1.3.story.md`의 Dev Agent Record에서 패턴에 드는 줄은 `8579e5a`에 둘(`40글자`, 시각 `21:40`), `main` 6188a27에 여덟이다. 잰 범위(`## Dev Notes`부터 다음 `## ` 앞까지)와 네 곳은 맞고, 든 넷을 재지 않은 것도 맞으며, 글은 Story의 표 2 `잰 범위` 행과 같다. 고칠 문장이 있는 dev-qa-r2의 `확인`의 앞 절 '남은 40은 ... 뿐이고'도 Dev Agent Record를 들지 않는데 그 절은 Story의 범위 밖이어서 다시 판정하지 않았다. 결정 순서: step 1 확인. step 2 이 Story가 쓴 글. step 3: `판정 방법`의 받는 글을 채우고 거부하는 글에 들지 않으며 표 2가 이 글을 정하므로 기준이 없고, Story 문장의 `잘못 좁히지 않는다`는 정도의 말이어서 그 자체로 기준이 아니다. step 4: 잰 범위가 적혀 있어 틀린 값을 내지 않는다. 비차단, 계약 안."
+    failure_scenario: "옛 값 40이 남은 곳을 찾는 검토자가 이 목록을 재지 않은 곳의 전부로 읽으면 Dev Agent Record를 빠뜨린다. 제품, 시험, 필수 점검에는 닿지 않는다."
+    suggested_action: "Dev가 처리를 정해 Completion Notes에 처리 줄을 남긴다. 고치면 앞선 항목을 고쳐 쓰지 않고 새 항목에서 재지 않은 곳에 Dev Agent Record를 더한다. 표 2의 글은 SM의 것이어서 Dev가 고치지 않는다. 시점: 병합 뒤 PO 점검이 항목 `[Tech-Debt] 재발: 기록의 서술이 실제와 다름`과 대조한다."
+    refs:
+      - "docs/stories/tech-debt/tech-debt-3.story.md, Completion Notes의 항목 `정정(Story 1.3 Dev 기록의 두 문장, 단위 1.1)`의 둘째 문장 부분, Testing의 표 2 `잰 범위`, `coverage_gaps`"
+      - "docs/story-records/1.3/dev-qa-r2.md, 섹션 `REQ-002 Story의 수용된 결정과 계획의 글이 사용자의 결정과 어긋난다`의 `확인`"
+      - "docs/stories/1.3.story.md, Dev Agent Record"
+    first_round: 1
+    verification: "`git show {개정}:docs/stories/1.3.story.md`를 `## ` 제목으로 나누어 표 2의 패턴으로 찾았다. 6188a27에서 패턴에 드는 줄은 Scope and Dependencies 6, Dev Notes 4, SM Draft Checklist 2, PO Validation 3, Dev Agent Record 8, QA Results 5이고, 8579e5a의 Dev Agent Record는 2다. 두 줄의 둘레 글을 읽어 값 `40글자`와 시각 `21:40`임을 확인했다."
+  - id: DOC-005
+    severity: low
+    disposition: optional
+    confidence: medium
+    suggested_owner: dev
+    finding: "dev-1.1의 섹션 `tech-debt-3-INSP-003: 둘째 문장의 정정 항목 읽기`의 '이 항목에서 정정한다고 적는다(첫 문장)'의 '첫 문장'이 자리를 국소 서수로 가리킨다. AC 1과 AC 2의 Source 줄도 항목의 `내용`을 첫 문장, 둘째 문장으로 가리킨다. CC-DOC-009는 'Do not record a line number, line range, or local ordinal as a locator'라고 적는다. 결정 순서: step 1 확인. step 2 이 Story가 쓴 글. step 3: dev-1.1은 그 문장의 말을 함께 들어 서수 없이도 자리가 찾아지고, AC의 Source 줄은 커밋 6188a27에 묶인 글이어서 규칙이 든 까닭 'an edit elsewhere in the source can move them'이 닿지 않으며 Scope and Dependencies가 그 글을 그대로 옮긴다. 서수가 말과 함께 있거나 커밋에 묶인 글을 가리킬 때 locator인지를 규칙이 정하지 않아 이 경우의 기준이 아니라고 읽었다. step 4: 자리를 잘못 찾는 일이 없다. 비차단. 규칙을 더 넓게 읽으면 step 3의 기준이 되므로 확신은 medium이고 그 읽기는 qa-r1에 적었다."
+    failure_scenario: "정정 항목의 문장 순서가 바뀌면 dev-1.1의 `첫 문장`이 맞지 않게 된다. 함께 든 말로 자리를 찾을 수 있어 잘못된 판정으로 이어지지 않는다."
+    suggested_action: "Dev가 처리를 정해 Completion Notes에 처리 줄을 남긴다. 고치면 뒤의 기록에서 서수 없이 문장의 말로만 가리킨다. AC의 Source 줄은 SM의 글이고 PO 두 회차가 통과시켰으므로 Dev가 고치지 않는다. 같은 꼴을 규칙이 막는지 분명히 하려면 convention 제안의 일이다."
+    refs:
+      - "docs/story-records/tech-debt-3/dev-1.1.md, 섹션 `tech-debt-3-INSP-003: 둘째 문장의 정정 항목 읽기`"
+      - "docs/stories/tech-debt/tech-debt-3.story.md, Acceptance Criteria의 AC 1, AC 2의 Source 줄"
+      - "docs/conventions/Common/sections/documentation.md, CC-DOC-009의 본문"
+    first_round: 1
+    verification: "새 기록과 Story에서 `첫 문장`, `둘째 문장`, `끝 문장`, 행 서수를 grep으로 찾아 둘레 글을 읽었다. Story의 `첫째 문장`, `둘째 문장`은 표 1, 표 2와 판정 방법이 쓰는 두 문장의 이름이어서 뺐다. 줄 번호와 줄 좌표는 찾은 곳이 없다."
+
+# -- 닫힌 지적과 처분 --
+resolved_issues: []
+
+# -- 위험 수와 통제 --
+risk_summary:
+  totals:
+    critical: 0
+    high: 0
+    medium: 0
+    low: 7
+  recommendations:
+    must_fix: []
+    monitor:
+      - "정정이 Story 1.3의 파일에 없어 dev-dod-2, dev-qa-r2만 읽는 사람은 정정으로 가는 링크를 보지 못한다. PO1-N1이 PO Validation에 있고 병합 뒤 점검이 옮긴다."
+      - "비교한 커밋 e71238d, 6701dcd, 8579e5a는 이 checkout의 archive ref에만 닿는다. 값은 Story와 dev-1.1에 있어 판정의 근거는 남고, 원격에 그 ref가 있는지는 이 회차도 보지 않았다."
+      - "기록의 서술이 실제와 다른 꼴이 이 Story의 Dev 기록에도 낮은 수준으로 있다(DOC-002, DOC-003, DOC-004). 병합 뒤 점검이 재발 항목과 대조한다."
+
+# -- 주석 정책과 수명 점검 --
+comment_hygiene:
+  status: "PASS"
+  status_reason: "기준선 20256e4에서 HEAD까지 src, test, ci, .github, package.json에 바뀐 줄이 없어 새 주석과 코드 옆 글이 없다. 보조 조사로 src, test, ci의 아홉 파일 전체에 후보 검색을 돌려 일치가 없다."
+
+  policy_reference:
+    coding_convention: "docs/conventions/Common/sections/golden-rules.md"
+    comment_policy: ".bmad-core/tasks/code-comment-style.md"
+    lifecycle_policy: ".bmad-core/tasks/in-flight-comment-lifecycle.md"
+
+  classifier_run:
+    script: "체크리스트 §3의 비교(`git diff --name-only 20256e4 HEAD -- src test ci .github package.json README.md`, 출력 없음). 바뀐 집합이 비어 §1.1, §1.2, §1.3, §1.7의 추가 줄 검색 대상이 없다. 보조 조사: src/*.js, test/*.js, ci/*.mjs 아홉 파일에 §1.1, §1.2(QA 접두, 이 Story와 기록에 적힌 ID PO1-B1, PO1-N1 ~ PO1-N5, N-1 ~ N-3, F-1), §1.3의 기계 고유 경로, §1.7의 grep, HEAD와 기준선의 `git grep IN-FLIGHT`. 모두 일치 없음"
+    mode: "agent-review에 grep 후보 수집을 더함"
+    guard_window: null
+    executed_at: "2026-11-07T07:25:00+09:00"
+    output_dir: "(inline)"
+
+  tracking_id_leaks:
+    count: 0
+    locations: []
+    threshold:
+      pass: 0
+      fail: "1+"
+
+  build_guard_critical:
+    count: 0
+    locations: []
+    handling: "not_applicable"
+
+  hotspot_pair_commit_compliance:
+    applicable: false
+    hotspot_files_touched: []
+    pair_commits_verified: []
+    forbidden_split_detected: []
+    status: "N/A"
+
+  in_flight_lifecycle:
+    total_created_during_story: 0
+    total_resolved: 0
+    pending_at_review: 0
+    pending_after_story_done: 0
+    orphan_from_prior_stories: 0
+    ledger_reference: "story_file::dev-agent-record::in-flight-comments-ledger"
+    status: "PASS"
+
+  forbidden_patterns:
+    rule_id_citations:
+      count: 0
+      locations: []
+    external_paths:
+      count: 0
+      locations: []
+    qa_gate_id_leaks:
+      count: 0
+      locations: []
+
+  access_specifier_compliance:
+    applicable: false
+    access_specifier_lines_changed_in_diff: 0
+    expected: 0
+    status: "PASS"
+
+  whitelist_preserved:
+    count: 0
+    expected: 0
+    items: []
+    status: "PASS"
+
+  tests_directory_findings:
+    count: 0
+    note: "기존 시험 잔여물이 없다. 기준선 20256e4와 HEAD의 시험 파일이 같고 후보 검색에 일치가 없다."
+
+  gate_decision_rules:
+    priority_order:
+      - "classify raw hygiene conditions below; retain counts/status for actually waived occurrences"
+      - "whitelist_preserved.status == FAIL -> FAIL"
+      - "access_specifier_compliance.status == FAIL -> FAIL"
+      - "tracking_id_leaks.count > 0 -> FAIL"
+      - "forbidden_patterns.rule_id_citations.count > 0 or forbidden_patterns.qa_gate_id_leaks.count > 0 -> FAIL"
+      - "forbidden_patterns.external_paths.count > 0 -> apply effective rule and active issue disposition"
+      - "in_flight_lifecycle.pending_after_story_done > 0 -> FAIL"
+      - "in_flight_lifecycle.pending_at_review > 0 -> FAIL"
+      - "hotspot_pair_commit_compliance.status == FAIL -> FAIL"
+      - "in_flight_lifecycle.orphan_from_prior_stories > 0 -> CONCERNS"
+      - "build_guard_critical.count > 0 and handling == manual_review_required -> CONCERNS"
+      - "tests_directory_findings.count > 0 -> historical residue only, no gate impact (CL-GLD-OPS-003)"
+      - "other active comment issues -> apply the top_issues disposition from tasks/qa-gate.md Evidence classification"
+      - "all raw conditions passed -> comment_hygiene.status PASS"
+      - "comment_hygiene.status CONCERNS or FAIL -> held by an active Required/Recommended issue or an applicable waiver; the overall gate is not PASS"
+      - "overall gate: unwaived active Required/Recommended conditions retain normal impact; covered conditions follow qa-gate.md's scoped WAIVED contract"
+
+# -- 검증 요약 --
+quality_score: 100
+expires: null
+
+evidence:
+  tests_reviewed: 0
+  risks_identified: 7
+  trace:
+    ac_covered: ["AC 1", "AC 2", "AC 3"]
+    ac_gaps: []
+    ac_partial: []
+
+# -- 품질 속성과 근거 --
+nfr_validation:
+  security:
+    status: "N/A"
+    notes: "수용된 보안 기준이 이 Story에 없고 코드, 입력 경로, 비밀, 의존성의 변경이 없다(`git diff --name-only 20256e4 HEAD -- src test ci .github package.json` 출력 없음). 새 글을 읽어 비밀과 자격 증명이 없음을 보았다."
+  performance:
+    status: "N/A"
+    notes: "수용된 성능 기준이 없고 실행되는 코드를 바꾸지 않아 닿는 실행 비용 규칙이 없다(Story의 기술 제약). 측정을 하지 않았다."
+  reliability:
+    status: "N/A"
+    notes: "수용된 신뢰성 기준이 없고 실행 동작이 바뀌지 않았다. 회귀 기준 tech-debt-3-INT-001은 이 회차에 통과했다."
+  maintainability:
+    status: "N/A"
+    notes: "수용된 유지보수 기준이 없고 코드와 시험이 그대로다. 기록의 정확성은 AC 1, AC 2와 활성 Optional DOC-002 ~ DOC-005가 든다."
+
+# -- 바로 할 일과 뒤의 일 --
+recommendations:
+  immediate:
+    - "Dev: DOC-002 ~ DOC-005의 처리를 정해 Completion Notes에 처리 줄을 남긴다. Status는 Review 그대로이고 `check-done.sh`가 이 줄을 요구한다. `fix`면 QA 회차가 닫아야 하고 `future`면 future 기록이 함께 있어야 한다."
+    - "그 뒤 QA의 완료 점검(`tasks/local-story-done.md`)이 현재 입력을 확인하고 Done 커밋을 만든다. 이 작업은 Done을 하지 않았다."
+  future:
+    - "PO1-N1: Story의 PO Validation에 있고 병합 뒤 PO 점검이 옮긴다. 이 회차는 같은 사실을 다시 확인했고 새 지적을 만들지 않았다."
+    - "`docs/qa/gates/1.3.yml`의 DOC-001과 Story 1.3의 처리 줄은 그때의 기록으로 남고 이 gate가 닫지 않는다(CL-GLD-OPS-004)."
+
+# -- 회차별 검토 근거 --
+review_rounds:
+  - round: 1
+    at: "2026-11-07T07:28:00+09:00"
+    gate: "PASS"
+    reviewer: "Quinn(QA 하위 세션, 모델 claude-opus-5-5, effort max는 실행 계획의 값), *run-story tech-debt-3 remote to Done run의 역할 작업, 구현을 쓰지 않은 주 검토자"
+    depth: standard
+    base_commit: "20256e4defbc36ab3d1e7cbce224a265e4121034"
+    head_commit: "a676f8e17f3969a849c76173983acc885e1a8bf1"
+    scope: "전체 검토. 브랜치 story/tech-debt-3-story-1-3-dev, 기준 main 20256e4에서 HEAD a676f8e까지, 커밋하지 않은 변경 없음. 제품과 시험: 바뀐 줄 없음(시험 76개는 회귀로 실행했고 시험의 글은 바뀌지 않아 검토하지 않았다). 문서: Story 파일 전체, dev-1.1, dev-2.1, dev-dod-1, 대조한 Story 1.3의 기록과 gate, docs/architecture.md, README.md, docs/planning/decisions.md, docs/planning/future-work.md의 해당 항목. 깊이 근거: 첫 회차이고 코드와 시험이 바뀌지 않은 기록 정정이어서 제품 위험이 없고, 정정 글의 정확성이 일의 전부여서 값의 재현과 다른 엔진의 재계산, 저장된 글의 읽기를 모두 직접 했다. deep을 부를 민감한 경로, 넓은 변경, 앞선 실패가 없다."
+    verification:
+      automated:
+        - "tech-debt-3-INSP-001 표 1: `git diff --numstat e71238d 6701dcd -- docs/stories/1.3.story.md` 29와 4. 머리 줄을 뺀 지운 줄 넷은 `InProgress`, `src/screen.js` (새 파일), `test/screen.test.js` (새 파일), 기준 `40e1a6b`의 바꾸지 않음 줄이고 세 줄 모두 `### File List` 아래다. 섹션 비교는 왼쪽 Dev Agent Record 3, Status 1, 오른쪽 Change Log 1, Dev Agent Record 27, Status 1, 두 커밋 모두 `## ` 제목 11개. `git ls-tree --name-only e71238d docs/story-records/1.3/` 11개, `git diff --name-status e71238d 6701dcd -- docs/story-records/1.3`는 A 다섯뿐, `6701dcd`의 기록 문서 16개. refs/archive/story/1.3이 이 checkout에 있고 `git for-each-ref --contains`가 세 커밋에 그 ref 하나를 낸다."
+        - "tech-debt-3-INSP-001 표 2: `8579e5a`, `6701dcd`, 6188a27에서 Story의 명령이 네 줄, 줄마다 하나를 내고, 범위의 글의 `git hash-object --stdin`이 셋 모두 c714acbdf17392b22bc35469ce018646fee87894다. Story 1.3 파일은 6188a27과 HEAD가 같다. 네 줄의 소제목과 둘레 글이 P-1 ~ P-4와 같다. `EXPECTED_WIDTH`와 `SCREEN_WIDTH`는 48이다."
+        - "tech-debt-3-INSP-004: `git diff --name-only 20256e4`는 Story 파일, dev-1.1, dev-2.1, dev-dod-1, po-r1, po-r2, sm-1, sm-2 여덟 경로이고 모두 `바꾸는 경로` 행에 있다. `git status --porcelain` 출력 없음. `git diff --name-only --no-renames --diff-filter=MD 2e86847 -- docs/story-records/tech-debt-3/` 출력 없음. `git hash-object`는 18eb39bc4ecbc7956f3d164bd3990bf739551591, 058eb6c45a1ffafc2c3d8fc277777e9ab7a08d25로 표 3과 같고 6188a27, HEAD의 blob도 같다. `git diff --name-only 20256e4 -- docs/story-records/1.3 docs/stories/1.3.story.md docs/qa src test ci .github package.json README.md docs/prd.md docs/architecture.md docs/planning` 출력 없음. 잰 범위는 Git이 보는 경로다."
+        - "tech-debt-3-INT-001: 프로젝트 루트의 `node --test`, HEAD a676f8e, Node.js v24.22.1, Windows x64, Git 2.51.0. tests 76, pass 76, fail 0, cancelled 0, skipped 0, todo 0, 종료 상태 0. `node ci/screen-rule.check.mjs` 종료 상태 0, 출력 없음. job `test`의 두 단계와 같은 명령임을 `.github/workflows/ci.yml`에서 읽었다."
+        - "`check-instructions.sh` 종료 상태 0. `check-stage.sh records` 종료 상태 0. `po-record`는 GO, 회차 2, complete. `future --story tech-debt-3` 종료 상태 0, Revisit 알림만. `check-stage.sh review`는 이미 Review인 Status 하나만 보고했다(Dev의 전환 뒤 상태라 정상). `check-merge.sh status 1.3 main`은 merged 937f21c5a4d5cc5623f90caefa08dd3e137d89f5다."
+        - "새 글의 점검: Story와 tech-debt-3 기록 문서 일곱에 `invisible-chars.awk`(LC_ALL=C)가 찾은 글자 없음, 임시 경로 검색 일치 없음, 줄 번호와 줄 좌표 꼴의 검색 일치는 po-r1, po-r2의 `6행`(시나리오 행의 수이고 위치가 아니다)뿐, 기록 문서 일곱에 저장 줄의 꼴 없음."
+      manual:
+        - "agent-review, tech-debt-3-INSP-002: 저장된 정정 항목의 첫째 문장 부분을 표 1과 판정 방법에 하나씩 대었다. 자리와 글이 dev-dod-2의 행과 글자대로 같고, 지운 줄 넷과 그 내역, Status 줄의 처리, 기록 문서 11개와 Story의 넷을 뺀 범위를 적는다. 거부하는 글에 드는 것이 없고 값이 내 실행과 같다. 통과."
+        - "agent-review, tech-debt-3-INSP-003: 저장된 정정 항목의 둘째 문장 부분을 표 2와 판정 방법에 하나씩 대었다. 자리와 글이 dev-qa-r2의 `확인`과 같고, 잰 범위, P-1 ~ P-4의 자리와 글, 값의 뜻, 48을 적는다. 거부하는 글에 드는 것이 없다. 통과. 재지 않은 곳의 목록의 틈은 DOC-004다."
+        - "agent-review, 두 기준에 공통: 항목이 Completion Notes에 SubTask 1.1의 줄과 따로 있고 DoD 줄 위에 있으며 dev-1.1을 링크하고, 앞선 기록을 고쳐 쓰지 않고 이 항목에서 정정한다고 적는다. INSP-004의 결과와 같다."
+        - "agent-review, tech-debt-3-INSP-005: 누적 변경을 docs/architecture.md의 기술 구성, 소스 트리, 설계 원칙 다섯, README.md, D-1, D-2와 대조했다. 변경이 docs 아래 문서뿐이고 dev-2.1의 항목별 결과와 no-change 결론이 맞으며 문서를 고쳐 위반을 덮은 일이 없다. 통과. 출처 표현의 틈은 DOC-003이다."
+        - "agent-review, Dev 기록 전체: dev-1.1, dev-2.1, dev-dod-1, Completion Notes, File List를 끝까지 읽고 사실 주장을 Git, 코드, 내 실행과 대었다. 어긋난 곳은 DOC-002 ~ DOC-005이고 기각한 후보는 note에 있다. 접근 verification-only와 Cleaner 없음은 testing-tdd와 development-quality의 기록만 바꾸는 SubTask에 맞다."
+        - "agent-review, 주석 위생: 바뀐 production과 test 줄이 없음을 확인했고 위 보조 조사의 후보가 0이다."
+        - "user-only 시나리오는 없다."
+    findings:
+      new: 4
+      resolved: 0
+      partial: 0
+      not_fixed: 0
+    external_reviews: []
+    adversarial_checks:
+      - id: tech-debt-3-INSP-001
+        verdict: CONFIRMED
+        evidence: "Quinn(QA), 표 1과 표 2의 값. Git의 diff와 grep에 기대지 않고 Node.js로 다시 셌다. e71238d의 Story 줄의 다중집합에서 6701dcd의 줄을 빼면 넷이 남고 글이 표의 넷과 같다. `--diff-algorithm`을 default, minimal, patience, histogram으로 바꿔도 numstat은 29와 4다. 앞에 숫자와 점이 없고 뒤에 숫자와 영문자가 없는 40을 Node.js 정규식으로 `## Dev Notes`부터 다음 `## ` 앞까지 세면 8579e5a, 6701dcd, 6188a27, HEAD에서 네 곳, 네 줄이다. 패턴에 표본을 넣으면 `40e1a6b`, `140자`, `400`, `4.40`, `v0.40`은 들지 않고 `got 40`, `폭 40,`, `40`, 시각 `21:40`은 든다. 잰 범위 안의 토큰 가운데 40을 담은 것은 네 곳과 커밋 이름 둘뿐이어서 시각이 수에 섞이지 않았다."
+        severity_change: "없음"
+      - id: DOC-004
+        verdict: CONFIRMED
+        evidence: "Quinn(QA), docs/stories/1.3.story.md의 재지 않은 섹션. 같은 패턴을 섹션별로 세어 Dev Agent Record에 줄이 있음을 grep과 Node.js 둘로 확인했고, 8579e5a의 두 줄의 둘레 글을 읽었다. 정정 항목의 수와 범위를 틀리게 하지 않아 심각도와 처분을 바꾸지 않았다."
+        severity_change: "없음"
+    dev_dispute_review: []
+    deviations:
+      - what: "점검 명령 하나의 글이 2,000자를 넘어 프로젝트의 훅이 실행 전에 막았다(CL-GLD-OPS-010)."
+        evidence: "PreToolUse 훅이 2337자라고 보고했고 명령은 돌지 않았다. 같은 점검을 2,000자 안의 명령 셋으로 나누어 돌렸다. 저장소가 바뀌지 않았고 결과에 닿지 않는다."
+    note: "적용한 규칙은 현재의 comments, documentation, golden-rules, testing-tdd 본문이다. 비교 기준은 Story 시작의 기준선 20256e4이고 production과 test의 바뀐 줄이 없어 새 위반도 기존 잔여물도 없다. CRAP은 코드를 바꾸지 않아 development-quality의 `When a Story changes such code`에 들지 않아 측정 대상과 제안이 없다. 이 gate의 ID는 DOC-002부터다. Story의 글과 Dev 기록이 Story 1.3 gate의 DOC-001을 여러 곳에서 들어, 같은 ID를 쓰면 `check-done.sh`의 future 기록 확인이 그 글을 기록으로 읽을 수 있기 때문이다. 기각한 후보: (1) a676f8e와 26a42cd가 Dev 자신의 시각 줄을 그 자리에서 고친 일. data/story-paths.md의 `a correction of an earlier result`와 CC-DOC-004가 말하는 것은 결과이고 시각은 항목의 정체성이며, 새 값이 `git log`의 커밋 시각과 같고 Change Log 0.6과 1.1 줄, 앞선 커밋이 까닭과 옛 글을 남긴다. (2) 2.1 줄과 dev-2.1의 `Story 파일과 기록 문서 여섯`. dev-2.1의 괄호가 A 여섯 줄을 들고 `git diff --name-status 20256e4 26a42cd`가 같다. 둘을 합쳐 여섯으로 읽는 글이어서 수가 틀리지 않았다. (3) dev-dod-1의 `커밋 메시지 파일 셋`과 로그의 다섯. 그 점검을 쓴 때의 수이고 로그가 지금의 목록을 맡는다. (4) 이어가기 로그의 SM, PO 항목에 남은 QA 쓰임의 말이 없음. 로컬 로그이고 항목이 일회용임을 적으며 이 회차는 그 자료를 쓰지 않았다. 목록은 임시 영역의 파일과 맞고, 항목의 확인은 local-story-done의 일이다. (5) 표 2의 패턴이 시각 `21:40`을 잡음. 잰 범위 안에 시각이 없어 값에 닿지 않는다. 리드: 없다. 한계: 지시대로 원격을 읽지 않아 이슈 #24와 원격의 archive ref를 확인하지 못했다(이슈의 번호는 시작 기록과 로그의 값이다). INT-001의 실행 시각 06:52:33은 다시 잴 수 없고 커밋 순서와 모순이 없다. INSP-004는 Git이 보는 경로만 잰다. 보조로 .bmad-core, AGENTS.md, Installer.md, RELEASE-NOTES.md, docs/conventions, .claude, .agents, .codex에서 run 시작 05:31 뒤에 바뀐 파일을 수정 시각으로 찾았고 없었다(증명이 아니다). 재기는 Windows x64의 Node.js v24.22.1, Git 2.51.0뿐이다. 프로젝트 밖 원문 조사는 사용자의 말로 이 호출에서 면제되었고 이 회차는 프로젝트 밖 자료를 읽지 않았다. 이 면제는 AGENTS.md의 조사 요건을 채운 것이 아니며 이 리뷰에 핵심 기술 결정이 없다. 넘겨받은 질문은 없다. 추가 검토는 없다."
+
+# -- 판정 이력 --
+history:
+  - at: "2026-11-07T07:28:00+09:00"
+    round: 1
+    gate: "PASS"
+    note: "첫 회차, 전체 검토. 시나리오 6개 통과, 활성 Optional 넷(DOC-002 ~ DOC-005), Status는 Review 그대로다."
