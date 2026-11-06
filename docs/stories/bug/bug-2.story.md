@@ -2,7 +2,7 @@
 
 ## Status
 
-InProgress
+Review
 
 ## Story
 
@@ -510,6 +510,7 @@ test_design:
 | 2026-11-07 | 0.2 | PO 검증 1회 반영: 사용자의 설계 수용 기록(PO1-B1), bug-2-INSP-001의 목록 보강(PO1-B2), PO1-N7 ~ PO1-N12 적용 | SM (Bob) |
 | 2026-11-07 | 0.3 | 처리할 수 없는 깊이를 계산 오류로 돌려줌(SubTask 1.1) | Dev (James) |
 | 2026-11-07 | 0.4 | Architecture 정렬 no-change(SubTask 2.1) | Dev (James) |
+| 2026-11-07 | 0.5 | Definition of Done 점검, Review로 넘김 | Dev (James) |
 
 ## PO Validation
 
@@ -587,6 +588,7 @@ Dev 하위 세션 James(Full Stack Developer), 모델 `claude-sonnet-5-5`(시스
 
 - 1.1: 조각별 RED와 GREEN 실행, 기준 통과 조각의 사후 민감도 점검, 표 행 전달 확인, Cleaner 결과와 처분, 최종 점검과 bug-2-INSP-001의 판단 목록: [dev-1.1](../../story-records/bug-2/dev-1.1.md)
 - 2.1: 대조한 문서와 항목별 결과, 증거 명령: [dev-2.1](../../story-records/bug-2/dev-2.1.md)
+- Definition of Done 점검 1회의 항목별 결과와 근거, AC와 시험의 대응: [dev-dod-1](../../story-records/bug-2/dev-dod-1.md)
 
 ### Completion Notes List
 
@@ -595,7 +597,11 @@ Issue: #17
 - 시작: 2026-11-07 02:04 +0900. `local-story-start.md`를 따랐다. 구현 브랜치 `story/bug-2`, 기준 브랜치 `main`, 기준선 HEAD `9aea1916e47d8d677fd0b4c291af260fa355c0a8`(`main`의 9aea191이고 `origin/main`과 같다). 슬롯 없는 run이고 원래 checkout에서 시작했다. 이 Story와 기록 문서는 커밋하지 않은 초안이어서 시작 커밋이 Story 브랜치에 더한다. 실행 요청 줄은 PO Validation의 `Run authorization: through Done remote`다. 시작 점검: `check-stage.sh start`, `check-stage.sh records`, `check-stage.sh po-record`(Validation: GO, Round: 2, Collection: complete)가 종료 상태 0이고, 선행 Story는 `check-merge.sh status 1.1 main`과 `status 1.3 main`이 `merged`(Done 커밋 81c547c와 937f21c)를 냈다. 이슈는 `publish.sh issue main story/bug-2`가 새로 만들었다(`issue 17 created`).
 - 시작 시 기준 통과: 프로젝트 루트의 `node --test` 68개 통과(실패 0, 취소와 건너뜀 0), `node ci/screen-rule.check.mjs` 종료 상태 0. Draft가 적은 관찰과 같다.
 - 1.1: 완료. 접근 `TDD`(결함 수정, CC-TDD-005). 조각 1(bug-2-UNIT-001, bug-2-UNIT-006)과 조각 2(bug-2-UNIT-004의 위치 G-3와 원인 G-5)는 RED를 보았고 GREEN으로 마쳤다. 조각 1의 RED는 엔진 시험이 `RangeError: Maximum call stack size exceeded`를 받고 화면 시험이 `renderScreen`이 던진 같은 `RangeError`를 받은 것이다(전체 70개 가운데 2개 실패). 같은 조각에서 행 "an expression nested too deeply"를 지웠다. 조각 3, 4, 5(bug-2-UNIT-005, UNIT-002, UNIT-003)와 G-4(까닭)와 bug-2-UNIT-007은 첫 실행에서 이미 통과했고 RED가 아니다. 사후 민감도 점검으로 시험이 해당 동작에 닿음을 보였다(클래스를 가리지 않는 `renderScreen`, 길이와 깊이 한도, 넘치면 값 0, 넘친 순간의 커서를 위치로 씀, 겹친 까닭이 각각 시험에서 실패). 시험이 가리지 못하는 변형 둘(`RangeError` 밖의 오류까지 번역함, 빈 까닭)은 bug-2-INSP-001의 읽기가 판정했고 판단 목록은 모두 통과다. 프로젝트 루트의 `node --test` 76개 통과(기준선 68개에 새 시험 8개), `node ci/screen-rule.check.mjs` 종료 상태 0, bug-2-INSP-002 종료 상태 0. Cleaner 검토자는 Dev가 시작한 하위 세션(별칭 `opus`, effort `high`, 이름 없음)이고 지적 4건 가운데 F-1, F-4를 받아들이고 F-3을 일부 받아들였으며 F-2는 받아들이지 않았다(까닭은 기록에 있다). 한계: CRAP 측정 안 함, 기준 통과 조각에 RED가 없음, 스택 크기를 바꾼 실행과 다른 런타임, 호출자가 스택을 거의 다 쓴 호출은 보지 않았다(N-5, N-6). 이 설계는 사용자가 조사 없이 받은 것이어서 조사 요건을 채웠다는 뜻이 아니다. 기록: [dev-1.1](../../story-records/bug-2/dev-1.1.md). 커밋 `4a69ac7`.
-- 2.1: 완료. 접근 `verification-only`, 시나리오 bug-2-INSP-003. 누적 변경(`src/engine.js`, `test/engine.test.js`, `test/screen.test.js`)을 `docs/architecture.md`의 기술 구성, 소스 트리, 설계 원칙, 결정 D-1, `README.md`와 대조해 어긋난 곳이 없었고 바꾼 문서는 없다(no-change). 같은 입력의 결과가 경계 부근에서 스택 상태에 달린다는 점과 "순수 함수"의 관계는 열린 N-4이고 소유자 Architect에게 남겨 두었다(글의 "입출력이나 전역 상태를 쓰지 않는다"는 어겨지지 않는다). 프로젝트 루트의 `node --test` 76개 통과와 `node ci/screen-rule.check.mjs` 종료 상태 0을 다시 확인했다. 기록: [dev-2.1](../../story-records/bug-2/dev-2.1.md). 커밋 해시는 다음 Dev 기록 갱신이 적는다.
+- 2.1: 완료. 접근 `verification-only`, 시나리오 bug-2-INSP-003. 누적 변경(`src/engine.js`, `test/engine.test.js`, `test/screen.test.js`)을 `docs/architecture.md`의 기술 구성, 소스 트리, 설계 원칙, 결정 D-1, `README.md`와 대조해 어긋난 곳이 없었고 바꾼 문서는 없다(no-change). 같은 입력의 결과가 경계 부근에서 스택 상태에 달린다는 점과 "순수 함수"의 관계는 열린 N-4이고 소유자 Architect에게 남겨 두었다(글의 "입출력이나 전역 상태를 쓰지 않는다"는 어겨지지 않는다). 프로젝트 루트의 `node --test` 76개 통과와 `node ci/screen-rule.check.mjs` 종료 상태 0을 다시 확인했다. 기록: [dev-2.1](../../story-records/bug-2/dev-2.1.md). 커밋 `7051cad`.
+- Definition of Done: 체크리스트의 적용 항목을 모두 다루었고 [N/A]는 각각 까닭이 있다(빌드와 린트가 설정되어 있지 않음, 범위 기준이 정의되어 있지 않음, 새 의존성과 환경 변수가 없음, 사용자 문서와 기술 문서를 갱신할 필요가 없음). 이 Story가 새로 가려낸 범위 밖 발견은 없다. 기록: [dev-dod-1](../../story-records/bug-2/dev-dod-1.md)
+- Review 인계: 구현 개정은 커밋 `4a69ac7`이며 구현 범위는 경로 `src/engine.js`, `test/engine.test.js`, `test/screen.test.js`다. 그 뒤 커밋 `7051cad`와 Review 전환 커밋은 Story와 기록 문서만 바꾸고 이 세 파일을 바꾸지 않는다. 시험 증거: 최종 상태에서 프로젝트 루트의 `node --test` 76개 통과(기준선 68개에 새 시험 8개), `node ci/screen-rule.check.mjs` 종료 상태 0, bug-2-INSP-002 종료 상태 0(바꾸지 않는 경로를 기준선 `9aea191`과 비교), 구현 파일의 Git 해시 `src/engine.js` `0e36604857b9`, `test/engine.test.js` `51193b926986`, `test/screen.test.js` `06fedf3f30bf`. 한계: CRAP 측정 안 함(`quality.crap.commands`가 비어 있음), 기준 통과 조각에 RED가 없고 사후 민감도 점검으로 보임, 시험이 가리지 못하는 틀린 변형 둘(`RangeError` 밖의 오류까지 번역함, 빈 까닭)은 bug-2-INSP-001의 읽기가 판정함, 스택 크기를 바꾼 실행과 다른 런타임과 호출자가 스택을 거의 다 쓴 호출은 보지 않음(N-5, N-6), 열린 N-1 ~ N-4는 구현이 정하지 않음. 설계는 사용자가 조사 없이 받은 것이어서 `AGENTS.md`의 조사 요건을 채웠다는 뜻이 아니다. 다음 소유자는 QA의 `review-story.md`다. Dev의 점검은 QA 검토가 아니다.
+
+DoD: READY
 
 ### File List
 
@@ -606,6 +612,7 @@ Issue: #17
 - `docs/story-records/bug-2/sm-1.md`, `sm-2.md`, `po-r1.md`, `po-r2.md` (새 파일로 시작 커밋이 더함. SM과 PO의 기록이다)
 - `docs/story-records/bug-2/dev-1.1.md` (새 파일)
 - `docs/story-records/bug-2/dev-2.1.md` (새 파일. 바꾼 문서가 없다는 no-change 기록)
+- `docs/story-records/bug-2/dev-dod-1.md` (새 파일. Definition of Done 점검 1회)
 - 바뀌지 않음(기준선 `9aea191`과 차이 없음을 `git diff --quiet`로 확인): Dev Notes "인터페이스와 파일 위치"의 "바꾸지 않음" 행의 경로 전부
 
 ### In-Flight Comments Ledger
