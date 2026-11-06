@@ -579,6 +579,8 @@ Validation: GO
 Round: 2
 Collection: complete
 
+Post-merge check: 2026-11-07 — `docs/planning/future-work.md`에 새 항목 8개를 undecided로 기록했다: [Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함(필수 CI 점검 test의 실패, QA 회차 2의 REQ-001, ARCH-002); 경계 부근의 결과와 순수 함수(PO1-N4); 스택 크기를 바꾼 실행과 스택을 거의 다 쓴 호출(PO1-N5); 깊은 입력의 결정을 둘 자리(PO1-N6); 조사 없이 받은 설계의 남은 일(PO2-N1); [Tech-Debt] 까닭이 빈 글자인 변형을 시험이 가리지 못함(TEST-001); [Tech-Debt] Story bug-2 Dev 기록의 두 문장(DOC-001); [Tech-Debt] 엔진 규칙의 점검이 글자 검색임(QA 회차 2의 TEST-002). 기존 항목 9개에 지적을 합쳐 undecided로 두었다: 오류 위치의 글자(PO1-N1); 문자열이 아닌 입력(PO1-N3); 오류 메시지의 언어와 꼴(PO1-N2); CI 규칙이 계획 문서에 없음(QA 회차 2의 DOC-002와 재발 ARCH-002, REQ-001); [Tech-Debt] 재발: 전달 시험이 틀린 변형을 잡지 못함(QA TEST-001, TEST-002, Cleaner F-3); [Tech-Debt] 재발: 주석과 시험 이름이 실제와 다름(Cleaner F-1, F-3); [Tech-Debt] 재발: 기록의 서술이 실제와 다름(QA DOC-001); [Tech-Debt] 재발: 담은 것을 말하지 않는 이름(Cleaner F-4); [Tech-Debt] 재발: 같은 코드와 글자를 여러 곳에 적음(Cleaner F-4). 나중 계획 대조에서 기록할 변경 없음. `Closed items` 줄 없음. 지적을 받은 Story 파일 없음.
+
 ## Dev Agent Record
 
 ### Agent Identity

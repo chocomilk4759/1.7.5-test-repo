@@ -2,6 +2,26 @@
 
 아직 계획하지 않은 일을 적는다. 항목마다 출처, 내용, 책임 역할과 계획 상태를 둔다.
 
+### [Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함
+
+- 출처: Story bug-2의 요청 18에서 실패한 필수 CI 점검과 QA 회차 2(2026-11-07, `.bmad-core/tasks/reopen-story.md`의 다시 열기). 점검의 이름은 `test`이고 링크는 <https://github.com/chocomilk4759/1.7.5-test-repo/actions/runs/42273621186/job/128084214029>다. QA의 기록은 `git show story/bug-2:docs/story-records/bug-2/qa-r2.md`, `git show story/bug-2:docs/qa/gates/bug-2.yml`의 회차 2, `git show story/bug-2:docs/stories/bug/bug-2.story.md`의 QA Results 회차 2이고 `main`에는 없다.
+- 내용: 실패한 단계는 `Run node ci/engine-rule.check.mjs`이고 출력은 `src/engine.js must not name RangeError: count the nesting depth instead`이며 종료 상태 1이다. 규칙은 `main`의 `[Chore]` 커밋 0528169가 Done 커밋 9c52693 뒤에 `ci/engine-rule.check.mjs`와 `.github/workflows/ci.yml`의 단계로 더했다. 규칙 파일의 첫 줄은 "the engine does not rest on the host's stack overflow error"이고 점검은 `src/engine.js`에서 글자 `RangeError`를 찾는다. Story bug-2의 `evaluate`는 `error instanceof RangeError`로 스택 넘침을 번역한다. QA의 판정 작업이 기준 tip을 합친 사본에서 같은 글과 종료 상태 1을 재현했고, Story의 변경이 없는 0528169에서는 두 규칙이 종료 상태 0이었다.
+- 병합의 사실: QA가 Story 브랜치에서 다시 열기 커밋을 만든 04:27:32 +0900과 거의 같은 때인 2026-11-07 04:27:38 +0900에 요청 18이 head f853bd1(Done 커밋 위의 서비스 갱신)로 병합되었고 병합 커밋은 1c91705다. 실패한 점검은 그대로였고 auto-merge는 03:48에 꺼져 있었다. 이 병합은 `*run-story bug-2 remote` 실행 밖에서 일어났고 누가 병합했는지 그 실행은 확인하지 않았다. 보관 ref `refs/archive/story/bug-2`는 Done 커밋 9c52693을 가리키고 원격 Story 브랜치는 지워졌다. 다시 연 커밋 둘 e9d79ff(`Done -> InProgress`), 3690604(회차 2 기록의 글 정정)는 로컬 브랜치 `story/bug-2`에만 있고 `main`에 없다. QA 회차 2의 기록은 이 커밋들에만 있다.
+- 지금 상태: `main`의 Story는 Status Done, gate WAIVED 회차 1이고 로컬 Story 브랜치의 Story는 InProgress, gate FAIL 회차 2다. `main` 1c91705의 `src/engine.js`의 `evaluate`가 `RangeError`를 이름으로 쓴다. 이 점검이 `main`에서 돌린 `node ci/engine-rule.check.mjs`는 같은 글로 종료 상태 1이고, `node --test`는 76개 통과, `node ci/screen-rule.check.mjs`는 종료 상태 0이다(Windows x64, Node.js v24.22.1). 병합 커밋의 트리 7ae7f4f는 QA의 합친 사본의 트리와 같다. `.github/workflows/ci.yml`은 `on: pull_request`에 경로 조건이 없으므로 고칠 때까지 `main`으로 가는 요청의 필수 점검 `test`는 문서만 바꾸는 요청까지 이 단계에서 실패할 것이다. 이 문장은 워크플로의 글과 위 실행에서 온 추론이고 이 점검은 호스팅 서비스를 읽지 않았다.
+- 사용자의 답 1(다시 열기의 질문): 결정자는 사용자이고, 2026-11-07 04:05 +0900 뒤에 메인 세션의 질문에 대한 선택으로 답했으며, 범위는 Story bug-2다. Q1(어느 쪽을 바꿀까요)의 답은 "규칙대로 깊이 세기 (QA 권고)"이고 선택지의 설명은 "고정된 수를 넘으면 CalculationError. AC 2, 범위 밖 문장, 사용자의 결정 2건을 바꿉니다. QA가 다시 열고 SM 수정, PO 재검증, Dev TDD, 전체 QA 리뷰, 새 Done 후 병합합니다. 지금 값이 나오는 P(2000), M(8000)은 거부되고, 호출자가 스택을 많이 쓰면 RangeError가 그대로 나갑니다."다. Q2(깊이 한도 수)의 답은 "1000 (QA 측정 근거)"이고 선택지의 설명은 "Story 표 2가 값을 요구하는 깊이(P(1000), M(1000), A(500))를 그대로 통과하고, 호출자 6000프레임까지 값을 돌려주었습니다. 7000프레임부터 RangeError입니다. P(2000), M(8000)은 거부합니다."다. `P(n)`, `M(n)`, `A(n)`은 Story bug-2 Testing의 "입력의 정의"의 표기다.
+- 사용자의 답 2(`merged while reopened`의 질문): 결정자는 사용자이고 2026-11-07 04:32 +0900 뒤다. 답은 "병합 유지, 이어 가기"이고 선택지의 설명은 "되돌리지 않습니다. Dev가 main을 fast-forward하고 병합을 확인해 archive ref를 9c52693에 만들고 원격 브랜치를 지웁니다. 로컬 Story 브랜치는 다시 연 커밋 둘과 함께 남습니다. QA가 이 실패를 [Bug] 항목(undecided, 답 '깊이 세기 1000' 포함)으로 적고 PO 병합 뒤 점검이 듭니다. 고치는 일은 그 항목의 계획으로 넘어가고, 그때까지 main의 규칙 위반은 남습니다."다. 설명은 QA가 항목을 적는다고 하지만 QA는 이 파일을 소유하지 않아 `.bmad-core/tasks/run-story.md` 섹션 Stop, hold and carry on대로 PO의 이 점검이 적었다.
+- 되돌리기: 사용자는 되돌리지 않았고 되돌리기(기준 브랜치의 되돌리기 커밋이나 호스팅 서비스의 되돌리기 요청)는 여전히 사용자의 결정이다. Story의 병합 위험 줄의 값은 revertible이고 되돌리면 그 식에서 `RangeError`가 돌아온다. 이 점검의 커밋 뒤의 되돌리기는 Story 파일 하나의 충돌을 풀어야 하고 이 점검의 항목은 남는다(`docs/story-records/bug-2/qa-done.md`의 섹션 "병합 위험 판단").
+- QA 회차 2의 지적: REQ-001(Required, 소유자 SM, 재검증 PO)은 Story의 수용된 결정과 계획의 글이 답과 어긋난다는 것이다. ARCH-002(Required, 소유자 Dev, 늦은 지적)는 이 실패이고 회차 1의 WAIVED와 완료 점검의 통과를 뒤집어 다음 리뷰는 새 세션의 전체 리뷰라고 적었다. Optional TEST-001, DOC-001은 처리 줄이 `future`이고 항목 "[Tech-Debt] 까닭이 빈 글자인 변형을 시험이 가리지 못함", "[Tech-Debt] Story bug-2 Dev 기록의 두 문장"이 든다. Optional TEST-002, DOC-002는 범위 밖이고 항목 "[Tech-Debt] 엔진 규칙의 점검이 글자 검색임", "CI 규칙이 계획 문서에 없음"이 든다. 면제 ARCH-001은 앞선 설계의 조사 요건만 덮어 이 실패를 덮지 않는다.
+- 고칠 글의 목록의 요점(qa-r2의 같은 이름 섹션, 완전함을 보증하지 않는다): 바뀌는 글은 Story의 범위 밖 문장 "깊이나 식 길이의 숫자 한도를 두지 않는다", AC 2의 "깊이의 숫자 한도는 두지 않는다"와 경계 부근의 확인 조건, 수용된 결정의 "숫자 한도 없이"와 스택 넘침을 번역하는 설계, Dev Notes "설계"의 잡는 곳과 `RangeError`, `cause`, Testing의 "필수 점검 명령은 둘이다"(셋이 된다), "100000과 1000은 입력을 고른 값이지 제품 코드의 한도가 아니다", G-5와 시험 `keeps the overflow of the call stack as the cause of the error for an expression nested too deeply`, 표 3과 bug-2-UNIT-003, bug-2-INSP-001의 "깊이를 세는 변수나 숫자 한도", bug-2-INT-001, bug-2-INSP-002의 기준선, `coverage_gaps`다. 답이 정하지 않아 계획이 정할 것은 세는 단위, 경계의 글(1000은 값, 1001부터 오류로 읽을 수 있다), 새 오류의 위치와 까닭(N-1, N-2는 미결), 수의 이름과 자리다.
+- 잰 값: QA의 판정 작업(2026-11-07, Windows x64, Node.js v24.22.1)이 합친 사본에 고정된 수 1000을 걸고 `catch`를 지운 사본은 `node --test` 76개 가운데 75개 통과이고 실패는 위 시험 하나이며 두 규칙 종료 상태 0이다. `P(1000)`, `M(1000)`은 값 1이고 `P(1001)`, `M(1001)`, `P(2000)`, `M(8000)`, `P(100000)`은 깊이 오류다. 호출자 6000프레임까지 `P(1000)`은 값 1이고 7000프레임부터 `RangeError`이며 호출자 10000프레임의 `P(1)`도 `RangeError`다. 지금 시험은 수 1000과 2000을 가리지 못한다(표 2는 깊이 1000까지, 표 3은 2000부터다). CI의 Linux에서는 재지 않았다. 사본은 결과를 재는 시험감이고 제안하는 구현이 아니다.
+- 조사: 새 설계에 `AGENTS.md` 섹션 Research for uncertainty and core implementation decisions의 참고 자료 다섯 개 조사가 없다. 메인 세션의 답은 `*run-story bug-2 remote` 호출의 프로젝트 밖 조사가 사용자의 말 "이 시험은 네트워크를 막아 두었으므로 프로젝트 밖 원문 조사는 면제하며, 면제 사실을 기록합니다."로 면제라는 것이고 조사 요건을 채운 것이 아니다. 항목 "조사 없이 받은 설계의 남은 일"을 함께 본다.
+- 처리와 까닭: Story는 병합되어 다시 열리지 않는다(`.bmad-core/tasks/verify-delivery.md` 섹션 2). 이 점검은 기록만 하고 제품 코드, 시험, CI 규칙을 바꾸지 않았다.
+- 필요한 일: 답대로 `Parser`가 중첩을 세어 고정된 수 1000을 넘으면 `CalculationError`를 던지게 하고 `evaluate`의 `try`와 `catch`를 지우며 JSDoc과 시험을 맞춘다. 결함 수정이므로 RED를 먼저 보인다(CC-TDD-005). `src/engine.js`에 글자 `RangeError`를 주석까지 남기지 않고, 글자만 피하는 고침(TEST-002의 세 변형)은 수정으로 받지 않는다. 어느 Story로 할지는 트리아지가 정한다. `node --test`, `node ci/screen-rule.check.mjs`, `node ci/engine-rule.check.mjs`가 통과하고 요청의 필수 점검 `test`가 통과하면 끝난다.
+- 책임: 사용자(계획, 되돌리기), SM(계획의 글), Dev(구현), QA(리뷰), PO(새 계획의 검증)
+
+Planning: undecided
+Source Story: bug-2
+
 ## 결과 복사
 
 - 출처: 2026-10-29 프로젝트 소유자 메모
@@ -31,11 +51,16 @@ Planning: unplanned
 - 더한 병합 결과: `test/screen.test.js`의 시험 `returns a line longer than the display whole`이 그 줄의 길이를 단언한다. QA 회차 3의 엔진 사본에서 끝 위치의 뒤 공백을 빼면 이 시험 하나가 길이 단언에서 실패해 조용히 지나가지 않는다.
 - 더한 처리: Story는 적용하지 않았다. SM의 다음 수정이 없었다. 계약 안이다.
 - 더한 일: po-r2의 수정안은 그 문장을 "엔진의 까닭 글자와 위치 규칙에 기댄다"로 적는 것이다. 위치 규칙의 답이 끝 위치를 바꾸면 그 변경에서 위 시험의 입력과 길이 단언을 함께 고친다.
+- 더한 출처: Story bug-2 PO 검증 1회(2026-11-07)의 PO1-N1, SM N-1. `docs/stories/bug/bug-2.story.md`의 PO Validation, `docs/story-records/bug-2/po-r1.md`의 섹션 "Q1, SM N-1, PO1-N1: 새 오류의 메시지 위치", `docs/qa/gates/bug-2.yml`의 `risk_summary.recommendations.monitor`
+- 더한 내용: 처리할 수 없는 깊이의 오류도 이 미결의 한 사례이고 이 항목은 그 오류를 들지 않았다. Story는 위치를 0부터 식 길이까지 받고 "가장 단순한 값은 식의 시작 0"을 구현 선택으로 적는다.
+- 더한 병합 결과: `src/engine.js`의 `evaluate`는 이 오류의 위치를 0으로 쓴다. `(` 100000개, `1`, `)` 100000개의 메시지는 `expression nested too deeply at position 0`이고, 그 앞에 `1 + `이 와도 같아서 위치 0은 `1`을 가리킨다(이 점검이 `main` 1c91705에서 실행). `test/engine.test.js`의 시험 `names a position inside an expression that is nested too deeply`는 0부터 식 길이까지 받는다. 이 선택은 수용된 결정이 아니다.
+- 더한 처리: Story는 적용하지 않았다. PO 검증 1회의 사본에서 위치 0, 첫 `(`나 `-`, 식 길이가 모두 통과해 합격 판정이 같고, 어느 글자인지 정하려면 새 결정이 필요해 계약 밖이다.
+- 더한 일: 위치 규칙을 정할 때 이 오류도 함께 정한다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 일이 이 위치의 코드를 없애고, 그 답을 잰 사본은 수를 넘은 자리의 커서를 위치로 썼으므로(`P(100000)`의 위치 1001) 그 계획과 함께 본다.
 
-Planning: unplanned
-Revisit: 브라우저 화면 Epic을 계획할 때
+Planning: undecided
 Source Story: 1.1
 Source Story: 1.3
+Source Story: bug-2
 
 ## AC 3의 목록에 없는 문법 오류
 
@@ -74,11 +99,16 @@ Source Story: 1.1
 - 더한 병합 결과: `renderScreen(42)`, `renderScreen(null)`, `renderScreen()`, `renderScreen(["1"])`은 `evaluate`의 `TypeError`("expression must be a string")를 그대로 던진다. `test/screen.test.js`의 시험 `throws what evaluate throws when that is not a calculation error`는 클래스 이름과 낱말을 고정하지 않고 `evaluate`와 `constructor`, `message`가 같은지 본다.
 - 더한 처리: Story는 적용하지 않았다. 오류 클래스와 인자 없는 호출의 뜻을 정하려면 새 결정이 필요해 계약 밖이다.
 - 더한 일: 오류 클래스를 정할 때 인자 없는 호출의 뜻도 함께 정한다. Story 1.3 po-r1의 제안은 지금 동작을 그대로 적는 것이고(호출 쪽의 잘못이므로 `오류:` 줄보다 던진다), 위의 Story 1.1 po-r1 제안과 다르다. 둘 다 제안이다. 답이 `TypeError`가 아니면 `src/engine.js`와 함께 Testing 표 2의 T-1과 위 시험의 기대를 바꾼다.
+- 더한 출처: Story bug-2 PO 검증 1회(2026-11-07)의 PO1-N3, SM N-3. `docs/stories/bug/bug-2.story.md`의 PO Validation, `docs/story-records/bug-2/po-r1.md`의 섹션 "Q3, SM N-3, PO1-N3: "다른 오류는 그대로 던진다"에 닿는 입력", `docs/qa/gates/bug-2.yml`의 `risk_summary.recommendations.monitor`
+- 더한 내용: Story bug-2 뒤로 `docs/prd.md`의 Story 1.3 AC 2 둘째 문장 "다른 오류는 그대로 던진다"에 시험으로 닿는 입력은 문자열이 아닌 입력뿐이다. 이 항목의 답이 `CalculationError`이면 닿는 시험 입력이 없어진다.
+- 더한 병합 결과: `test/screen.test.js`의 시험 `throws what evaluate throws when that is not a calculation error`에서 행 "an expression nested too deeply"가 지워졌고 입력 일곱(`42`, `0`, `null`, 인자 없는 호출, `["1"]`, `[]`, `[" "]`)이 남았다. 글자 입력이 이 문장에 닿는 길은 호출자가 스택을 거의 다 쓴 경우뿐이다(항목 "스택 크기를 바꾼 실행과 스택을 거의 다 쓴 호출").
+- 더한 처리: Story는 적용하지 않았다. 지금의 답(`TypeError`)에서 판정이 하나이고 수용되지 않은 뒤의 변경을 가정하지 않았다. 계약 밖이다.
+- 더한 일: 오류 클래스를 정할 때 함께 본다. po-r1의 제안은 답이 `CalculationError`이면 그 변경의 계획이 Story bug-2 Testing 표 4의 T-1과 위 시험을 다시 정하는 것이다.
 
-Planning: unplanned
-Revisit: 브라우저 화면 Epic을 계획할 때
+Planning: undecided
 Source Story: 1.1
 Source Story: 1.3
+Source Story: bug-2
 
 ## 오류 메시지의 언어와 꼴
 
@@ -93,11 +123,16 @@ Source Story: 1.3
 - 더한 병합 결과: `renderScreen("7 / 0")`은 `오류: division by zero at position 2`이고, `renderScreen("7 +".padEnd(1000))`은 `오류: unexpected end of expression at position 1000`으로 49글자다. Dev와 QA의 엔진 사본에서 까닭을 `unexpected end`로 줄이면 그 줄이 35글자가 되고 위 시험 하나만 길이 단언에서 실패해 조용히 지나가지 않는다.
 - 더한 처리: PO1-N4는 Story가 적용하지 않았다. 바꾸는 일은 `src/engine.js`의 별도 계획이어서 계약 밖이다. DEV-1은 Dev가 적용하지 않고 future로 기록했다. 메시지를 바꾸는 일은 이 항목의 답이 먼저다.
 - 더한 일: 위 필요한 일의 "Story 1.3 초안 전에"는 시점이 지났다. Story 1.3 po-r1의 제안은 사용자에게 보이는 글이므로 까닭을 한국어로 하는 것이고, 그러면 `src/engine.js`의 까닭 글자를 바꾸는 별도 계획이 필요하다. 답이 까닭을 줄이면 그 변경에서 위 시험의 길이 단언을 함께 고친다. 오류 줄의 길이는 `오류: `의 4글자, 까닭, ` at position `의 13글자, 위치의 자릿수를 더한 값이어서 까닭이 14글자이면 48글자를 넘으려면 위치가 18자리여야 한다(계산한 값이고 실행한 것이 아니다). 그때는 입력만 다시 고르는 것으로 끝나지 않을 수 있어 길이 단언의 방식을 그 변경에서 다시 정한다. 시험을 고치는 일은 Dev의 책임이다.
+- 더한 출처: Story bug-2 PO 검증 1회(2026-11-07)의 PO1-N2, SM N-2. `docs/stories/bug/bug-2.story.md`의 PO Validation, `docs/story-records/bug-2/po-r1.md`의 섹션 "Q2, SM N-2, PO1-N2: 새 까닭 글자의 언어", `docs/qa/gates/bug-2.yml`의 `risk_summary.recommendations.monitor`
+- 더한 내용: 사용자에게 보이는 글자에 영어 까닭이 하나 더 늘었다.
+- 더한 병합 결과: `renderScreen`은 처리할 수 없는 깊이의 식에 `오류: expression nested too deeply at position 0`을 돌려준다(이 점검이 `main` 1c91705에서 실행). 시험은 낱말을 고정하지 않고 까닭이 다른 문제의 까닭과 다른지만 본다. 영어 낱말이고 식을 되풀이하지 않는다는 조건은 bug-2-INSP-001의 읽기가 보았다.
+- 더한 처리: Story는 적용하지 않았다. 언어를 정하려면 새 결정이 필요해 계약 밖이다.
+- 더한 일: 이 항목의 답을 새 까닭에도 적용한다. 낱말이 정해질 때 항목 "[Tech-Debt] 까닭이 빈 글자인 변형을 시험이 가리지 못함"의 단언도 함께 본다(QA의 제안).
 
-Planning: unplanned
-Revisit: 브라우저 화면 Epic을 계획할 때
+Planning: undecided
 Source Story: 1.1
 Source Story: 1.3
+Source Story: bug-2
 
 ## CI 규칙이 계획 문서에 없음
 
@@ -116,12 +151,17 @@ Source Story: 1.3
 - 더한 병합 결과: `src/screen.js`는 `SCREEN_WIDTH = 48`을 내보내고 `node ci/screen-rule.check.mjs`는 판정을 내려 종료 상태 0이다. `renderScreen`은 이 폭으로 자르거나 접지 않아 `1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12`의 값 줄 53글자와 `"7 +".padEnd(1000)`의 오류 줄 49글자가 그대로 나오고, `test/screen.test.js`의 시험 `returns a line longer than the display whole`이 이를 본다. 값은 여전히 `docs/prd.md`, `docs/architecture.md`, `docs/planning/decisions.md`에 없어, QA는 Story가 Done인 동안 규칙이 바뀌면 같은 어긋남이 되풀이될 수 있다고 적었다(`monitor`).
 - 더한 처리: PO1-N8은 Story가 적용하지 않았다. Task 2.1이 이 일을 맡지 않았고 문서를 바꾸는 일이어서 계약 밖이다. REQ-001, REQ-002는 Story에서 고쳐 QA 회차 3이 닫았다.
 - 더한 일: 위 필요한 일의 "Story 1.3 초안 전에"는 시점이 지났다. 남은 일은 `docs/architecture.md`에 코딩 표준 절과 Change Log 절을 두고 `SCREEN_WIDTH`의 값과 뜻, 소스 트리의 내보내기를 적으며(Architect), 폭을 넘는 줄의 처리를 정하는 것이다(PM). 문서의 값이 `EXPECTED_WIDTH`와 같고 `src/screen.js` 행이 내보내기를 모두 들면 끝난다.
+- 더한 출처: Story bug-2 QA 회차 2(2026-11-07)의 DOC-002와 그 원인인 ARCH-002, REQ-001. `git show story/bug-2:docs/qa/gates/bug-2.yml`의 `top_issues`와 `risk_summary.recommendations.monitor`, `git show story/bug-2:docs/story-records/bug-2/qa-r2.md`의 섹션 "대조한 글", "위험 평가". 재발 비교의 앞선 지적은 Story 1.3 QA 회차 2의 REQ-001, REQ-002(`docs/qa/gates/1.3.yml`의 `resolved_issues`)다.
+- 더한 내용: 같은 틈이 둘째 규칙에서 되풀이되었다. `main`의 `[Chore]` 커밋 0528169가 Story bug-2의 Done 커밋 뒤에 `ci/engine-rule.check.mjs`와 `.github/workflows/ci.yml`의 단계를 더했고, 커밋 메시지에 까닭이 없다. Story 1.3의 `REQ-001`, `REQ-002`와 같은 결함이다: Done 뒤에 들어온 CI만 보는 규칙이 필수 점검으로 병합을 막았고, 그 답이 Story의 수용된 결정을 바꾸었다. Story 1.3의 QA가 적은 위험 "Story가 Done인 동안 규칙이 바뀌면 같은 어긋남이 되풀이될 수 있다"가 새 규칙의 꼴로 일어났다.
+- 더한 병합 결과: `git grep -n -i -E 'RangeError|nesting|스택|재귀|깊이|depth' main -- docs/architecture.md docs/planning/decisions.md docs/prd.md README.md`와 `git grep -n engine-rule main -- docs README.md`는 일치가 없다(이 점검이 `main` 1c91705에서 실행). 규칙과 사용자가 고른 수 1000이 수용 문서에 없고, `main`의 Story도 앞선 설계를 적는다. 규칙 위반은 `main`에 남았다(항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함").
+- 더한 처리: DOC-002는 Optional이고 범위 밖이다. Story가 다시 열린 채 병합되어 Dev의 처리 줄이 없고 지적은 로컬 브랜치의 gate에만 있다.
+- 더한 일: 위 남은 일에 `ci/engine-rule.check.mjs`의 규칙과 까닭, 수 1000의 값과 뜻을 더한다(Architect, PM). 규칙의 까닭은 어디에도 적혀 있지 않아 규칙을 더한 사람의 말이 필요하다. 재발 비교의 처리: 지금도 필수 점검과 병합 작업의 사본 검증이 잡으므로, 막았을 첫 장치는 자동 점검이 아니라 규칙 줄이다. 코딩 표준 절에 "CI에 규칙을 더하는 커밋은 이 절에 규칙과 까닭을 적고 열린 요청과 Done Story에 닿는지 먼저 본다"를 두는 것이 제안이다. 항목 "[Tech-Debt] 엔진 규칙의 점검이 글자 검색임"도 함께 본다.
 
-Planning: unplanned
-Revisit: 브라우저 화면 Epic을 계획하거나 ci/screen-rule.check.mjs의 EXPECTED_WIDTH가 바뀔 때
+Planning: undecided
 Source Story: 1.1
 Source Story: 1.2
 Source Story: 1.3
+Source Story: bug-2
 
 ## 위치 판정 방법의 문장과 {범위} 행
 
@@ -349,10 +389,13 @@ Source Story: 1.2
 - 책임: 프로젝트 소유자(도구의 승인), Architect
 - 더한 출처: Story 1.3의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1, 1.2와 대조한 재발. Story 1.3의 QA TEST-001(`docs/qa/gates/1.3.yml`의 `resolved_issues`), Cleaner F-1(`docs/story-records/1.3/dev-3.3.md`의 섹션 "Cleaner 결과")
 - 더한 내용: 같은 기준이고 결함도 같다. 끝의 U+0020이나 CR을 지우고 `evaluate`에 넘기는 변형이 QA 회차 1의 시험 13개를 통과했고(TEST-001), 엔진 메시지에 CR을 끼운 변형이 단위 3.3의 시험 13개를 통과했다(F-1). 둘 다 제품은 맞았고 Story에서 시험을 고쳤다. `testing.mutationCommands`가 여전히 비어 있어 이번에도 QA와 Cleaner 검토자의 손 변이에서야 드러났으므로 막았을 첫 장치와 필요한 일은 그대로다.
+- 더한 출처: Story bug-2의 병합 뒤 점검(2026-11-07)이 앞선 병합 Story 1.1, 1.2, 1.3과 대조한 재발. Story bug-2의 QA TEST-001(`docs/qa/gates/bug-2.yml`의 `top_issues`), Cleaner F-3(`docs/story-records/bug-2/dev-1.1.md`의 섹션 "Cleaner 결과"), QA 회차 2의 TEST-002(`git show story/bug-2:docs/qa/gates/bug-2.yml`의 `top_issues`)
+- 더한 내용: 같은 기준이고 결함도 같다. 까닭을 빈 글자로 쓴 변형이 시험 76개를 통과한다(TEST-001, F-3). 제품은 맞고 고칠 일은 항목 "[Tech-Debt] 까닭이 빈 글자인 변형을 시험이 가리지 못함"이 든다. TEST-002는 같은 gate 범주의 같은 꼴이고 대상이 CI 규칙이다. 글자만 피한 사본 셋이 시험 76개와 두 규칙을 통과하고, 고칠 일은 항목 "[Tech-Debt] 엔진 규칙의 점검이 글자 검색임"이 든다. `testing.mutationCommands`가 여전히 비어 있어 이번에도 Cleaner 검토자와 QA의 손 변이(회차 1은 30개 가운데 21개를 시험이 잡았다)에서야 드러났으므로 막았을 첫 장치와 필요한 일은 그대로다. TEST-002는 `src/`의 변이로 드러나지 않으므로 그 도구를 고를 때 따로 본다.
 
-Planning: unplanned
+Planning: undecided
 Source Story: 1.2
 Source Story: 1.3
+Source Story: bug-2
 
 ## [Tech-Debt] 재발: 주석과 시험 이름이 실제와 다름
 
@@ -362,10 +405,13 @@ Source Story: 1.3
 - 책임: SM
 - 더한 출처: Story 1.3의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1, 1.2와 대조한 재발. Story 1.3의 Cleaner F-6(`docs/story-records/1.3/dev-1.1.md`의 섹션 "Cleaner 결과"), Cleaner F-1(`docs/story-records/1.3/dev-3.3.md`의 섹션 "Cleaner 결과")
 - 더한 내용: 같은 기준이다. 시험 이름 "keeps no state between calls, also after an error"가 단언보다 강했고(F-6), 단언의 메시지 "has no line break"가 LF만 보았다(F-1). 둘 다 Story에서 고쳤다. Story 1.3은 Dev Notes의 "이전 Story"에 "시험 주석이 단언의 실제 범위와 맞지 않았고(CC-CMT-010)"를 두었다. 프로젝트 규칙 적용의 자리는 아니었고, 위 지적은 Cleaner 검토에서 나왔으며 QA 회차 1과 3은 주석과 시험 이름의 위반을 찾지 못했다. 막았을 첫 장치를 고를 때 이 결과를 함께 본다.
+- 더한 출처: Story bug-2의 병합 뒤 점검(2026-11-07)이 앞선 병합 Story 1.1, 1.2, 1.3과 대조한 재발. Story bug-2의 Cleaner F-1, F-3(`docs/story-records/bug-2/dev-1.1.md`의 섹션 "Cleaner 결과")
+- 더한 내용: 같은 기준이다. 시험 이름 `gives the same message for an expression nested too deeply on every call and whatever the call stack holds`가 단언보다 강했고(F-1), 단언의 글 `the message holds more than a position`이 실제 판정과 달랐다(F-3). 둘 다 Story에서 고쳤다. Story bug-2의 Dev Notes의 프로젝트 규칙 적용에 이 항목의 제안과 같은 문장 "시험 이름과 주석은 시험이 실제로 닿고 단언하는 것을 말해야 하고(CC-CMT-010)"가 있었는데도 Cleaner 검토에서 나왔다. QA 회차 1은 고친 뒤의 시험에서 위반을 찾지 못했다. 그 탐색 포인터는 Dev가 쓸 때 막지 못했고 Cleaner 검토가 잡았으므로, 막았을 첫 장치를 고를 때 이 결과를 함께 본다.
 
-Planning: unplanned
+Planning: undecided
 Source Story: 1.2
 Source Story: 1.3
+Source Story: bug-2
 
 ## [Tech-Debt] 재발: 함께 바뀌어야 할 숫자를 여러 곳에 적음
 
@@ -388,10 +434,13 @@ Source Story: 1.3
 - 책임: SM
 - 더한 출처: Story 1.3의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1, 1.2와 대조한 재발. Story 1.3의 QA DOC-001(`docs/qa/gates/1.3.yml`의 `top_issues`). 정정할 일은 항목 "[Tech-Debt] Story 1.3 Dev 기록의 두 문장"이 든다
 - 더한 내용: 같은 기준과 gate 범주 DOC이다. DOC-001은 사실은 맞고 표현이 넓은 Optional이다. "지운 줄이 없음"은 섹션마다 같음과 바뀜만 내는 비교에서 말했고, "현재 계획의 글에는 40이 없다"는 옛 규칙의 값을 적은 문장을 빠뜨렸다. Story 1.3은 Dev Notes의 "이전 Story"에 "기록은 실제 출력과 대조해 적는다"를 두었는데도 되풀이되었다. 앞 문장이 위 필요한 일의 "잰 범위"와 같은 꼴이고 그 제안은 아직 어느 Story에도 적히지 않았으므로 막았을 첫 장치는 그대로 탐색 포인터다.
+- 더한 출처: Story bug-2의 병합 뒤 점검(2026-11-07)이 앞선 병합 Story 1.1, 1.2, 1.3과 대조한 재발. Story bug-2의 QA DOC-001(`docs/qa/gates/bug-2.yml`의 `top_issues`). 정정할 일은 항목 "[Tech-Debt] Story bug-2 Dev 기록의 두 문장"이 든다
+- 더한 내용: 같은 기준과 gate 범주 DOC이다. DOC-001은 순서와 값은 맞고 시각 하나와 나열 하나가 다른 Optional이다. Story bug-2의 Dev Notes의 "이전 Story"에 위 제안과 같은 문장 "기록은 실제 출력과 대조해 적고, 모든 입력을 말하는 문장에는 잰 범위를 함께 적는다"가 있었는데도 되풀이되었다. 그 탐색 포인터는 막지 못했다. 위 필요한 일의 끝을 포인터로 둘지 트리아지가 다시 본다. 사실 주장의 참은 자동 점검이 가리지 못하고 규칙(CL-GLD-OPS-005, CC-DOC-009)은 이미 있다.
 
-Planning: unplanned
+Planning: undecided
 Source Story: 1.2
 Source Story: 1.3
+Source Story: bug-2
 
 ## [Tech-Debt] 재발: 죽은 코드
 
@@ -409,9 +458,12 @@ Source Story: 1.2
 - 내용: 기준은 Cleaner 점검 목록 줄 "Names that express domain meaning and functions with a coherent responsibility"다. 상수 이름이 사실과 달랐고, `open`은 위치를, `sourceKind`와 `targetKind`는 단위 목록을 담았다. 모두 Cleaner에서 고쳤다.
 - 필요한 일: 막았을 첫 장치는 탐색 포인터다. 이름의 뜻은 자동 점검이 가리지 못하고 기준은 이미 있다. SM이 Dev Notes의 프로젝트 규칙 적용에 이 줄을 가리키는 문장을 둔다.
 - 책임: SM
+- 더한 출처: Story bug-2의 병합 뒤 점검(2026-11-07)이 앞선 병합 Story 1.1, 1.2, 1.3과 대조한 재발. Story bug-2의 Cleaner F-4(`docs/story-records/bug-2/dev-1.1.md`의 섹션 "Cleaner 결과")
+- 더한 내용: 같은 기준이다. 위치 시험의 지역 상수 `widened`가 뜻을 말하지 않았고 Cleaner에서 이름을 지웠다. Story bug-2의 Dev Notes의 프로젝트 규칙 적용에 이 항목의 제안과 같은 문장 "이름은 담은 것을 말해야 한다(`.bmad-core/data/development-quality.md`의 Cleaner 점검 목록)"가 있었는데도 Cleaner 검토에서 나왔다. 그 탐색 포인터는 막지 못했으므로 위 필요한 일을 트리아지가 다시 본다.
 
-Planning: unplanned
+Planning: undecided
 Source Story: 1.2
+Source Story: bug-2
 
 ## evaluate에 넘기는 글자의 확인
 
@@ -467,9 +519,12 @@ Source Story: 1.3
 - 내용: 기준은 `.bmad-core/data/development-quality.md`의 Cleaner 점검 목록 줄 "Unnecessary branches, nesting, duplication, dead code and speculative abstractions"의 중복이고, Story 1.3의 Cleaner는 CL-GLD-005를 들었다. Story 1.1은 까닭 글자 "unexpected character"를 세 곳에 적었고 커서 읽기를 되풀이했다. Story 1.3은 비교와 실패 메시지의 꼴이 같은 반복문 둘(`assertErrorLines`, `assertLines`)을 두었고 한 시험 안에 같은 입력(`7 +`, `7 + a`)을 두 번 적었다. 모두 Cleaner에서 고쳤다. 숫자 리터럴은 항목 "[Tech-Debt] 재발: 함께 바뀌어야 할 숫자를 여러 곳에 적음"이 든다.
 - 필요한 일: 막았을 첫 장치는 자동 점검이다. 그 항목이 제안한 후보 명령을 같은 파일에서 되풀이되는 글자 리터럴과 같은 토큰 열까지 넓혀 `testing.lintCommands`에 두면 Dev가 Cleaner 전에 본다. 외부 패키지는 쓰지 않으므로 내장 모듈로 만들고 후보의 판단은 사람이 한다. 설정된 명령이 `src/`와 `test/`의 이런 반복을 후보로 내면 끝난다.
 - 책임: Architect, 프로젝트 소유자(도구의 승인)
+- 더한 출처: Story bug-2의 병합 뒤 점검(2026-11-07)이 앞선 병합 Story 1.1, 1.2, 1.3과 대조한 재발. Story bug-2의 Cleaner F-4(`docs/story-records/bug-2/dev-1.1.md`의 섹션 "Cleaner 결과")
+- 더한 내용: 같은 기준이다. 위치 시험이 `parenthesized`와 같은 꼴의 입력을 따로 만들었고(지역 상수 `widened`), Cleaner에서 그 도우미의 선택 인자로 줄였다. `testing.lintCommands`가 여전히 비어 있어 Cleaner 검토에서야 드러났으므로 막았을 첫 장치와 필요한 일은 그대로다.
 
-Planning: unplanned
+Planning: undecided
 Source Story: 1.3
+Source Story: bug-2
 
 ## [Tech-Debt] 재발: 공개 함수의 계약이 선언에 없음
 
@@ -480,3 +535,84 @@ Source Story: 1.3
 
 Planning: unplanned
 Source Story: 1.3
+
+## 경계 부근의 결과와 순수 함수
+
+- 출처: Story bug-2 PO 검증 1회(2026-11-07)의 PO1-N4, SM N-4. `docs/stories/bug/bug-2.story.md`의 PO Validation, `docs/story-records/bug-2/po-r1.md`의 섹션 "Q4, SM N-4, PO1-N4: 경계 부근의 같은 식", `docs/qa/gates/bug-2.yml`의 회차 1 `adversarial_checks`와 `risk_summary.recommendations.monitor`
+- 내용: `docs/architecture.md#설계-원칙`의 "공개 함수는 순수 함수로 두고 입출력이나 전역 상태를 쓰지 않는다"가 스택 한계에 달린 결과를 금하는지 수용된 글이 정하지 않는다. Story bug-2가 AC 3의 출처로 쓴 이 문장과 Testing 표 3이 어떻게 함께 서는지가 수용 문서에 없다. 구체적인 글 "입출력이나 전역 상태를 쓰지 않는다"는 어겨지지 않는다.
+- 병합 결과: `(` 3000개, `1`, `)` 3000개의 식은 같은 프로세스에서 첫 호출은 깊이 오류이고 얕은 호출로 예열한 뒤에는 값 1이다. `(` 4000개 뒤에 `1`이 오는 식은 새 프로세스에서 깊이 오류이고 예열한 프로세스에서 `unclosed parenthesis at position 3999`다. 이 값은 이 점검이 `main` 1c91705에서 잰 것이고(Windows x64, Node.js v24.22.1), QA 회차 1의 탐침과 같은 꼴이다. 시험 `answers an expression near the depth the recursion can hold with its value or a CalculationError`가 두 결과를 받는다. 고치기 전의 엔진도 `RangeError` 뒤에 값을 돌려주어 Story bug-2가 만든 성질은 아니다.
+- 처리와 까닭: Story는 적용하지 않았다. 표 3의 합격 판정이 하나이고 수용 문서에 적는 일은 계약 밖이다.
+- 필요한 일: po-r1의 제안은 설계 원칙에 스택 한계에 달린 결과의 예외를 적는 것이다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 답(깊이를 세어 1000을 넘으면 오류)이 구현되면, 호출자 스택이 잰 범위 안인 동안 결과가 스택 상태에 달리지 않아(잰 범위와 카운터의 구조에서 온 QA의 추론) 이 항목의 전제가 바뀐다. 그 일 뒤에 남는 것을 정하면 끝난다.
+- 책임: Architect
+
+Planning: undecided
+Source Story: bug-2
+
+## 스택 크기를 바꾼 실행과 스택을 거의 다 쓴 호출
+
+- 출처: Story bug-2 PO 검증 1회(2026-11-07)의 PO1-N5, SM N-5, N-6과 2회의 갱신. `docs/stories/bug/bug-2.story.md`의 PO Validation, `docs/story-records/bug-2/po-r1.md`의 섹션 "Q5, SM N-5, N-6: 잡아 번역하는 결정과 보지 않은 실행"과 "런타임 근거", `docs/story-records/bug-2/po-r2.md`의 섹션 "앞선 비차단 지적", `docs/qa/gates/bug-2.yml`의 회차 1 `adversarial_checks`와 `risk_summary.recommendations.monitor`
+- 내용: Story bug-2의 AC 머리는 "Node.js 24의 기본 스택 크기"로 한정하고 Dev Notes는 "호출자가 스택을 거의 다 쓴 상태의 호출은 이 Story의 입력이 아니다"라고 적는다. 메모 N-6의 글은 `RangeError`만 말하고 짧은 식 `1 + 2`가 깊이 오류로 번역되는 경우를 말하지 않는다.
+- 병합 결과: 이 점검이 `main` 1c91705의 Worker에서 쟀다(`resourceLimits.stackSizeMb`, Windows x64, Node.js v24.22.1). 0.25는 `P(1000)`도 깊이 오류, 4는 `P(1000)` 값 1과 `P(100000)` 깊이 오류, 64는 `P(100000)`도 값 1이다. PO 검증 1회의 사본에서 스택을 채우고 풀면서 층마다 부른 호출은 `P(100000)`이 깊이 오류 6317번과 `RangeError` 2번, `1 + 2`가 값 3 6313번과 `RangeError` 2번, 깊이 오류 4번이다. QA 회차 1이 전달 모듈에서 같은 꼴을 확인했다. 시험은 이 호출을 보지 않고 화면을 쓰는 호출자는 아직 없다. `P(n)`은 Story bug-2 Testing의 "입력의 정의"의 표기다.
+- 처리와 까닭: Story는 적용하지 않았다. 수용된 쓰임이 아니어서 비차단이고 수용 문서에 적는 일은 계약 밖이다. 사용자가 설계를 조사 없이 받아 po-r1의 "PO1-B1의 조사에서 함께 보고"는 없어졌다.
+- 필요한 일: po-r1의 제안은 짧은 식이 깊이 오류로 번역되는 경우까지 수용 문서에 적고 까닭 글자가 깊이만 말하게 둘지 정하는 것이다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 답이 구현되면 `catch`가 없어져 결과가 바뀐다. 사용자가 고른 선택지의 설명은 "호출자가 스택을 많이 쓰면 RangeError가 그대로 나갑니다"이고, QA가 잰 사본은 호출자 6000프레임까지 `P(1000)` 값 1, 7000프레임부터 `RangeError`, 호출자 10000프레임의 `P(1)`도 `RangeError`다. 그 일 뒤의 결과를 수용 문서에 적을지 정하면 끝난다.
+- 책임: Architect
+
+Planning: undecided
+Source Story: bug-2
+
+## 깊은 입력의 결정을 둘 자리
+
+- 출처: Story bug-2 PO 검증 1회(2026-11-07)의 PO1-N6과 2회의 갱신. `docs/stories/bug/bug-2.story.md`의 PO Validation, `docs/story-records/bug-2/po-r1.md`의 섹션 "Q6, PO1-N6: 결정의 자리와 Story의 두 해석", `docs/story-records/bug-2/po-r2.md`의 섹션 "앞선 비차단 지적"
+- 내용: 깊은 입력의 결과를 정한 사용자의 결정과 Story bug-2의 두 해석("같은 식의 메시지는 호출마다 같다", "`D`는 값이 아니라 `CalculationError`다")은 그 Story의 Scope and Dependencies와 커밋 2c44760의 메시지에 있고 `docs/planning/decisions.md`와 `docs/prd.md`의 Story 1.1 AC 3에는 없다. `D`는 그 Story의 Testing의 표기로 `(` 100000개, `1`, `)` 100000개다. `.bmad-core/tasks/research-decision.md` step 6과 `.bmad-core/data/future-work-planning.md`에 맞는 자리여서 빠진 것이 아니고, 다른 Story가 공유 근거로 쓸 때의 일이다.
+- 병합 결과: `docs/planning/decisions.md`는 D-1, D-2뿐이다. `main`의 Story는 앞선 결정 "숫자 한도 없이"와 스택 넘침을 번역하는 설계를 적는다. 사용자의 새 답은 로컬 브랜치 `story/bug-2`의 QA Results와 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"에 있다.
+- 처리와 까닭: Story는 적용하지 않았다. 그 문서들을 바꾸지 않는다고 적어 계약 밖이다.
+- 필요한 일: po-r1의 제안은 후보 D-3으로 결정 기록에 옮길지 정하는 것이다. 설계 수용의 결정을 공유 근거로 쓰려면 항목 "조사 없이 받은 설계의 남은 일"이 먼저다(po-r2의 갱신). 위 새 답이 결정의 내용을 바꾸므로 옮길 글은 그 일의 결과로 정한다.
+- 책임: PM
+
+Planning: undecided
+Source Story: bug-2
+
+## 조사 없이 받은 설계의 남은 일
+
+- 출처: Story bug-2 PO 검증 2회(2026-11-07)의 PO2-N1. `docs/stories/bug/bug-2.story.md`의 PO Validation과 Scope and Dependencies의 "수용된 결정", `docs/story-records/bug-2/po-r2.md`의 섹션 "PO2-N1: 조사 없이 받은 설계의 남은 일", `docs/qa/gates/bug-2.yml`의 `waiver`, `resolved_issues`의 ARCH-001, `recommendations.future`, `AGENTS.md` 섹션 Research for uncertainty and core implementation decisions
+- 내용: 설계 "재귀 파서를 그대로 두고, 스택 넘침의 `RangeError`를 `evaluate` 경계에서 잡아 `CalculationError`로 바꿈"을 사용자가 "조사 없이 이 설계를 수용"으로 그 Story에 한해 받았고 참고 자료 다섯 개의 조사가 없다. 조사 요건은 채워지지 않았다. 사용자가 받은 남는 위험은 "스택 크기를 바꾼 실행과 다른 런타임의 동작이 확인되지 않습니다."다. 읽을 후보로 든 빠진 자료는 ECMAScript 명세가 호출 스택의 한계를 정하는지, V8과 Node.js의 공식 문서가 스택 넘침의 오류와 복구를 어떻게 말하는지(`--stack-size`, Worker의 `resourceLimits.stackSizeMb`), 스택 넘침을 잡는 일에 대한 정착된 지침, 재귀 하강 파서의 깊이 처리에 대한 공개 구현이나 지침이다.
+- 병합 결과: `main`의 `evaluate`가 이 설계이고 gate WAIVED 회차 1의 면제 ARCH-001의 범위는 이 설계뿐이다. 사용자가 뒤에 고른 깊이 세기 1000에도 조사가 없다. 메인 세션의 답은 `*run-story bug-2 remote` 호출의 프로젝트 밖 조사가 사용자의 말 "이 시험은 네트워크를 막아 두었으므로 프로젝트 밖 원문 조사는 면제하며, 면제 사실을 기록합니다."로 면제라는 것이고 조사 요건을 채운 것이 아니다.
+- 처리와 까닭: Story는 적용하지 않았다. 외부 자료의 조사는 그 Story의 일이 아니고 네트워크 조건이 막아 계약 밖이다.
+- 필요한 일: 이 설계를 다른 Story나 결정 기록의 공유 근거로 쓸 때, 또는 외부 자료를 읽을 수 있는 호출에서 빠진 자료를 읽을지 사용자가 정한다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 일을 맡는 계획이 새 설계의 조사 요건을 어떻게 다룰지도 정한다.
+- 책임: Architect(조사), 사용자(읽을지의 결정)
+
+Planning: undecided
+Source Story: bug-2
+
+## [Tech-Debt] 까닭이 빈 글자인 변형을 시험이 가리지 못함
+
+- 출처: Story bug-2 QA 회차 1(2026-11-07)의 TEST-001(Optional, 계약 안)과 Cleaner F-3. `docs/qa/gates/bug-2.yml`의 `top_issues`, `docs/stories/bug/bug-2.story.md`의 Completion Notes와 처리 줄 `TEST-001 future`, `docs/story-records/bug-2/qa-r1.md`, `docs/story-records/bug-2/dev-qa-r1.md`의 섹션 "TEST-001 까닭이 빈 글자인 변형을 시험이 가리지 못한다", `docs/story-records/bug-2/dev-1.1.md`의 섹션 "Cleaner 결과"
+- 내용: Story bug-2 Testing 표 1의 G-4 "`D`의 까닭이 빈 글자가 아니고"를 보는 단언이 빈 까닭을 가리지 못한다. `test/engine.test.js`의 시험 `gives a different reason in the message for different problems`의 `reason.trim()`은 도우미 `reasonOf`가 메시지에서 수만 뺀 글자를 보는데, 까닭이 빈 글자여도 ` at position `이 남아 통과한다. 새 오류의 까닭을 빈 글자로 쓴 엔진 사본에서 `node --test` 76개가 모두 통과한다. 전달된 까닭은 `expression nested too deeply`여서 제품은 맞다.
+- 처리와 까닭: Dev가 적용하지 않고 future로 기록했다. 잘못된 결과가 없고, 고칠 Required와 Recommended가 없는 라운드였으며, `fix`로 두면 구현 개정이 바뀌어 Done 전에 QA 회차의 닫음이 필요했다. QA 회차 2는 Story가 InProgress로 돌아와 같은 Story에서 고칠 수 있게 되었다고 적었으나, 다시 열린 채 병합되어 Dev에 닿지 않았고 `main`의 처리 줄은 `future`다.
+- 필요한 일: 각 까닭에서 공통 꼬리 ` at position`을 걷어낸 나머지가 비어 있지 않은지 같은 시험에서 본다. 낱말을 시험에 적지 않고 제품 코드는 바꾸지 않는다. 이 단언을 더한 사본은 전달된 엔진에서 76개 통과, 빈 까닭의 엔진에서 이 시험 하나가 실패한다. 저울질할 점은 Cleaner F-3이 접미사를 걷어내는 일을 구현을 되풀이하는 기계로 보아 단언의 글만 고친 것이고, `testing-tdd`의 "restates the implementation"과 함께 따진다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 일이 같은 시험 파일을 바꾸고, 항목 "오류 메시지의 언어와 꼴"의 답이 낱말을 정한다. 변형이 그 시험에서 실패하면 끝난다.
+- 책임: Dev
+
+Planning: undecided
+Source Story: bug-2
+
+## [Tech-Debt] Story bug-2 Dev 기록의 두 문장
+
+- 출처: Story bug-2 QA 회차 1(2026-11-07)의 DOC-001(Optional, 계약 안). `docs/qa/gates/bug-2.yml`의 `top_issues`, `docs/stories/bug/bug-2.story.md`의 Completion Notes와 처리 줄 `DOC-001 future`, `docs/story-records/bug-2/qa-r1.md`, `docs/story-records/bug-2/dev-qa-r1.md`의 섹션 "DOC-001 Dev 기록 dev-1.1의 두 문장이 실제와 다르다"
+- 내용: `docs/story-records/bug-2/dev-1.1.md` 머리의 시각 줄 "첫 RED 02:09"는 조각 1의 RED 출력 수정 시각 02:07:12와 다르고 02:09:42는 조각 5의 출력이다. 섹션 "Cleaner 결과"의 "검토자의 변형 가운데 76/76을 통과한 것은 위 표의 둘과 Story가 예고한 틈"과 그 괄호의 나열에서, 위 표의 `catch-every-other-error`는 Dev의 변형이어서 검토자의 요약에 없고 요약에서 76개를 통과한 `depth-limit-above-the-fitting-depth`가 괄호에 없다. RED, GREEN, Cleaner, 재점검의 순서와 그 밖의 값은 저장된 출력과 같고 제품, 시험, 필수 점검에 닿지 않는다.
+- 처리와 까닭: Dev가 적용하지 않고 future로 기록했다. 고칠 Required와 Recommended가 없는 라운드였고 `fix`로 두면 Done 전에 QA 회차의 닫음이 필요했다. QA 회차 2는 같은 Story에서 고칠 수 있게 되었다고 적었으나 다시 열린 채 병합되어 Dev에 닿지 않았다.
+- 필요한 일: 두 문장을 위 사실로 정정한다. 앞선 기록(dev-1.1)은 고쳐 쓰지 않고 코드와 시험은 바꾸지 않는다. Dev의 기록이 정한 자리는 Completion Notes의 새 항목인데, Story가 병합되어 다시 열리지 않으므로 이 정정을 담을 계획이 따로 필요하다.
+- 책임: Dev
+
+Planning: undecided
+Source Story: bug-2
+
+## [Tech-Debt] 엔진 규칙의 점검이 글자 검색임
+
+- 출처: Story bug-2 QA 회차 2(2026-11-07)의 TEST-002(Optional, 범위 밖). `git show story/bug-2:docs/qa/gates/bug-2.yml`의 `top_issues`, `git show story/bug-2:docs/story-records/bug-2/qa-r2.md`의 섹션 "분류", "고치는 길의 측정". Story가 다시 열린 채 병합되어 Dev의 처리 줄이 없고 지적은 로컬 브랜치의 gate에만 있다.
+- 내용: `ci/engine-rule.check.mjs`의 첫 줄의 뜻 "the engine does not rest on the host's stack overflow error"를 점검이 지키지 못한다. 점검은 `src/engine.js`에서 글자 `RangeError`를 `includes`로 찾을 뿐이다. `evaluate`의 조건만 `!(error instanceof CalculationError)`, `error.name === "Range" + "Error"`, `/call stack/.test(error.message)`로 바꾼 사본 셋이 `node --test` 76개와 두 규칙을 모두 통과했다(QA의 판정 작업, 2026-11-07, Windows x64, Node.js v24.22.1).
+- 처리와 까닭: 규칙 파일은 Story가 만들거나 바꾼 내용이 아니고 필수 점검의 실패가 아니어서 범위 밖이고 비차단이다. CI 규칙은 그대로 두었다.
+- 필요한 일: 규칙을 남기고 뜻까지 지키려면 규칙의 소유자가 점검의 방법을 정한다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 일에서는 점검이 못 가리므로 글자만 피하는 고침을 읽기로 막는다. 정해진 방법이 위 세 사본을 잡거나, 잡지 않기로 한 까닭이 코딩 표준 절에 적히면 끝난다.
+- 책임: 규칙의 소유자를 적은 글이 없다. Architect(`docs/conventions/Common/CODING_CONVENTION.md`의 "A rule that fits only this project goes into the Architecture's coding standards section, which the Architect owns"), 프로젝트 소유자(규칙을 더한 커밋 0528169의 까닭과 점검 방법의 승인)
+
+Planning: undecided
+Source Story: bug-2
