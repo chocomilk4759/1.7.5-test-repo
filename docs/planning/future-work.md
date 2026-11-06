@@ -99,25 +99,6 @@ Revisit: 브라우저 화면 Epic을 계획할 때
 Source Story: 1.1
 Source Story: 1.3
 
-## 아주 깊은 중첩
-
-- 출처: Story 1.1 PO 검증 1회(2026-11-06)의 PO1-N6, SM N-6. `docs/stories/1.1.story.md`의 PO Validation, `docs/story-records/1.1/po-r1.md`의 섹션 "Q6, SM N-6, PO1-N6", `docs/story-records/1.1/qa-r1.md`의 넘겨받은 질문 3, `docs/qa/gates/1.1.yml`의 `risk_summary.recommendations.monitor`
-- 내용: 재귀 파서는 아주 깊은 중첩에서 콜 스택이 넘쳐 `CalculationError`가 아닌 `RangeError`를 던진다. 수용 문서에 한도가 없고, `evaluate`의 JSDoc도 이 오류를 말하지 않는다.
-- 병합 결과: 새 프로세스에서 괄호는 깊이 2000을 통과하고 3000부터 `RangeError`이며, 단항 마이너스는 8000을 통과하고 10000부터 `RangeError`다(Node.js v24.22.1, 이 기기의 기본 스택 크기). 다음 호출은 정상이다. `docs/prd.md`의 Story 1.3 AC 2 "다른 오류는 그대로 던진다"에 따라 화면도 이 입력에서 던진다.
-- 처리와 까닭: Story는 적용하지 않았다. 이 입력의 점검이 계획에 없고 검증을 더하면 범위가 넓어져 계약 밖이다. QA는 차단이 아닌 위험(medium)으로 두었다.
-- 필요한 일: Story 1.3 초안 전에 처리할 수 없는 깊이의 결과를 정한다. po-r1의 제안은 숫자 한도 없이 "처리할 수 없는 깊이면 `CalculationError`"다. 정해지면 엔진과 JSDoc을 맞추고, 값 또는 그 결과를 받는 시험을 둔다.
-- 책임: PM
-- 더한 출처: Story 1.3 PO 검증 1회(2026-11-06)의 PO1-N6, SM N-6. `docs/stories/1.3.story.md`의 PO Validation, `docs/story-records/1.3/po-r1.md`의 섹션 "Q6, SM N-6, PO1-N6: 아주 깊은 중첩", `docs/qa/gates/1.3.yml`의 `risk_summary.recommendations.monitor`
-- 더한 내용: 사용자가 입력한 글자로 화면이 던지는 길이다. 이 입력은 글자로 Story 1.3 AC 2의 "다른 오류"에 닿는 유일한 길이어서 Testing 표 2의 T-2가 대표 입력으로 쓴다.
-- 더한 병합 결과: `(` 100000개, `1`, `)` 100000개를 이은 식에서 `renderScreen`은 `RangeError`("Maximum call stack size exceeded")를 던진다(Node.js v24.22.1). `test/screen.test.js`의 시험 `throws what evaluate throws when that is not a calculation error`의 행 "an expression nested too deeply"가 `evaluate`와 `constructor`, `message`가 같은지 본다. QA는 위험 medium으로 monitor에 두었고 화면을 쓰는 호출자는 아직 없다.
-- 더한 처리: Story는 적용하지 않았다. AC 2가 지금 엔진에서의 결과를 정하고, 바꾸는 일은 엔진의 별도 계획이어서 계약 밖이다.
-- 더한 일: 위 필요한 일의 "Story 1.3 초안 전에"는 시점이 지났다. Story 1.3 po-r1의 제안도 "처리할 수 없는 깊이면 `CalculationError`"다. 정해지면 엔진, JSDoc과 함께 Testing 표 2의 T-2와 위 시험의 행을 바꾼다.
-
-Planning: undecided
-Plan: [Bug] 유형 Story, docs/stories/bug/ 아래(키는 SM의 draft-standalone가 정한다) — SM — 2026-11-06
-Source Story: 1.1
-Source Story: 1.3
-
 ## CI 규칙이 계획 문서에 없음
 
 - 출처: Story 1.1 PO 검증 1회(2026-11-06)의 PO1-N7, SM N-7. `docs/stories/1.1.story.md`의 PO Validation, `docs/story-records/1.1/po-r1.md`의 섹션 "Q7, SM N-7, PO1-N7"
