@@ -111,6 +111,7 @@ Source Story: 1.3
 - 더한 일: 위 필요한 일의 "Story 1.3 초안 전에"는 시점이 지났다. Story 1.3 po-r1의 제안도 "처리할 수 없는 깊이면 `CalculationError`"다. 정해지면 엔진, JSDoc과 함께 Testing 표 2의 T-2와 위 시험의 행을 바꾼다.
 
 Planning: undecided
+Plan: [Bug] 유형 Story, docs/stories/bug/ 아래(키는 SM의 draft-standalone가 정한다) — SM — 2026-11-06
 Source Story: 1.1
 Source Story: 1.3
 
