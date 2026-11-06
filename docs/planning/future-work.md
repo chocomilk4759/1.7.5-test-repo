@@ -32,7 +32,8 @@ Planning: unplanned
 - 더한 처리: Story는 적용하지 않았다. SM의 다음 수정이 없었다. 계약 안이다.
 - 더한 일: po-r2의 수정안은 그 문장을 "엔진의 까닭 글자와 위치 규칙에 기댄다"로 적는 것이다. 위치 규칙의 답이 끝 위치를 바꾸면 그 변경에서 위 시험의 입력과 길이 단언을 함께 고친다.
 
-Planning: undecided
+Planning: unplanned
+Revisit: 브라우저 화면 Epic을 계획할 때
 Source Story: 1.1
 Source Story: 1.3
 
@@ -74,7 +75,8 @@ Source Story: 1.1
 - 더한 처리: Story는 적용하지 않았다. 오류 클래스와 인자 없는 호출의 뜻을 정하려면 새 결정이 필요해 계약 밖이다.
 - 더한 일: 오류 클래스를 정할 때 인자 없는 호출의 뜻도 함께 정한다. Story 1.3 po-r1의 제안은 지금 동작을 그대로 적는 것이고(호출 쪽의 잘못이므로 `오류:` 줄보다 던진다), 위의 Story 1.1 po-r1 제안과 다르다. 둘 다 제안이다. 답이 `TypeError`가 아니면 `src/engine.js`와 함께 Testing 표 2의 T-1과 위 시험의 기대를 바꾼다.
 
-Planning: undecided
+Planning: unplanned
+Revisit: 브라우저 화면 Epic을 계획할 때
 Source Story: 1.1
 Source Story: 1.3
 
@@ -92,7 +94,8 @@ Source Story: 1.3
 - 더한 처리: PO1-N4는 Story가 적용하지 않았다. 바꾸는 일은 `src/engine.js`의 별도 계획이어서 계약 밖이다. DEV-1은 Dev가 적용하지 않고 future로 기록했다. 메시지를 바꾸는 일은 이 항목의 답이 먼저다.
 - 더한 일: 위 필요한 일의 "Story 1.3 초안 전에"는 시점이 지났다. Story 1.3 po-r1의 제안은 사용자에게 보이는 글이므로 까닭을 한국어로 하는 것이고, 그러면 `src/engine.js`의 까닭 글자를 바꾸는 별도 계획이 필요하다. 답이 까닭을 줄이면 그 변경에서 위 시험의 길이 단언을 함께 고친다. 오류 줄의 길이는 `오류: `의 4글자, 까닭, ` at position `의 13글자, 위치의 자릿수를 더한 값이어서 까닭이 14글자이면 48글자를 넘으려면 위치가 18자리여야 한다(계산한 값이고 실행한 것이 아니다). 그때는 입력만 다시 고르는 것으로 끝나지 않을 수 있어 길이 단언의 방식을 그 변경에서 다시 정한다. 시험을 고치는 일은 Dev의 책임이다.
 
-Planning: undecided
+Planning: unplanned
+Revisit: 브라우저 화면 Epic을 계획할 때
 Source Story: 1.1
 Source Story: 1.3
 
@@ -133,7 +136,8 @@ Source Story: 1.3
 - 더한 처리: PO1-N8은 Story가 적용하지 않았다. Task 2.1이 이 일을 맡지 않았고 문서를 바꾸는 일이어서 계약 밖이다. REQ-001, REQ-002는 Story에서 고쳐 QA 회차 3이 닫았다.
 - 더한 일: 위 필요한 일의 "Story 1.3 초안 전에"는 시점이 지났다. 남은 일은 `docs/architecture.md`에 코딩 표준 절과 Change Log 절을 두고 `SCREEN_WIDTH`의 값과 뜻, 소스 트리의 내보내기를 적으며(Architect), 폭을 넘는 줄의 처리를 정하는 것이다(PM). 문서의 값이 `EXPECTED_WIDTH`와 같고 `src/screen.js` 행이 내보내기를 모두 들면 끝난다.
 
-Planning: undecided
+Planning: unplanned
+Revisit: 브라우저 화면 Epic을 계획하거나 ci/screen-rule.check.mjs의 EXPECTED_WIDTH가 바뀔 때
 Source Story: 1.1
 Source Story: 1.2
 Source Story: 1.3
@@ -200,7 +204,7 @@ Source Story: 1.1
 - 더한 처리: Story 1.3은 적용하지 않았다. 계약 밖이고 po-r1은 제안을 내지 않았다.
 - 더한 일: 위 "QA의 제안은 Story 1.3 초안 전에 정하는 것이다"는 시점이 지났다. 어느 답이든 `src/screen.js`와 `test/screen.test.js`를 바꿀 일은 없다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 Source Story: 1.2
 Source Story: 1.3
@@ -229,7 +233,7 @@ Source Story: 1.1
 - 더한 처리: Story는 Dev Notes의 문장을 고치지 않았다. SM의 다음 수정이 없었다. 계약 안이다.
 - 더한 일: po-r2의 수정안은 Story 1.3 Dev Notes의 그 문장에서 "Dev가 빠진 입력을 기록한다"를 지우고, 이 항목의 위 문장을 트리아지에서 다시 보는 것이다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 Source Story: 1.3
 
@@ -246,7 +250,8 @@ Source Story: 1.3
 - 더한 처리: PO1-N1, PO1-N2는 Story가 적용하지 않았다. 하나로 정하려면 새 결정이 필요해 계약 밖이다. PO1-N12는 이 점검이 적용했다. 위 출처의 커밋을 어느 브랜치에도 없는 a81b56a에서 `main`의 병합 커밋 81c547c로 고쳤고, 두 커밋의 `src/engine.js`는 같은 객체다.
 - 더한 일: 위 필요한 일의 "Story 1.3 초안 전에"는 시점이 지났다. AC 3의 "공백"과 AC 1의 `{식}`의 꼴을 해석 결정이나 AC 보강으로 정한다. Story 1.3 po-r1의 제안은 공백을 U+0020으로 하고 `{식}`을 받은 그대로 두는 것이다. 항목 "공백의 종류와 자리, 숫자의 범위"의 답이 엔진의 공백을 넓히면 그 답과 함께 다시 본다. 답이 오면 표 3과 위 두 시험을 한 결과로 줄이고, 지금 동작과 다르면 `src/screen.js`도 바꾼다.
 
-Planning: undecided
+Planning: unplanned
+Revisit: 브라우저 화면 Epic을 계획할 때
 Source Story: 1.1
 Source Story: 1.3
 
@@ -259,7 +264,7 @@ Source Story: 1.3
 - 필요한 일: 이 결과를 AC 보강이나 해석 결정으로 정한다. po-r1의 제안은 `ConversionError`다. 항목 "범위 끝의 반올림 오차 안에서 갈리는 결과"도 함께 정한다. 답이 무한대가 아니면 `src/units.js`와 JSDoc을 바꾸고, 시험 "answers a result that overflows with an infinity or a ConversionError"를 한 결과로 줄인다.
 - 책임: PM 또는 프로젝트 소유자
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## 기대 값이 0일 때의 같은 값 판정
@@ -271,7 +276,7 @@ Source Story: 1.2
 - 필요한 일: 결정 기록을 고칠 때 이 읽기를 적는다. po-r1의 제안은 "기대 값이 0이면 0 또는 -0"이다. 절대 허용 폭을 두기로 하면 `isSameValue`를 바꾼다.
 - 책임: 프로젝트 소유자
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## 절대 영도 판정의 엄밀함
@@ -283,7 +288,7 @@ Source Story: 1.2
 - 필요한 일: 이 읽기를 확인해 결정 기록에 적는다. 허용 폭을 두기로 하면 수용된 결정의 변경이고 `convert`와 위 시험을 바꾼다.
 - 책임: 프로젝트 소유자
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## 결과가 0에 가까울 때의 정밀도
@@ -295,7 +300,7 @@ Source Story: 1.2
 - 필요한 일: 이 구간의 정밀도를 약속할지 정한다. po-r1의 제안은 약속하지 않는다고 적는 것이고, 약속하려면 정밀 계산이 필요한 요구사항 변경이다. 항목 "같은 단위 반환을 지키는 시험이 없음"도 함께 정한다.
 - 책임: 프로젝트 소유자
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## 수용된 글을 그대로 읽은 해석
@@ -307,7 +312,7 @@ Source Story: 1.2
 - 필요한 일: 이 읽기를 확인해 AC 보강이나 해석 결정으로 적는다. 다르게 정하면 수용된 결정의 변경이고 `src/units.js`와 `test/units.test.js`를 그 답에 맞춘다.
 - 책임: PM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## 가져오기 검색이 놓치는 줄의 한계
@@ -319,7 +324,7 @@ Source Story: 1.2
 - 필요한 일: po-r2의 수정안은 섹션 끝 문단에 "같은 줄 앞쪽에 `/`나 `*`가 있는 줄의 `import(`, `require(`는 보지 못한다"를 더하는 것이다.
 - 책임: SM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## [Tech-Debt] 먼저 나누는 변형을 잡는 길이 행
@@ -330,7 +335,7 @@ Source Story: 1.2
 - 필요한 일: 길이 행 `{ mm: 1e307, cm: 1e306 }`과 `{ mm: 1e308, cm: 1e307, in: 1e308 / 25.4, ft: 1e308 / 304.8 }`을 시험에 더한다. 제품 코드는 바꿀 일이 없다. 변형이 그 행에서 실패하면 끝난다.
 - 책임: Dev
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## 같은 단위 반환을 지키는 시험이 없음
@@ -341,7 +346,7 @@ Source Story: 1.2
 - 필요한 일: 항목 "결과가 0에 가까울 때의 정밀도"를 정할 때 같은 단위 반환을 계약으로 유지할지 함께 정한다. 유지하면 지운 구현이 틀리는 입력의 행을 더하고, 유지하지 않으면 분기를 지워도 된다.
 - 책임: 프로젝트 소유자
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## 범위 끝의 반올림 오차 안에서 갈리는 결과
@@ -352,7 +357,7 @@ Source Story: 1.2
 - 필요한 일: 항목 "변환 결과가 유한하지 않을 때"를 정할 때 이 구간에서 무엇을 약속할지도 함께 정한다. 정확한 반올림을 요구하는 답이면 `src/units.js`의 환산과 JSDoc을 바꾸고 시험을 더한다.
 - 책임: PM 또는 프로젝트 소유자
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## [Tech-Debt] 재발: 전달 시험이 틀린 변형을 잡지 못함
@@ -364,7 +369,7 @@ Source Story: 1.2
 - 더한 출처: Story 1.3의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1, 1.2와 대조한 재발. Story 1.3의 QA TEST-001(`docs/qa/gates/1.3.yml`의 `resolved_issues`), Cleaner F-1(`docs/story-records/1.3/dev-3.3.md`의 섹션 "Cleaner 결과")
 - 더한 내용: 같은 기준이고 결함도 같다. 끝의 U+0020이나 CR을 지우고 `evaluate`에 넘기는 변형이 QA 회차 1의 시험 13개를 통과했고(TEST-001), 엔진 메시지에 CR을 끼운 변형이 단위 3.3의 시험 13개를 통과했다(F-1). 둘 다 제품은 맞았고 Story에서 시험을 고쳤다. `testing.mutationCommands`가 여전히 비어 있어 이번에도 QA와 Cleaner 검토자의 손 변이에서야 드러났으므로 막았을 첫 장치와 필요한 일은 그대로다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 Source Story: 1.3
 
@@ -377,7 +382,7 @@ Source Story: 1.3
 - 더한 출처: Story 1.3의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1, 1.2와 대조한 재발. Story 1.3의 Cleaner F-6(`docs/story-records/1.3/dev-1.1.md`의 섹션 "Cleaner 결과"), Cleaner F-1(`docs/story-records/1.3/dev-3.3.md`의 섹션 "Cleaner 결과")
 - 더한 내용: 같은 기준이다. 시험 이름 "keeps no state between calls, also after an error"가 단언보다 강했고(F-6), 단언의 메시지 "has no line break"가 LF만 보았다(F-1). 둘 다 Story에서 고쳤다. Story 1.3은 Dev Notes의 "이전 Story"에 "시험 주석이 단언의 실제 범위와 맞지 않았고(CC-CMT-010)"를 두었다. 프로젝트 규칙 적용의 자리는 아니었고, 위 지적은 Cleaner 검토에서 나왔으며 QA 회차 1과 3은 주석과 시험 이름의 위반을 찾지 못했다. 막았을 첫 장치를 고를 때 이 결과를 함께 본다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 Source Story: 1.3
 
@@ -390,7 +395,7 @@ Source Story: 1.3
 - 더한 출처: Story 1.3의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1, 1.2와 대조한 재발. Story 1.3의 Cleaner F-1(`docs/story-records/1.3/dev-1.1.md`의 섹션 "Cleaner 결과")
 - 더한 내용: 같은 기준이다(Cleaner가 CL-GLD-001을 들었다). 시험의 깊이 `100000`을 두 번 적었고 이름 있는 상수 `NESTING_LEVELS` 하나로 고쳤다. Story 1.3은 Dev Notes의 "이전 Story"에 "같은 입력 글자를 여러 번 적어 함께 고쳐야 했다(CL-GLD-001)"를 두었는데도 Cleaner 검토에서 나왔다. 그 포인터는 막지 못했고 막았을 첫 장치는 그대로 자동 점검이다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 Source Story: 1.3
 
@@ -403,7 +408,7 @@ Source Story: 1.3
 - 더한 출처: Story 1.3의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1, 1.2와 대조한 재발. Story 1.3의 QA DOC-001(`docs/qa/gates/1.3.yml`의 `top_issues`). 정정할 일은 항목 "[Tech-Debt] Story 1.3 Dev 기록의 두 문장"이 든다
 - 더한 내용: 같은 기준과 gate 범주 DOC이다. DOC-001은 사실은 맞고 표현이 넓은 Optional이다. "지운 줄이 없음"은 섹션마다 같음과 바뀜만 내는 비교에서 말했고, "현재 계획의 글에는 40이 없다"는 옛 규칙의 값을 적은 문장을 빠뜨렸다. Story 1.3은 Dev Notes의 "이전 Story"에 "기록은 실제 출력과 대조해 적는다"를 두었는데도 되풀이되었다. 앞 문장이 위 필요한 일의 "잰 범위"와 같은 꼴이고 그 제안은 아직 어느 Story에도 적히지 않았으므로 막았을 첫 장치는 그대로 탐색 포인터다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 Source Story: 1.3
 
@@ -414,7 +419,7 @@ Source Story: 1.3
 - 필요한 일: 막았을 첫 장치는 자동 점검이다. 문장이나 속성을 지우는 변이를 내는 점검이면 항목 "[Tech-Debt] 재발: 전달 시험이 틀린 변형을 잡지 못함"의 명령으로 함께 드러난다. 그 도구를 고를 때 이 변이를 내는지 확인한다.
 - 책임: 프로젝트 소유자(도구의 승인), Architect
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## [Tech-Debt] 재발: 담은 것을 말하지 않는 이름
@@ -424,7 +429,7 @@ Source Story: 1.2
 - 필요한 일: 막았을 첫 장치는 탐색 포인터다. 이름의 뜻은 자동 점검이 가리지 못하고 기준은 이미 있다. SM이 Dev Notes의 프로젝트 규칙 적용에 이 줄을 가리키는 문장을 둔다.
 - 책임: SM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 
 ## evaluate에 넘기는 글자의 확인
@@ -436,7 +441,8 @@ Source Story: 1.2
 - 필요한 일: 이 읽기를 확인해 AC 보강이나 D-1과 같은 해석 결정으로 "식은 `renderScreen`이 받은 글자이고 `evaluate`에 그대로 넘긴다"를 적는다. 이렇게 확인하면 항목 "Story 1.3의 공백 판정과 식 표시"의 `{식}`도 받은 그대로로 함께 정해진다. 다르게 정하면 수용된 결정의 변경이고 `src/screen.js`와 위 시험을 그 답에 맞춘다.
 - 책임: PM
 
-Planning: undecided
+Planning: unplanned
+Revisit: 브라우저 화면 Epic을 계획할 때
 Source Story: 1.3
 
 ## 1.3-UNIT-011의 수준
@@ -448,7 +454,7 @@ Source Story: 1.3
 - 필요한 일: po-r1의 수정안은 `git diff` 부분을 inspection 행으로 나누고 합계를 고치는 것이다.
 - 책임: SM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.3
 
 ## 1.3-UNIT-011이 병합으로 들어온 파일을 덮지 않음
@@ -460,7 +466,7 @@ Source Story: 1.3
 - 필요한 일: po-r2의 수정안은 그 행과 시나리오에 두 파일을 더하거나, 기준 tip과 다른 경로가 Story의 파일뿐임을 보게 적는 것이다.
 - 책임: SM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.3
 
 ## [Tech-Debt] Story 1.3 Dev 기록의 두 문장
@@ -471,7 +477,7 @@ Source Story: 1.3
 - 필요한 일: 두 문장을 위 사실로 정정한다. 앞선 기록(dev-dod-2, dev-qa-r2)은 고쳐 쓰지 않고 코드와 시험은 바꾸지 않는다. Dev의 기록이 정한 자리는 Completion Notes의 새 항목인데, Story가 병합되어 다시 열리지 않으므로 이 정정을 담을 계획이 따로 필요하다.
 - 책임: Dev
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.3
 
 ## [Tech-Debt] 재발: 같은 코드와 글자를 여러 곳에 적음
@@ -481,7 +487,7 @@ Source Story: 1.3
 - 필요한 일: 막았을 첫 장치는 자동 점검이다. 그 항목이 제안한 후보 명령을 같은 파일에서 되풀이되는 글자 리터럴과 같은 토큰 열까지 넓혀 `testing.lintCommands`에 두면 Dev가 Cleaner 전에 본다. 외부 패키지는 쓰지 않으므로 내장 모듈로 만들고 후보의 판단은 사람이 한다. 설정된 명령이 `src/`와 `test/`의 이런 반복을 후보로 내면 끝난다.
 - 책임: Architect, 프로젝트 소유자(도구의 승인)
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.3
 
 ## [Tech-Debt] 재발: 공개 함수의 계약이 선언에 없음
@@ -491,5 +497,5 @@ Source Story: 1.3
 - 필요한 일: 막았을 첫 장치는 자동 점검이다. `src/`에서 내보내는 함수 바로 위에 문서 주석이 있는지 보는 명령을 내장 모듈로 만들어 `testing.lintCommands`에 두면 Dev가 Cleaner 전에 본다. 주석이 계약을 다 말하는지는 사람이 본다. 설정된 명령이 문서 주석 없는 공개 함수에서 실패하면 끝난다.
 - 책임: Architect, 프로젝트 소유자(도구의 승인)
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.3
