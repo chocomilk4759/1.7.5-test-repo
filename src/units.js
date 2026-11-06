@@ -134,8 +134,8 @@ export function convert(value, from, to) {
   if (value < source.minimum) {
     throw new ConversionError("value is below absolute zero");
   }
-  // Passing a temperature through the degree Celsius would round a small value
-  // in kelvin or in degrees Fahrenheit to zero, so the value is returned as is.
+  // A conversion to the same unit needs no arithmetic; for a temperature it
+  // would only round the value through the degree Celsius.
   if (source === target) {
     return value;
   }

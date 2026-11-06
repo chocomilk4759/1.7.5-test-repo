@@ -125,8 +125,8 @@ test("converts a large temperature in every unit", () => {
   ]);
 });
 
-// Converting these through the reference unit of their kind would overflow,
-// although the conversion to the same unit leaves the value as it is.
+// A conversion to the same unit returns a value near the largest double as it
+// is, in a unit of each kind.
 test("returns a value unchanged when both units are the same", () => {
   const cases = [
     [1e308, "km"],
@@ -330,11 +330,12 @@ test("throws a ConversionError that is also an Error with a text message", () =>
 });
 
 test("keeps no state between calls, also after an error", () => {
-  const first = convert(1, "m", "cm");
-  assertSameValue(first, 100, 'convert(1, "m", "cm")');
+  const convertSample = () => convert(1, "m", "cm");
+  const first = convertSample();
+  assertSameValue(first, 100, "first call");
   assertRejected(1, "x", "m");
-  assert.equal(convert(1, "m", "cm"), first);
-  assert.equal(convert(1, "m", "cm"), first);
+  assert.equal(convertSample(), first);
+  assert.equal(convertSample(), first);
 });
 
 test("exports exactly the conversion function, the list function and the error class", () => {
