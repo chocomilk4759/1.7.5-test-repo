@@ -3,7 +3,7 @@
 - Story: [tech-debt-3](../../stories/tech-debt/tech-debt-3.story.md)
 - Entry: Dev SubTask 1.1
 - 작성자와 실제 실행자: Dev 하위 세션 James, 모델 `claude-sonnet-5-5`(시스템이 알려 준 값), `*run-story tech-debt-3 remote to Done` run의 역할 작업
-- 시각: 2026-11-07, Story 시작 커밋 06:49 +0900, 값 다시 내기와 시험 실행 06:51 ~ 06:53 +0900
+- 시각: 2026-11-07, Story 시작 커밋 06:49:16 +0900, 회귀 점검(INT-001) 실행 06:52:33 +0900, 이 SubTask의 커밋 06:56:11 +0900(`git log`의 커밋 시각과 실행 출력에서 읽은 값)
 - 입력 기준: 브랜치 `story/tech-debt-3-story-1-3-dev`, 시작 커밋 `2e86847`(`Approved -> InProgress`), 기준선 `main`의 `20256e4defbc36ab3d1e7cbce224a265e4121034`. 시작 커밋은 Story 파일과 `sm-`, `po-` 기록 문서만 더해서 `src/`와 `test/`는 기준선과 같다. 이 SubTask가 바꾸는 파일은 Story 파일과 이 기록 문서뿐이다.
 - 환경: Node.js v24.22.1, Windows x64, Git 2.51.0, Git Bash의 `awk`와 `grep`. 포매터와 린터는 설정되어 있지 않다(`core-config.yaml`의 `testing.lintCommands`가 비어 있음).
 

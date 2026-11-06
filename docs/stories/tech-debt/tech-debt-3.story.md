@@ -420,6 +420,7 @@ test_design:
 | 2026-11-07 | 0.3 | Story 1.3 Dev 기록의 두 문장 정정(SubTask 1.1) | Dev (James) |
 | 2026-11-07 | 0.4 | Architecture 정렬 no-change(SubTask 2.1) | Dev (James) |
 | 2026-11-07 | 0.5 | Definition of Done 점검, Review로 넘김 | Dev (James) |
+| 2026-11-07 | 0.6 | Dev 기록 세 문서(dev-1.1, dev-2.1, dev-dod-1)의 시각 줄을 커밋 시각에 맞게 고침(기록만, Status는 Review 그대로) | Dev (James) |
 
 ## PO Validation
 

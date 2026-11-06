@@ -3,7 +3,7 @@
 - Story: [tech-debt-3](../../stories/tech-debt/tech-debt-3.story.md)
 - Entry: Dev Definition of Done check 1 (Review로 넘기기 전)
 - 작성자와 실제 실행자: Dev 하위 세션 James, 모델 `claude-sonnet-5-5`(시스템이 알려 준 값), `*run-story tech-debt-3 remote to Done` run의 역할 작업
-- 시각: 2026-11-07, 06:58 ~ 07:02 +0900
+- 시각: 2026-11-07, SubTask 2.1의 커밋 06:57:55 +0900 뒤에 시작해 Review 전환 커밋 07:00:31 +0900에 마침(`git log`의 커밋 시각)
 - 입력 기준: 브랜치 `story/tech-debt-3-story-1-3-dev`, HEAD `f131d37`(SubTask 2.1), 기준선 `main`의 `20256e4defbc36ab3d1e7cbce224a265e4121034`. 구현 범위는 없다(코드와 시험을 바꾸지 않았다). 이 점검은 `.bmad-core/checklists/story-dod-checklist.md`를 끝까지 읽고 실행했다. 완료 점검(`develop-story.md` Completion 4.5)을 위해 `comments`, `crap`, `javascript-crap` 본문도 읽었다.
 - 결과: `DoD: READY`. 적용되는 항목을 모두 다루었고 [N/A]는 각각 까닭이 있다.
 
