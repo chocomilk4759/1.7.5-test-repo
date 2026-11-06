@@ -511,6 +511,7 @@ test_design:
 | 2026-11-07 | 0.3 | 처리할 수 없는 깊이를 계산 오류로 돌려줌(SubTask 1.1) | Dev (James) |
 | 2026-11-07 | 0.4 | Architecture 정렬 no-change(SubTask 2.1) | Dev (James) |
 | 2026-11-07 | 0.5 | Definition of Done 점검, Review로 넘김 | Dev (James) |
+| 2026-11-07 | 0.6 | QA 라운드 1 처리 기록(구현 없음): Optional TEST-001, DOC-001을 future 기록과 처리 줄로 남김, 나머지 항목의 보관 위치 대조, Status는 Review 유지 | Dev (James) |
 
 ## PO Validation
 
@@ -584,11 +585,14 @@ Collection: complete
 
 Dev 하위 세션 James(Full Stack Developer), 모델 `claude-sonnet-5-5`(시스템이 알려 준 값), `*run-story bug-2 remote to Done` run의 역할 작업. effort는 설정의 이름(`xhigh`)과의 대응을 이 세션이 확인할 수 없다.
 
+QA 처리 기록 1회차(`apply-qa-fixes.md`의 기록만 하는 인계, QA 라운드 1)는 새 Dev 하위 세션 James가 실행했다. 모델 `claude-sonnet-5-5`(시스템이 알려 준 값)이고 effort는 같은 이유로 확인하지 못했다. 이 라운드는 코드를 바꾸지 않아 Cleaner 검토자를 시작하지 않았다.
+
 ### Debug Log References
 
 - 1.1: 조각별 RED와 GREEN 실행, 기준 통과 조각의 사후 민감도 점검, 표 행 전달 확인, Cleaner 결과와 처분, 최종 점검과 bug-2-INSP-001의 판단 목록: [dev-1.1](../../story-records/bug-2/dev-1.1.md)
 - 2.1: 대조한 문서와 항목별 결과, 증거 명령: [dev-2.1](../../story-records/bug-2/dev-2.1.md)
 - Definition of Done 점검 1회의 항목별 결과와 근거, AC와 시험의 대응: [dev-dod-1](../../story-records/bug-2/dev-dod-1.md)
+- QA 라운드 1의 지적별 분석, 결정 목록, 처리 줄이 없는 나머지 항목의 보관 위치 대조, 점검(구현 없음): [dev-qa-r1](../../story-records/bug-2/dev-qa-r1.md)
 
 ### Completion Notes List
 
@@ -600,8 +604,14 @@ Issue: #17
 - 2.1: 완료. 접근 `verification-only`, 시나리오 bug-2-INSP-003. 누적 변경(`src/engine.js`, `test/engine.test.js`, `test/screen.test.js`)을 `docs/architecture.md`의 기술 구성, 소스 트리, 설계 원칙, 결정 D-1, `README.md`와 대조해 어긋난 곳이 없었고 바꾼 문서는 없다(no-change). 같은 입력의 결과가 경계 부근에서 스택 상태에 달린다는 점과 "순수 함수"의 관계는 열린 N-4이고 소유자 Architect에게 남겨 두었다(글의 "입출력이나 전역 상태를 쓰지 않는다"는 어겨지지 않는다). 프로젝트 루트의 `node --test` 76개 통과와 `node ci/screen-rule.check.mjs` 종료 상태 0을 다시 확인했다. 기록: [dev-2.1](../../story-records/bug-2/dev-2.1.md). 커밋 `7051cad`.
 - Definition of Done: 체크리스트의 적용 항목을 모두 다루었고 [N/A]는 각각 까닭이 있다(빌드와 린트가 설정되어 있지 않음, 범위 기준이 정의되어 있지 않음, 새 의존성과 환경 변수가 없음, 사용자 문서와 기술 문서를 갱신할 필요가 없음). 이 Story가 새로 가려낸 범위 밖 발견은 없다. 기록: [dev-dod-1](../../story-records/bug-2/dev-dod-1.md)
 - Review 인계: 구현 개정은 커밋 `4a69ac7`이며 구현 범위는 경로 `src/engine.js`, `test/engine.test.js`, `test/screen.test.js`다. 그 뒤 커밋 `7051cad`와 Review 전환 커밋은 Story와 기록 문서만 바꾸고 이 세 파일을 바꾸지 않는다. 시험 증거: 최종 상태에서 프로젝트 루트의 `node --test` 76개 통과(기준선 68개에 새 시험 8개), `node ci/screen-rule.check.mjs` 종료 상태 0, bug-2-INSP-002 종료 상태 0(바꾸지 않는 경로를 기준선 `9aea191`과 비교), 구현 파일의 Git 해시 `src/engine.js` `0e36604857b9`, `test/engine.test.js` `51193b926986`, `test/screen.test.js` `06fedf3f30bf`. 한계: CRAP 측정 안 함(`quality.crap.commands`가 비어 있음), 기준 통과 조각에 RED가 없고 사후 민감도 점검으로 보임, 시험이 가리지 못하는 틀린 변형 둘(`RangeError` 밖의 오류까지 번역함, 빈 까닭)은 bug-2-INSP-001의 읽기가 판정함, 스택 크기를 바꾼 실행과 다른 런타임과 호출자가 스택을 거의 다 쓴 호출은 보지 않음(N-5, N-6), 열린 N-1 ~ N-4는 구현이 정하지 않음. 설계는 사용자가 조사 없이 받은 것이어서 `AGENTS.md`의 조사 요건을 채웠다는 뜻이 아니다. 다음 소유자는 QA의 `review-story.md`다. Dev의 점검은 QA 검토가 아니다.
+- QA 처리 기록 1회차(QA 라운드 1, gate WAIVED, 기록만): 2026-11-07 02:58 +0900에 `apply-qa-fixes.md`로 시작했다. 브랜치 `story/bug-2`, 시작 HEAD `e0d6507`(QA 1회차 기록 커밋), 작업 트리 깨끗, Status는 Review이고 바꾸지 않았다. 처리 결정은 저장된 실행 요청 줄(PO Validation의 `Run authorization: through Done remote`)이 답하는 "Story가 적용하지 않는 Optional과 future 지적을 Story의 future 기록으로 남기는 것"(`tasks/run-story.md`의 Inputs and authorization)과 메인 세션이 이 역할 작업에 전달한 지시다. 이 라운드에는 고칠 Required와 Recommended가 없어 `apply-qa-fixes.md` CP-4가 Dev의 선택으로 Optional을 적용하게 하는 라운드가 아니고, Optional의 적용이나 `InProgress`로의 복귀를 정한 사용자의 결정도 없다. 대상은 gate의 활성 Optional TEST-001, DOC-001, 닫힌 지적 ARCH-001(QA가 사용자의 글로 면제), `recommendations.immediate` 둘, `recommendations.future` 셋, `risk_summary.recommendations.monitor` 여덟이다. 항목별 분석, 결정 목록, 보관 위치 대조는 [dev-qa-r1](../../story-records/bug-2/dev-qa-r1.md)에 있다. 처리: TEST-001과 DOC-001은 future이고 아래에 future 기록을 남겼다. ARCH-001은 QA가 자기 기록에서 닫았고(면제의 범위는 이 Story의 이 설계이며 조사 요건은 채워지지 않았다) Dev가 다시 쓰지 않았으며, 남은 위험은 PO Validation의 PO2-N1이 든다. 나머지 항목은 이미 보관된 곳(이 Story의 PO Validation, `docs/planning/future-work.md`의 기존 항목)이 들고 있어 새 줄이 없다. 이의를 낸 지적과 사용자가 drop한 지적은 없다.
+- TEST-001(QA 라운드 1의 Optional, 계약 안, future 기록): 표 1 G-4의 "`D`의 까닭이 빈 글자가 아니고"를 보는 단언이 실제로 빈 까닭을 가리지 못한다. 엔진 시험 `gives a different reason in the message for different problems`의 `reason.trim()`은 도우미 `reasonOf`가 메시지에서 수만 뺀 글자를 보는데, 까닭이 빈 글자여도 ` at position `이 남아 통과한다. 새 오류의 까닭을 빈 글자로 쓴 엔진 사본에서 프로젝트 루트의 `node --test`가 76개 모두 통과한다. 전달된 까닭은 `expression nested too deeply`여서 제품은 맞다. 출처는 gate `docs/qa/gates/bug-2.yml`의 `top_issues`(라운드 1)와 [qa-r1](../../story-records/bug-2/qa-r1.md)이고, Cleaner F-3([dev-1.1](../../story-records/bug-2/dev-1.1.md))이 같은 틈을 보고 단언 문구만 고쳤다. Dev가 사본에서 같은 결과를 다시 얻었다(방법과 결과는 [dev-qa-r1](../../story-records/bug-2/dev-qa-r1.md)). 이 Story가 적용하지 않는 까닭: 전달된 코드는 맞아 잘못된 결과가 없고, 이 라운드에는 고칠 Required와 Recommended가 없어 Dev가 값어치 있는 Optional을 함께 적용하는 길이 닿지 않으며, 사용자의 결정도 없다. 시험 파일을 바꾸려면 Review에서 InProgress로 돌아와야 하고, `fix`는 QA가 검토한 구현 개정 `4a69ac7`을 바꿔 `check-done.sh`가 Done 전에 QA 회차의 닫음을 요구한다. 필요한 일: 시험 `gives a different reason in the message for different problems`에서 각 까닭의 메시지에서 공통 꼬리 ` at position`을 걷어낸 나머지가 비어 있지 않은지 같은 시험에서 본다. 낱말을 시험에 적지 않아 N-2와 어긋나지 않고, 제품 코드는 바꿀 일이 없다. 이 단언을 더한 시험 사본은 전달된 엔진에서 76개 모두 통과하고 까닭을 빈 글자로 쓴 엔진 사본에서 이 시험 하나가 실패한다. 저울질할 점: Cleaner F-3은 접미사를 걷어내는 일이 구현을 되풀이하는 기계를 더한다고 보아 문구만 고쳤으므로, 고칠 때 이 점과 `testing-tdd`의 "restates the implementation"을 함께 따진다. 제안하는 자리(정하는 것은 PO의 트리아지): 기존 항목 "오류 메시지의 언어와 꼴"(QA의 제안, 까닭의 낱말이 정해질 때 함께 본다)이나 같은 기준의 기존 항목 `[Tech-Debt] 재발: 전달 시험이 틀린 변형을 잡지 못함`. 이 Story가 다른 까닭으로 InProgress로 돌아와 이 항목이 수용된 범위 안에서 고칠 수 있게 되면 같은 Story에서 고치고, 그때의 `Treatment: TEST-001 fix` 줄이 이 future 결정을 대신한다. 책임은 Dev다.
+- DOC-001(QA 라운드 1의 Optional, 계약 안, future 기록): Dev 기록 [dev-1.1](../../story-records/bug-2/dev-1.1.md)의 두 문장이 실제와 다르다. 하나는 머리의 시각 줄 "첫 RED 02:09"다. Dev가 남긴 조각 1의 RED 출력 파일의 수정 시각은 02:07:12이고 02:09:42는 조각 5의 출력이다. 다른 하나는 섹션 "Cleaner 결과"의 "검토자의 변형 가운데 76/76을 통과한 것은 위 표의 둘과 Story가 예고한 틈"과 그 괄호의 나열이다. 위 표의 둘 가운데 `catch-every-other-error`는 Dev의 변형이어서 검토자의 변형 요약에 없고, 검토자의 요약에서 76개 모두 통과한 `depth-limit-above-the-fitting-depth`가 괄호에 없다. 그 변형도 Story가 예고한 틈(`coverage_gaps`의 숫자 한도의 부재)이어서 일반 문장은 맞고 나열만 덜 정확하다. RED, GREEN, Cleaner, 재점검의 순서와 그 밖의 값은 저장된 출력과 같다. 출처는 gate의 `top_issues`(라운드 1)와 [qa-r1](../../story-records/bug-2/qa-r1.md)이고, Dev가 출력 파일의 수정 시각과 검토자의 변형 요약을 다시 읽어 같은 결과를 얻었다(방법과 결과는 [dev-qa-r1](../../story-records/bug-2/dev-qa-r1.md)). 이 Story가 적용하지 않는 까닭: 두 문장은 Story 자신의 실행 기록이어서 제품, 시험, 필수 점검의 결과에 닿지 않고, 이 라운드에는 고칠 Required와 Recommended가 없으며 사용자의 결정도 없다. `fix`로 두면 `check-done.sh`가 QA 회차의 닫음을 Done 전에 요구한다. 필요한 일: Completion Notes의 새 항목에서 시각과 나열을 위 사실로 정정한다. 앞선 기록(dev-1.1)은 고쳐 쓰지 않고 코드와 시험은 바꾸지 않는다. 제안하는 자리(정하는 것은 PO의 트리아지): 같은 기준의 기존 항목 `[Tech-Debt] 재발: 기록의 서술이 실제와 다름`. 이 Story가 다른 까닭으로 InProgress로 돌아와 이 항목이 수용된 범위 안에서 고칠 수 있게 되면 같은 Story에서 정정하고, 그때의 `Treatment: DOC-001 fix` 줄이 이 future 결정을 대신한다. 책임은 Dev다.
+- Review 인계(QA 처리 기록 1회차, 기록만): 구현 범위가 없다. 제품 파일 `src/engine.js`(`0e36604857b9`)와 시험 파일 `test/engine.test.js`(`51193b926986`), `test/screen.test.js`(`06fedf3f30bf`)는 QA 라운드 1이 검토한 구현 개정 `4a69ac7`과 같다(`git diff --quiet 4a69ac7 HEAD -- src test` 종료 상태 0과 `git hash-object` 값으로 확인). 이 라운드의 변경은 Story와 새 기록 문서 dev-qa-r1뿐이고 gate, QA Results, `docs/planning/future-work.md`는 바꾸지 않았다. 시험 증거: 프로젝트 루트의 `node --test` 76개 통과(실패 0, 취소와 건너뜀 0), `node ci/screen-rule.check.mjs` 종료 상태 0. 제품과 시험 파일이 마지막 Definition of Done 점검(dev-dod-1)의 때와 같아 그 점검을 되풀이하지 않고 마지막 `DoD: READY`를 잇는다. Status는 deferral만 있어 Review 그대로다. 한계: TEST-001과 DOC-001의 고침은 이 라운드에 하지 않았다(위 future 기록), 사본 실험은 손으로 만든 변형 하나와 단언 하나이고 변이 도구가 없으며, 서비스 CI와 이슈 #17의 상태는 보지 않았다(이 호출은 네트워크를 쓰지 않는다), effort의 이름과 이 세션이 받은 값의 대응은 확인하지 못했다. 다음 소유자: QA(`local-story-done.md`)이고 면제의 범위와 현재 입력을 확인해 새 Done 커밋을 만든다. 이 Dev 점검은 QA 검토가 아니다.
 
 DoD: READY
+Treatment: TEST-001 future
+Treatment: DOC-001 future
 
 ### File List
 
@@ -613,6 +623,7 @@ DoD: READY
 - `docs/story-records/bug-2/dev-1.1.md` (새 파일)
 - `docs/story-records/bug-2/dev-2.1.md` (새 파일. 바꾼 문서가 없다는 no-change 기록)
 - `docs/story-records/bug-2/dev-dod-1.md` (새 파일. Definition of Done 점검 1회)
+- `docs/story-records/bug-2/dev-qa-r1.md` (새 파일. QA 처리 기록 1회차의 지적 분석과 결정 목록, 기록만)
 - 바뀌지 않음(기준선 `9aea191`과 차이 없음을 `git diff --quiet`로 확인): Dev Notes "인터페이스와 파일 위치"의 "바꾸지 않음" 행의 경로 전부
 
 ### In-Flight Comments Ledger
