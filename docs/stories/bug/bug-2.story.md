@@ -143,9 +143,9 @@ Story 1.2와 `tech-debt-1`은 선행이 아니다. 이 일은 `src/units.js`를 
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: 처리할 수 없는 깊이의 결과 고치기 (AC: #1, #2, #3, #4, #5, 그리고 회귀와 호환 기준)
+- [x] Task 1: 처리할 수 없는 깊이의 결과 고치기 (AC: #1, #2, #3, #4, #5, 그리고 회귀와 호환 기준)
   - 접근: `TDD`, 결함 수정이므로 CC-TDD-005에 따라 고치기 전에 실패를 보인다. Testing의 Recommended Execution Order대로 조각마다 RED → GREEN을 마치고, 마지막 GREEN 뒤에 Independent Cleaner review, 받아들인 정리, 영향받은 재점검을 같은 SubTask 안에서 끝낸 다음 커밋한다.
-  - [ ] 1.1 `evaluate`가 처리할 수 없는 깊이에서 `CalculationError`를 던지게 하고 JSDoc을 맞추며, `test/engine.test.js`에 표 1, 2, 3의 행을, `test/screen.test.js`에 표 4의 S-1을 더하고 행 "an expression nested too deeply"를 지운다. 시나리오: bug-2-UNIT-001 ~ bug-2-UNIT-007, bug-2-INT-001, bug-2-INSP-001, bug-2-INSP-002. 완료 점검: 프로젝트 루트의 `node --test` 전부 통과, `node ci/screen-rule.check.mjs` 종료 상태 0. 커밋 제목: `[story-bug-2] Task 1.1: 처리할 수 없는 깊이를 계산 오류로 돌려줌`
+  - [x] 1.1 `evaluate`가 처리할 수 없는 깊이에서 `CalculationError`를 던지게 하고 JSDoc을 맞추며, `test/engine.test.js`에 표 1, 2, 3의 행을, `test/screen.test.js`에 표 4의 S-1을 더하고 행 "an expression nested too deeply"를 지운다. 시나리오: bug-2-UNIT-001 ~ bug-2-UNIT-007, bug-2-INT-001, bug-2-INSP-001, bug-2-INSP-002. 완료 점검: 프로젝트 루트의 `node --test` 전부 통과, `node ci/screen-rule.check.mjs` 종료 상태 0. 커밋 제목: `[story-bug-2] Task 1.1: 처리할 수 없는 깊이를 계산 오류로 돌려줌`
 - [ ] Task 2: Architecture 정렬 (의무 출처: `.bmad-core/tasks/architecture-align.md`, `docs/architecture.md`)
   - 접근: `verification-only`. 제품과 시험의 동작을 바꾸지 않는다. 대조에서 코드 위반이 나오면 코드를 고치고 영향받은 점검을 다시 돌린다.
   - [ ] 2.1 누적 변경을 `docs/architecture.md`의 기술 구성, 소스 트리, 설계 원칙, `README.md`와 대조하고, 고칠 문서가 없으면 검토 범위와 까닭을 no-change로 기록한다. 시나리오: bug-2-INSP-003. 커밋 제목: `[story-bug-2] Task 2.1: Architecture 정렬`
@@ -508,6 +508,7 @@ test_design:
 | --- | --- | --- | --- |
 | 2026-11-07 | 0.1 | Story 초안 작성 | SM (Bob) |
 | 2026-11-07 | 0.2 | PO 검증 1회 반영: 사용자의 설계 수용 기록(PO1-B1), bug-2-INSP-001의 목록 보강(PO1-B2), PO1-N7 ~ PO1-N12 적용 | SM (Bob) |
+| 2026-11-07 | 0.3 | 처리할 수 없는 깊이를 계산 오류로 돌려줌(SubTask 1.1) | Dev (James) |
 
 ## PO Validation
 
@@ -583,14 +584,25 @@ Dev 하위 세션 James(Full Stack Developer), 모델 `claude-sonnet-5-5`(시스
 
 ### Debug Log References
 
+- 1.1: 조각별 RED와 GREEN 실행, 기준 통과 조각의 사후 민감도 점검, 표 행 전달 확인, Cleaner 결과와 처분, 최종 점검과 bug-2-INSP-001의 판단 목록: [dev-1.1](../../story-records/bug-2/dev-1.1.md)
+
 ### Completion Notes List
 
 Issue: #17
 
 - 시작: 2026-11-07 02:04 +0900. `local-story-start.md`를 따랐다. 구현 브랜치 `story/bug-2`, 기준 브랜치 `main`, 기준선 HEAD `9aea1916e47d8d677fd0b4c291af260fa355c0a8`(`main`의 9aea191이고 `origin/main`과 같다). 슬롯 없는 run이고 원래 checkout에서 시작했다. 이 Story와 기록 문서는 커밋하지 않은 초안이어서 시작 커밋이 Story 브랜치에 더한다. 실행 요청 줄은 PO Validation의 `Run authorization: through Done remote`다. 시작 점검: `check-stage.sh start`, `check-stage.sh records`, `check-stage.sh po-record`(Validation: GO, Round: 2, Collection: complete)가 종료 상태 0이고, 선행 Story는 `check-merge.sh status 1.1 main`과 `status 1.3 main`이 `merged`(Done 커밋 81c547c와 937f21c)를 냈다. 이슈는 `publish.sh issue main story/bug-2`가 새로 만들었다(`issue 17 created`).
 - 시작 시 기준 통과: 프로젝트 루트의 `node --test` 68개 통과(실패 0, 취소와 건너뜀 0), `node ci/screen-rule.check.mjs` 종료 상태 0. Draft가 적은 관찰과 같다.
+- 1.1: 완료. 접근 `TDD`(결함 수정, CC-TDD-005). 조각 1(bug-2-UNIT-001, bug-2-UNIT-006)과 조각 2(bug-2-UNIT-004의 위치 G-3와 원인 G-5)는 RED를 보았고 GREEN으로 마쳤다. 조각 1의 RED는 엔진 시험이 `RangeError: Maximum call stack size exceeded`를 받고 화면 시험이 `renderScreen`이 던진 같은 `RangeError`를 받은 것이다(전체 70개 가운데 2개 실패). 같은 조각에서 행 "an expression nested too deeply"를 지웠다. 조각 3, 4, 5(bug-2-UNIT-005, UNIT-002, UNIT-003)와 G-4(까닭)와 bug-2-UNIT-007은 첫 실행에서 이미 통과했고 RED가 아니다. 사후 민감도 점검으로 시험이 해당 동작에 닿음을 보였다(클래스를 가리지 않는 `renderScreen`, 길이와 깊이 한도, 넘치면 값 0, 넘친 순간의 커서를 위치로 씀, 겹친 까닭이 각각 시험에서 실패). 시험이 가리지 못하는 변형 둘(`RangeError` 밖의 오류까지 번역함, 빈 까닭)은 bug-2-INSP-001의 읽기가 판정했고 판단 목록은 모두 통과다. 프로젝트 루트의 `node --test` 76개 통과(기준선 68개에 새 시험 8개), `node ci/screen-rule.check.mjs` 종료 상태 0, bug-2-INSP-002 종료 상태 0. Cleaner 검토자는 Dev가 시작한 하위 세션(별칭 `opus`, effort `high`, 이름 없음)이고 지적 4건 가운데 F-1, F-4를 받아들이고 F-3을 일부 받아들였으며 F-2는 받아들이지 않았다(까닭은 기록에 있다). 한계: CRAP 측정 안 함, 기준 통과 조각에 RED가 없음, 스택 크기를 바꾼 실행과 다른 런타임, 호출자가 스택을 거의 다 쓴 호출은 보지 않았다(N-5, N-6). 이 설계는 사용자가 조사 없이 받은 것이어서 조사 요건을 채웠다는 뜻이 아니다. 기록: [dev-1.1](../../story-records/bug-2/dev-1.1.md). 커밋 해시는 다음 Dev 기록 갱신이 적는다.
 
 ### File List
+
+- `src/engine.js` (바꿈. `evaluate`가 `RangeError`를 `CalculationError`로 번역하고 JSDoc을 맞춤, 메시지의 꼴을 `calculationErrorAt` 한 곳에 둠)
+- `test/engine.test.js` (바꿈. 새 시험 일곱 개와 이름표를 받는 도우미, 기존 까닭 시험에 두 입력을 더함)
+- `test/screen.test.js` (바꿈. 새 시험 하나, 행 "an expression nested too deeply" 삭제, `errorLineOf`가 이름표를 받음)
+- `docs/stories/bug/bug-2.story.md` (새 파일로 시작 커밋이 더했고, 그 뒤 Tasks / Subtasks 체크박스, Dev Agent Record, Change Log가 바뀜)
+- `docs/story-records/bug-2/sm-1.md`, `sm-2.md`, `po-r1.md`, `po-r2.md` (새 파일로 시작 커밋이 더함. SM과 PO의 기록이다)
+- `docs/story-records/bug-2/dev-1.1.md` (새 파일)
+- 바뀌지 않음(기준선 `9aea191`과 차이 없음을 `git diff --quiet`로 확인): Dev Notes "인터페이스와 파일 위치"의 "바꾸지 않음" 행의 경로 전부
 
 ### In-Flight Comments Ledger
 

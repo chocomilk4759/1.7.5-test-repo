@@ -14,18 +14,19 @@ const OVERFLOW_POWER_OF_TEN = `${LARGEST_POWER_OF_TEN}0`;
 
 // The line the screen shows for an expression that evaluate rejects: the
 // reason evaluate gives, behind the error prefix. Taking the reason from
-// evaluate keeps its wording out of these tests.
-function errorLineOf(expression) {
+// evaluate keeps its wording out of these tests. A long expression is named
+// by a label instead of being copied into a message.
+function errorLineOf(expression, label = JSON.stringify(expression)) {
   try {
     evaluate(expression);
   } catch (error) {
     assert.ok(
       error instanceof CalculationError,
-      `evaluate(${JSON.stringify(expression)}) throws a CalculationError`,
+      `evaluate(${label}) throws a CalculationError`,
     );
     return `오류: ${error.message}`;
   }
-  return assert.fail(`evaluate(${JSON.stringify(expression)}) must throw`);
+  return assert.fail(`evaluate(${label}) must throw`);
 }
 
 function thrownBy(call, label) {
@@ -116,6 +117,21 @@ test("returns an error line instead of throwing for a rejected expression", () =
 const NESTING_LEVELS = 100000;
 const NESTED_TOO_DEEP =
   "(".repeat(NESTING_LEVELS) + "1" + ")".repeat(NESTING_LEVELS);
+const MINUS_TOO_DEEP = "-".repeat(NESTING_LEVELS) + "1";
+const UNCLOSED_TOO_DEEP = "(".repeat(NESTING_LEVELS) + "1";
+
+test("returns an error line instead of throwing for an expression nested too deeply", () => {
+  const expressions = [
+    ["parentheses around a number", NESTED_TOO_DEEP],
+    ["unary minus signs before a number", MINUS_TOO_DEEP],
+    ["opening parentheses that are never closed", UNCLOSED_TOO_DEEP],
+  ];
+  for (const [label, expression] of expressions) {
+    const line = renderScreen(expression);
+    assert.equal(line, errorLineOf(expression, label), label);
+    assert.ok(!/[\r\n]/.test(line), `the line for ${label} has no line break`);
+  }
+});
 
 test("throws what evaluate throws when that is not a calculation error", () => {
   const cases = [
@@ -126,7 +142,6 @@ test("throws what evaluate throws when that is not a calculation error", () => {
     ["an array holding a number text", [["1"]]],
     ["an empty array", [[]]],
     ["an array holding a space", [[" "]]],
-    ["an expression nested too deeply", [NESTED_TOO_DEEP]],
   ];
   for (const [label, args] of cases) {
     const expected = thrownBy(

@@ -6,6 +6,10 @@
  */
 export class CalculationError extends Error {}
 
+function calculationErrorAt(reason, position, options) {
+  return new CalculationError(`${reason} at position ${position}`, options);
+}
+
 function isDigit(character) {
   return character >= "0" && character <= "9";
 }
@@ -31,7 +35,7 @@ class Parser {
   }
 
   fail(reason, position) {
-    throw new CalculationError(`${reason} at position ${position}`);
+    throw calculationErrorAt(reason, position);
   }
 
   // Rejects what stands at the cursor: the end of the input, or a character
@@ -164,13 +168,27 @@ class Parser {
  *
  * @param {string} expression
  * @returns {number}
- * @throws {CalculationError} For a syntax error, a division by zero, or a
- *   number or intermediate result that is not finite.
+ * @throws {CalculationError} For a syntax error, a division by zero, a number
+ *   or intermediate result that is not finite, or an expression nested so
+ *   deeply that the parser runs out of call stack. The error of the last case
+ *   names the start of the expression, and its cause is the overflow.
  * @throws {TypeError} When the argument is not a string.
  */
 export function evaluate(expression) {
   if (typeof expression !== "string") {
     throw new TypeError("expression must be a string");
   }
-  return new Parser(expression).parseAll();
+  try {
+    return new Parser(expression).parseAll();
+  } catch (error) {
+    if (error instanceof RangeError) {
+      // The recursion outgrew the call stack. The position is the start of the
+      // expression: the cursor at the overflow depends on how much of the
+      // stack was already in use, so it would differ between calls.
+      throw calculationErrorAt("expression nested too deeply", 0, {
+        cause: error,
+      });
+    }
+    throw error;
+  }
 }
