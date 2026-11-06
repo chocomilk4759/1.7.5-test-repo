@@ -183,7 +183,7 @@ test("does not take white space other than a space for a space", () => {
   }
 });
 
-const DISPLAY_WIDTH = 40;
+const DISPLAY_WIDTH = 48;
 
 test("returns a line longer than the display whole", () => {
   const longValueLine = renderScreen(
@@ -195,7 +195,9 @@ test("returns a line longer than the display whole", () => {
   );
   assert.ok(longValueLine.length > DISPLAY_WIDTH);
 
-  const longErrorExpression = "7 +";
+  // The error is at the end of an expression a thousand characters long, so
+  // the four digits of its position widen the error line past the display.
+  const longErrorExpression = "7 +".padEnd(1000);
   const longErrorLine = renderScreen(longErrorExpression);
   assert.equal(longErrorLine, errorLineOf(longErrorExpression));
   assert.ok(longErrorLine.length > DISPLAY_WIDTH);
