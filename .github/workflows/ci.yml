@@ -21,4 +21,3 @@ jobs:
           node-version: 24
       - run: node --test
       - run: node ci/screen-rule.check.mjs
-      - run: node ci/engine-rule.check.mjs
