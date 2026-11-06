@@ -1,0 +1,375 @@
+# Story 1.2 단위 변환의 품질 게이트. 회차는 review_rounds 안의 데이터이고, 근거의 서술은 회차 기록 문서 qa-r1, qa-r2에 있다.
+
+# -- 현재 판정 --
+schema: 2
+story: "1.2"
+story_title: "단위 변환"
+gate: "PASS"
+status_reason: "REL-001, TEST-001, TEST-002, DOC-001, DOC-002를 현재 코드와 실행으로 모두 닫았고 필수 시나리오 17개와 새 시험 둘이 통과했다. 남은 활성 지적은 Optional TEST-003(제품은 맞고 틀린 변형 하나를 시험이 잡지 못함)뿐이다."
+reviewer: "Quinn(QA 하위 세션, 모델 claude-opus-5-5, effort max), *run-story 1.2 1.3 remote to Done run의 역할 작업"
+updated: "2026-11-06T16:30:00+09:00"
+round: 2
+
+# 승인된 면제는 없다
+waiver: { active: false }
+
+# -- 활성 지적 --
+top_issues:
+  - id: TEST-003
+    severity: low
+    disposition: optional
+    confidence: high
+    suggested_owner: dev
+    finding: "변이 `(value / target.size) * size`(배율 단위가 목표 크기로 먼저 나눔)가 전달 시험 20개를 모두 통과한다. 이 변이는 `convert(1e307, \"mm\", \"cm\")`에서 중간 값이 넘쳐 Infinity를 돌려주는데 참값은 1e306이다. 새 압력 시험은 기준 단위를 거치는 변형을 잡지만 목표 크기가 1보다 작은 쌍을 들지 않는다. 실제 코드는 1e306을 돌려주어 잘못된 결과가 없다. 어떤 점검이나 시나리오도 이 사례를 이름 붙이지 않아 3단계의 기준이 아니고, 틀린 구현이 통과할 가능성은 3단계의 기준을 통해서만 막으므로 비차단이다. 수정된 코드에서 생긴 변이여서 늦은 지적이 아니다."
+    failure_scenario: "뒤의 수정이 계산 순서를 이 꼴로 바꾸면 REL-001과 같은 실패가 길이 단위에서 생겨도 시험이 통과한다."
+    suggested_action: "처리를 정한다. 적용하면 참값이 범위 안이고 목표 크기가 1보다 작은 길이 행(예: `{ mm: 1e307, cm: 1e306 }`)을 시험에 더하며 제품 코드는 바꿀 일이 없다. 적용하지 않으면 `tasks/apply-qa-fixes.md`대로 future 기록과 처리 줄을 남긴다. 계약 안이다."
+    refs:
+      - "src/units.js, `scaledUnits`의 `convertTo`"
+      - "test/units.test.js, 시험 \"converts a pressure that is out of range in pascals\""
+    first_round: 2
+    verification: "변이 사본에서 전달 시험 20개가 통과하고, 같은 사본에서 convert(1e307, \"mm\", \"cm\")와 convert(1e306, \"cm\", \"mm\")가 Infinity다. 전달 모듈은 1e+306과 1e+307을 돌려준다."
+
+# -- 닫힌 지적과 처분 --
+resolved_issues:
+  - id: TEST-001
+    severity: low
+    disposition: required
+    first_round: 1
+    resolved_round: 2
+    verdict: RESOLVED
+    resolution: "시험 \"returns a value unchanged when both units are the same\"의 주석을 \"A conversion to the same unit returns a value near the largest double as it is, in a unit of each kind\"로 고쳤다(커밋 3009f33). 네 행의 단언과 맞고 넘침을 말하지 않는다. 지적의 기준(CC-CMT-010 아래 문장)이 충족된다. 점검 문구는 이 회차의 판단대로 적용되지 않는다(회차 note)."
+    refs:
+      - "test/units.test.js, 시험 \"returns a value unchanged when both units are the same\"의 주석"
+      - "docs/story-records/1.2/dev-3.2.md, 섹션 'TEST-001'과 Cleaner 결과의 F1"
+    verification: "1회차 확인: 같은 단위 반환을 지운 사본에서 C 행만 넘치지 않았다. 2회차 확인: 현재 코드의 같은 사본에서 네 행이 모두 같은 값이고 전달 시험 20개가 통과한다. 새 주석은 그 변형의 실패를 말하지 않으므로 거짓이 아니다."
+  - id: TEST-002
+    severity: low
+    disposition: required
+    first_round: 1
+    resolved_round: 2
+    verdict: RESOLVED
+    resolution: "같은 입력의 호출을 지역 함수 `convertSample` 하나로 모아 리터럴 `1`이 한 곳에 있다(커밋 3009f33). 상태가 남는 변이를 이 시험만 돌리면 첫 호출 뒤의 비교에서 실패한다."
+    refs:
+      - "test/units.test.js, 시험 \"keeps no state between calls, also after an error\""
+      - "docs/story-records/1.2/dev-3.2.md, 섹션 'TEST-002'"
+    verification: "1회차 확인: 숫자 리터럴을 모두 읽어 이 시험의 `1` 셋만 함께 바뀌어야 함을 보았다. 2회차 확인: 시험 파일의 `convert(1, \"m\", \"cm\")`가 1곳이고, 변이 '오류 뒤 상태'에 시험 이름 필터로 이 시험만 돌려 종료 상태 1, 메시지 'Expected values to be strictly equal'이다."
+  - id: REL-001
+    severity: low
+    disposition: recommended
+    first_round: 1
+    resolved_round: 2
+    verdict: RESOLVED
+    resolution: "`src/units.js`의 배율 단위가 크기의 비로 곱하고 온도가 9 / 5로 곱하거나 나눈다(커밋 9ede139). 시험 \"converts a pressure that is out of range in pascals\"와 \"converts a large temperature in every unit\"가 16쌍을 덮고, 오라클의 같은 표본에서 해당 결과가 984건에서 0건이 되었다. 범위 끝의 반올림 오차 안(1 ulp 미만)은 원인과 경계가 달라 리드로 두었다(회차 note). DEV-1의 처리 줄은 fix로 바뀌었다."
+    refs:
+      - "src/units.js, `scaledUnits`의 `convertTo`, `FAHRENHEIT_PER_CELSIUS`, `convert`의 JSDoc"
+      - "test/units.test.js, 시험 \"converts a pressure that is out of range in pascals\", \"converts a large temperature in every unit\""
+      - "docs/story-records/1.2/dev-3.1.md, 섹션 '진단'과 '조각별 실행 기록'"
+    verification: "1회차 확인: 프로젝트 루트에서 convert(1e303, \"MPa\", \"kPa\")와 convert(1e308, \"F\", \"C\")가 Infinity이고, 유리수 오라클 28만 호출에서 참값이 범위 안인 Infinity가 984건이며 모두 16쌍이었다. 2회차 확인: 두 입력이 1e+306과 5.555555555555556e+307이고, 같은 표본에서 0건이며, 참값이 범위를 넘는 Infinity 1329건은 그대로다. 정규 범위의 배율 변환 어긋남은 0건이다."
+  - id: DOC-001
+    severity: low
+    disposition: optional
+    first_round: 1
+    resolved_round: 2
+    verdict: RESOLVED
+    resolution: "dev-3.3과 Completion Notes의 정정 항목 (가)가 앞 문장을 고쳐 쓰지 않고 바로잡았다(커밋 f66d51f). 시험 파일의 이스케이프와 ASCII만 있음을 QA가 다시 확인했다."
+    refs:
+      - "docs/story-records/1.2/dev-3.3.md, 섹션 'DOC-001'"
+      - "docs/stories/1.2.story.md, Completion Notes의 '정정(DOC-001, DOC-002, 단위 3.3)' 항목"
+  - id: DOC-002
+    severity: low
+    disposition: optional
+    first_round: 1
+    resolved_round: 2
+    verdict: RESOLVED
+    resolution: "dev-3.3과 Completion Notes의 정정 항목 (나)가 SubTask 1.1에 구현 전 재확인의 기록이 없음을 사실대로 적었고 뒤에 만들지 않았다(커밋 f66d51f). 이 라운드의 재실행 출력이 온도 식을 바꾸기 전 시각에 있고 모두 Story의 값과 같다."
+    refs:
+      - "docs/story-records/1.2/dev-3.3.md, 섹션 'DOC-002'"
+      - "docs/story-records/1.2/dev-3.1.md, 섹션 '구현 전 기준'"
+
+# -- 위험 집계와 통제 --
+risk_summary:
+  # 프로젝트에 정한 위험 척도가 없어 결과의 크기와 가능성을 글로 판단했다. 근거는 qa-r2의 위험 표에 있다.
+  totals: { critical: 0, high: 0, medium: 0, low: 6 }
+  recommendations:
+    must_fix: []
+    monitor:
+      - "참값이 범위를 넘는 변환의 결과와 범위 끝의 반올림 오차 안(N-1, PO1-N1): 표 3이 Infinity와 ConversionError를 모두 받는다. 답이 오면 표 3을 하나로 줄이고 시험을 바꾼다."
+      - "0에 가까운 결과의 정밀도(N-4, PO1-N4)와 같은 단위 반환의 유지: 예를 들어 convert(273.16, \"K\", \"C\")는 0.010000000000047748이다. 표가 이런 입력을 쓰지 않고 그 반환을 지키는 시험이 없다."
+      - "ConversionError의 name(N-5, PO1-N5)과 기존 future-work 항목 \"[Tech-Debt] CalculationError의 name\"."
+      - "CRAP 측정 안 함과 저작권, SPDX 값 없음: 기존 future-work 항목이 들고 있다."
+      - "TEST-003: 길이 단위에서 먼저 나누는 틀린 변형을 시험이 잡지 못한다."
+
+# -- 주석 정책과 수명 점검 --
+comment_hygiene:
+  status: "PASS"
+  status_reason: "src/units.js와 test/units.test.js 전체에 추적 번호, 규칙과 QA ID, 편집 표시, 기계 고유 경로, IN-FLIGHT, 비ASCII 글자가 없다. 기준 b7cf162 뒤 바뀐 주석을 모두 읽어 실제 동작과 단언에 맞음을 확인했고 TEST-001의 거짓 주장이 없어졌다."
+
+  policy_reference:
+    coding_convention: "docs/conventions/Common/sections/golden-rules.md"
+    comment_policy: ".bmad-core/tasks/code-comment-style.md"
+    lifecycle_policy: ".bmad-core/tasks/in-flight-comment-lifecycle.md"
+
+  classifier_run:
+    script: "체크리스트 §1.1, §1.2(QA 접두, Story에 선언된 ID, 이 gate의 REL, TEST, DOC), §1.3, §1.4, §1.7의 grep 후보 검색과 작업 태그, 비ASCII, 탭, var 검색을 src/units.js, test/units.test.js 전체에 실행했고 보조 조사로 src와 test 전체에 §1.1을 실행했다. 모두 일치 없음. 기준 b7cf162 대비 바뀐 주석과 시험 이름을 모두 읽었다."
+    mode: "agent-review에 grep 후보 수집을 더함"
+    guard_window: null
+    executed_at: "2026-11-06T16:21:00+09:00"
+    output_dir: "(inline)"
+
+  tracking_id_leaks:
+    count: 0
+    locations: []
+    threshold:
+      pass: 0
+      fail: "1+"
+
+  build_guard_critical:
+    count: 0
+    locations: []
+    handling: "not_applicable"
+
+  hotspot_pair_commit_compliance:
+    applicable: false
+    hotspot_files_touched: []
+    pair_commits_verified: []
+    forbidden_split_detected: []
+    status: "N/A"
+
+  in_flight_lifecycle:
+    total_created_during_story: 0
+    total_resolved: 0
+    pending_at_review: 0
+    pending_after_story_done: 0
+    orphan_from_prior_stories: 0
+    ledger_reference: "story_file::dev-agent-record::in-flight-comments-ledger"
+    status: "PASS"
+
+  forbidden_patterns:
+    rule_id_citations:
+      count: 0
+      locations: []
+    external_paths:
+      count: 0
+      locations: []
+    qa_gate_id_leaks:
+      count: 0
+      locations: []
+
+  access_specifier_compliance:
+    applicable: false
+    access_specifier_lines_changed_in_diff: 0
+    expected: 0
+    status: "PASS"
+
+  whitelist_preserved:
+    count: 0
+    expected: 0
+    items: []
+    status: "PASS"
+
+  tests_directory_findings:
+    count: 0
+    note: "기존 시험 잔여물이 없다. test/units.test.js는 기준 40e1a6b에 없는 새 파일이고 test/engine.test.js, test/number-format.test.js는 바뀌지 않았다."
+
+  gate_decision_rules:
+    priority_order:
+      - "classify raw hygiene conditions below; retain counts/status for actually waived occurrences"
+      - "whitelist_preserved.status == FAIL -> FAIL"
+      - "access_specifier_compliance.status == FAIL -> FAIL"
+      - "tracking_id_leaks.count > 0 -> FAIL"
+      - "forbidden_patterns.rule_id_citations.count > 0 or forbidden_patterns.qa_gate_id_leaks.count > 0 -> FAIL"
+      - "forbidden_patterns.external_paths.count > 0 -> apply effective rule and active issue disposition"
+      - "in_flight_lifecycle.pending_after_story_done > 0 -> FAIL"
+      - "in_flight_lifecycle.pending_at_review > 0 -> FAIL"
+      - "hotspot_pair_commit_compliance.status == FAIL -> FAIL"
+      - "in_flight_lifecycle.orphan_from_prior_stories > 0 -> CONCERNS"
+      - "build_guard_critical.count > 0 and handling == manual_review_required -> CONCERNS"
+      - "tests_directory_findings.count > 0 -> historical residue only, no gate impact (CL-GLD-OPS-003)"
+      - "other active comment issues -> apply the top_issues disposition from tasks/qa-gate.md Evidence classification"
+      - "all raw conditions passed -> comment_hygiene.status PASS"
+      - "comment_hygiene.status CONCERNS or FAIL -> held by an active Required/Recommended issue or an applicable waiver; the overall gate is not PASS"
+      - "overall gate: unwaived active Required/Recommended conditions retain normal impact; covered conditions follow qa-gate.md's scoped WAIVED contract"
+
+# -- 점검 요약 --
+quality_score: 100
+expires: null
+
+evidence:
+  tests_reviewed: 55
+  risks_identified: 6
+  trace:
+    ac_covered: ["AC 1", "AC 2", "AC 3", "AC 4"]
+    ac_gaps: []
+    ac_partial: []
+
+# -- 품질 속성과 근거 --
+nfr_validation:
+  security:
+    status: "PASS"
+    notes: "적용되는 기준은 CC-JS-004의 경계 검증이다. 값은 Number.isFinite로, 기호는 Map의 정확한 키로, 종류는 ===로 판정하고, 적대 입력 17개(Symbol, Date, valueOf와 toString을 가진 객체, String 객체, 0, false, NaN 등)를 이 회차에도 돌려 모두 ConversionError다. 가져오는 모듈, 입출력, eval, 비밀 값이 없고 오류 메시지가 입력을 되풀이하지 않는다."
+  performance:
+    status: "N/A"
+    notes: "수용된 성능 기준과 이 변경에 닿는 실행 비용 규칙이 없다. 산술과 작은 Map 조회뿐이어서 측정 기준을 만들지 않았다."
+  reliability:
+    status: "PASS"
+    notes: "유리수 오라클 28만 호출에서 참값이 범위 안인 Infinity 0건, 정규 범위의 배율 변환 어긋남 0건이고, 범위 끝 쓸기 10425호출에서 어긋남은 그 끝의 1 ulp 안 다섯 건뿐이다. 절대 영도 경계의 결과가 목표 단위의 하한 아래로 내려가지 않고 호출 사이의 상태가 없다. 0에 가까운 결과의 정밀도는 Story가 N-4로 범위 밖에 두었다."
+  maintainability:
+    status: "PASS"
+    notes: "공개 심볼 셋 뒤에 단위 표, 검사 순서, 환산을 숨긴 모듈이고 공개 인터페이스로만 시험한다. 변이 91개 가운데 계약이 허용하지 않는 통과는 TEST-003의 하나다. CRAP은 quality.crap.commands가 비어 측정하지 않았고, 이것은 통과도 차단도 아니다."
+
+# -- 바로 할 일과 뒤의 일 --
+recommendations:
+  immediate:
+    - "Dev: Done 전에 Optional TEST-003의 처리를 정해 Completion Notes에 처리 줄을 남긴다. 이 회차는 이것을 정하지 않았고 구현을 허락하지 않는다."
+  future:
+    - "저작권과 SPDX 값: 프로젝트에 값이 없어 비워 두었다. 기존 future-work 항목 \"[Tech-Debt] 새 파일의 저작권과 SPDX 값\"이 들고 있고 이 Story를 막지 않는다."
+    - "PO1-N1 ~ PO1-N7, PO2-N1: Story의 PO Validation에 있고 병합 뒤 PO 점검이 옮긴다."
+    - "같은 단위 반환의 유지: 어떤 시험도 이 분기를 지키지 않는다. 지키려면 Story가 시험하지 않기로 한 0 근처 입력을 계약으로 정해야 하므로 PO1-N4를 정할 때 함께 정한다. 소유자는 프로젝트 소유자다."
+    - "범위 끝의 반올림 오차 안(1 ulp 미만)의 결과: Infinity와 Number.MAX_VALUE 사이에서 갈린다. PO1-N1을 정할 때 함께 정한다. 소유자는 PM 또는 프로젝트 소유자다."
+
+# -- 회차별 검토 근거 --
+review_rounds:
+  - round: 1
+    at: "2026-11-06T15:28:00+09:00"
+    gate: "FAIL"
+    reviewer: "Quinn(QA 하위 세션, 모델 claude-opus-5-5, effort max), *run-story 1.2 1.3 remote to Done run의 역할 작업"
+    depth: deep
+    base_commit: "40e1a6b2fef2c8ce7af538f885b4d966593d8df9"
+    head_commit: "b7cf1628b9f016ecfffdcc71f3615a1f4b2e0222"
+    scope: "전체 검토. 브랜치 story/1.2, main 40e1a6b에서 b7cf162까지. 제품과 시험: 새 파일 src/units.js, test/units.test.js(구현 개정 53267c9, 그 뒤 두 파일 변경 없음, git hash-object 92fb71af25f, a74655cc732). 문서: Story와 dev-1.1, dev-2.1, dev-dod-1 전체, sm-1과 po-r1의 N-1 부분. 바뀌지 않음을 확인: src/engine.js, src/number-format.js, test/engine.test.js, test/number-format.test.js, package.json, README.md, docs/prd.md, docs/architecture.md, docs/planning, ci, .github. 커밋하지 않은 변경 없음."
+    verification:
+      automated:
+        - "node --test: 프로젝트 루트, HEAD b7cf162, Node.js v24.22.1. 53개 통과, 실패 0(단위 변환 18, 기존 35). 1.2-UNIT-001 ~ 1.2-UNIT-013의 시험과 기존 시험."
+        - "1.2-INSP-001: Story의 가져오기 검색이 src/units.js에서 일치 없이 끝남, 종료 상태 1."
+        - "1.2-UNIT-014: git diff --quiet 40e1a6b -- src/engine.js src/number-format.js test/engine.test.js test/number-format.test.js 종료 상태 0."
+        - "표 대조: Story의 글에서 표 1, 2, 3을 읽어 기대 호출 643개를 만들고 기록용 사본에서 전달 시험을 실행했다. 빠진 호출 0, 기대 밖의 호출 12(Z-2의 나머지 6, 같은 단위 4, units(\"x\"), convert(1, \"m\", \"cm\")). 값 행 13개의 289호출이 실제 모듈에서 모두 Story의 같은 값 판정을 통과한다."
+        - "표 자체: 표 1의 값 행 228쌍을 D-2와 SI 접두어의 유리수로 대조해 가장 큰 상대 차이 1.096e-16."
+        - "독립 오라클(제품과 코드를 나누지 않음, 입력의 정확한 이진 값과 유리수 산술, 쌍마다 4000 표본, 28만 호출): 1e-12 안 276860, 참값이 범위를 넘는 Infinity 1329, 참값이 범위 안인데 Infinity 984(REL-001), 정규 범위 아래의 결과가 허용 폭을 넘는 경우 817, 절대 영도 입력에서 결과 0과 입력의 이진 오차가 다른 경우 10, 그 밖의 어긋남 0, 예기치 않은 오류 0."
+        - "절대 영도 경계: 각 단위의 하한부터 위로 배정밀도 수 넷을 세 단위로 변환해 목표 단위의 하한 아래인 결과 0건. 연산이 단조이므로 더 위의 입력에도 같다. -273.15000000000003, -459.67000000000007은 각 하한 바로 아래의 수임을 확인."
+        - "수작업 변이 83개: 잡힘 75, 통과 8. 통과는 모두 계약이 허용하는 구현이다(허용 오차 안의 psi와 반올림, 1.8의 곱과 나눗셈, 얼린 공유 목록, TypeError를 잇는 오류, name을 가진 오류, 넘침의 ConversionError)."
+        - "적대 입력 17개가 모두 ConversionError. units는 호출마다 새 배열."
+        - "Dev Notes의 값 여덟 개를 다시 실행해 모두 같음. AC 1 ~ 4의 글이 docs/prd.md와 같고 D-2 인용이 docs/planning/decisions.md와 같음."
+        - "check-stage.sh records 종료 상태 0, po-record 종료 상태 0, check-stage.sh future --story 1.2 종료 상태 0, check-instructions.sh 종료 상태 0, node ci/screen-rule.check.mjs 종료 상태 0(src/screen.js가 없어 판정 없음, 필수 점검 아님)."
+      manual:
+        - "agent-review, 1.2-INSP-002: src/units.js를 끝까지 읽음. 가져오기, 입출력, 전역 접근이 없고 모듈 변수는 선언 뒤 바뀌지 않으며 AC 1에 없는 단위와 별칭이 없다. 통과."
+        - "agent-review, 1.2-INSP-003: 누적 변경을 docs/architecture.md의 기술 구성, 소스 트리, 설계 원칙, D-2, README.md와 다시 대조. 어긋남이 없고 dev-2.1의 no-change 결론과 같다. 통과."
+        - "agent-review, TDD 증거: dev-1.1의 조각 표를 Dev의 원시 출력과 대조. 조각 13개와 Cleaner 뒤 조각의 시험 수, 실패 수, 첫 실패 메시지가 표와 같고 파일 시각의 순서가 RED, GREEN, Cleaner, 재점검이다. 변형 요약 48 잡힘, 1 통과와 45 잡힘, 도달 643, 누락 0도 기록과 같다."
+        - "agent-review, 주석 위생: 두 파일의 주석과 시험 이름을 모두 읽음. 어긋난 곳은 TEST-001."
+        - "user-only 시나리오는 없다."
+    findings:
+      new: 5
+      resolved: 0
+      partial: 0
+      not_fixed: 0
+    external_reviews: []
+    adversarial_checks:
+      - id: REL-001
+        verdict: CONFIRMED
+        evidence: "QA 주 검토자, 유리수 오라클과 실제 모듈의 대조 28만 호출. 사본의 수정 후보에서는 같은 표본의 해당 건수가 0이고 전달 시험 18개가 통과해, 수용된 계약 안에서 고칠 수 있음을 보였다."
+        severity_change: "없음"
+      - id: TEST-001
+        verdict: CONFIRMED
+        evidence: "QA 주 검토자, 같은 단위 반환을 지운 사본에서 네 행 실행. C 행만 넘치지 않는다."
+        severity_change: "없음"
+    dev_dispute_review: []
+    deviations: []
+    note: >-
+      적용 정책과 기준선: 현재의 comments, documentation, golden-rules, testing-tdd, javascript-language, coding-principles,
+      crap, javascript-crap 본문을 적용했다. 두 대상 파일은 기준 40e1a6b에 없는 새 파일이라 기존 잔여물이 없다.
+      깊이 deep의 까닭: 새 모듈 전체가 이 Story의 산출물이고 조용히 틀린 값을 돌려주는 것이 Story가 막으려는 위험이어서, 독립 오라클과 변이 점검을 더했다.
+      회차 결론: 필수 시나리오 17개가 모두 통과했고 AC 2, 3, 4는 충족한다. AC 1은 표의 입력에서 충족하나 참값이 범위 안이고 중간 값이 넘치는 입력에서 틀린 값을 돌려준다(REL-001). Required 2(TEST-001, TEST-002), Recommended 1(REL-001), Optional 2(DOC-001, DOC-002)이고 차단 지적은 모두 rework, 소유자 Dev이므로 gate는 FAIL이고 Status는 InProgress로 돌린다. 미완료 점검과 pending, contract 지적은 없다.
+      넘겨받은 질문의 분류. 질문 자체가 막는 것은 없다. DEV-1의 관찰은 지적 REL-001이 되었고 나머지는 아래 리드로 둔다.
+      DEV-1 판정: 질문은 N-1을 정할 때 참값이 유한한 입력도 함께 정할지 묻는다. 참값이 유한한 입력의 답은 AC 1과 D-2가 이미 정하므로 소유자의 결정이 필요 없고, 수정은 N-1의 어떤 답과도 충돌하지 않는다. PO의 비차단 분류는 계획 단계의 판단(Story의 합격 판정이 같고 구현 선택만 다름)이고, 이 회차는 전달된 결과를 본다. 같은 단위 사이는 Dev가 같은 까닭으로 이미 고쳤다. 앞 Story의 깊은 중첩과 다른 점은, 그 입력은 Story가 N-6으로 범위 밖에 두었으나 이 입력은 '지원 입력'이 받는 유한한 수이고 표 3이 참값이 범위를 넘는 입력만 든다는 것이다.
+      리드 1(PO1-N1, 참값이 범위를 넘는 변환): 표 3의 세 입력이 Infinity이고 받는 결과 안에 든다. 두 읽기의 합격 판정이 같아 막지 않는다. 확인하는 것: PM 또는 프로젝트 소유자의 결정.
+      리드 2(PO1-N2, 기대 값 0): T-1, T-5, L-4, P-4의 0 결과가 모두 0이나 -0이고 시험이 허용 폭 0으로 본다. 막지 않는다. 확인하는 것: 프로젝트 소유자의 결정 기록 보강.
+      리드 3(PO1-N3, 절대 영도 엄밀함): Z-2 전부 거부, Z-1 전부 수용을 실행으로 확인. 막지 않는다. 확인하는 것: 같은 결정 기록 보강.
+      리드 4(PO1-N4, 0에 가까운 결과): convert(-273.149, 'C', 'K')는 0.0009999999999763531로 Dev Notes와 같다. 원인은 D-2의 식을 배정밀도로 계산할 때의 273.15의 이진 오차이고 Story가 범위 밖에 두었으며 어떤 구현도 배정밀도 안에서 없애기 어렵다. 정규 범위 아래의 결과가 허용 폭을 넘는 경우(convert(5e-322, 'mm', 'cm')가 0)도 같은 범위의 표본이다. 막지 않는다. 확인하는 것: 프로젝트 소유자의 정밀도 결정.
+      리드 5(PO1-N5, 오류의 name): new ConversionError('x').name은 'Error'이고 String은 'Error: x'다. 수용 문서에 없고 기존 future-work 항목이 닿는다. 막지 않는다. 확인하는 것: 그 항목의 트리아지.
+      리드 6(PO1-N6, 수용된 글의 해석): 음수 길이와 압력, 글자가 아닌 단위와 종류, SI 접두어, units의 배열을 시험과 실행으로 확인. 막지 않는다. 확인하는 것: PM의 확인.
+      리드 7(PO1-N7, Architecture의 절): docs/architecture.md에 코딩 표준 절과 Change Log 절이 없다. 이 Story는 문서를 바꾸지 않아(dev-2.1) 영향이 없다. 확인하는 것: Architect의 처리.
+      리드 8(PO2-N1, 검색의 한계): const a = 1 / require('./engine.js'); 꼴의 줄에 검색이 종료 상태 1이다. src/units.js에 그런 줄이 없음을 읽기로 확인했다. 막지 않는다. 확인하는 것: SM의 다음 수정.
+      리드 9(Dev 질문 2, 저작권과 SPDX): 두 새 파일의 머리글은 요약 한 줄이다. 프로젝트에 값이 없어 CC-CMT-001대로 Dev가 빠진 입력을 dev-1.1에 기록했고 기존 future-work 항목이 들고 있어 위반이 아니다. 확인하는 것: 프로젝트 소유자의 값.
+      리드 10(Dev 질문 4, 도구 관찰): 이 세션의 Write 도구도 입력의 이스케이프를 문자로 저장했고(바이트로 확인), 시험 파일에는 이스케이프가 남아 비ASCII가 없다. check-stage.sh에 Story 키를 주면 종료 상태 2이고 파일 경로를 주면 동작한다. 제품과 무관하며 소유자는 방법론 소유자다. 기록에 드러난 부분만 DOC-001이다.
+      리드 11(세션 정체): Dev 세션의 effort 이름 대응과 Cleaner 검토자의 실제 모델 ID는 이 세션에서 확인할 수 없다. 이 회차가 Cleaner 결과의 내용을 직접 확인했고 절차가 특정 모델을 요구하지 않아 판정을 막지 않는다.
+      수집 뒤 버린 후보: 숫자 리터럴에서 cases의 1e308 셋은 단위가 달라 함께 바뀔 까닭이 없는 독립 입력이고(1단계에서 제외, 3단계), convert(-0, ...) 둘, assertRejected(1, ...), -273.15의 기대 값, 0 행, 5 계열 입력도 같다(1단계에서 제외, 3단계). 제품의 크기 표와 온도 상수는 2단계이고 symbols.length === 0은 3단계다. -459.67은 다른 값에서 유도되지만 이름 있는 상수이고 까닭을 주석이 설명한다(2단계). File List가 sm-1, sm-2, po-r1, po-r2를 들지 않는 점은 DoD 체크리스트가 구현과 필수 동반 파일을 요구하고 이 넷은 계획 기록이어서 지적이 아니다. 조각 3과 10의 RED가 값 단언이 아닌 예외인 점은 빠진 동작 때문이어서 CC-TDD-002에 맞고 Dev가 적었다. ABSOLUTE_ZERO_CELSIUS가 KELVIN_AT_ZERO_CELSIUS의 부호를 바꾼 값인 점은 반올림이 없어 주석과 어긋나지 않는다. 시험 이름 줄 3개의 80칸 초과는 CC-JS-002가 권장값으로 둔다. node:util의 inspect는 내장 모듈이어서 Architecture에 맞다. 두 주석의 순서 설명 중복과 [...UNITS].filter().map() 연쇄는 판단 정도의 문제이고 잘못된 결과가 없어 지적으로 올리지 않았다. 합친 후보: PO1-N1의 더한 관찰, Dev DEV-1, Cleaner F4(나)를 REL-001 하나로 합쳤다.
+      닫기 전 원문 보존(2회차에 닫은 지적을 옮기며 더함).
+      TEST-001 지적: 시험 'returns a value unchanged when both units are the same' 위의 주석 'Converting these through the reference unit of their kind would overflow'는 cases의 네 행 모두를 말하는데 행 [Number.MAX_VALUE, 'C']는 넘치지 않는다. C는 온도의 기준 단위이고 두 환산 함수가 값을 그대로 돌려주기 때문이다. 기준은 CC-CMT-010 표 아래 문장과 tasks/code-comment-style.md 섹션 3. 실패 시나리오: 읽는 사람이 이 행도 넘침을 잡는 회귀 행이라고 믿는다. 조치: 그 행을 빼거나 주석을 실제로 넘치는 행으로 한정하고, REL-001 뒤의 코드에 맞춰 함께 다시 쓴다. 점검으로 같은 단위 반환을 지운 변형에서 남긴 행이 주석이 말한 대로 실패하는지 본다.
+      TEST-002 지적: 시험 'keeps no state between calls, also after an error'가 같은 입력 convert(1, 'm', 'cm')를 숫자 리터럴 1로 세 번 적어 함께 고쳐야 한다. 기준은 CL-GLD-001의 Numeric literals 1단계. 실패 시나리오: 입력을 한 곳만 바꾸면 상태가 아니라 입력이 달라서 실패한다. 조치: 입력에 이름을 주거나 호출을 지역 함수로 모은다.
+      REL-001 지적: 참값이 double 범위 안인 변환이 Infinity를 돌려준다. convert(1e303, 'MPa', 'kPa')는 참값 1e306, convert(1e308, 'F', 'C')는 참값 약 5.56e307. 모든 환산이 기준 단위(Pa, C)를 거치며 중간 값이 넘치기 때문이고, 해당 쌍은 kPa, MPa, bar, psi 사이의 12개와 C→F, K→F, F→C, F→K다. 어떤 시나리오도 이름 붙이지 않아 3단계의 기준이 아니고, 4단계에서 AC 1의 수용된 쓰임에 틀린 값을 돌려주어 차단이다. 실패 시나리오: 입력이 MPa 약 1.8e302, bar 약 1.8e303, psi 약 2.6e304, kPa 약 1.8e305, C와 K에서 F로 약 2.0e307, F에서 C와 K로 약 3.6e307 이상이면 오류 없이 Infinity를 받는다. 조치: 비율을 먼저 구해 곱하고 온도는 1.8로 곱하거나 나누며 재현 시험을 먼저 더한다.
+      DOC-001 지적: dev-1.1의 '시험 파일의 문자' 문장이 이스케이프 자리에도 문자를 적었다. 사실은 맞고 표현만 부정확하다. 조치: 다음 Dev 기록에서 바로잡는다.
+      DOC-002 지적: Dev Notes의 'Dev는 구현 전에 다시 확인한다'에 대응하는 기록이 dev-1.1과 Completion Notes에 없다. QA가 값 여덟 개를 다시 실행해 모두 같아 근거는 유효하다. 조치: 다음 Dev 기록에 사실대로 적고 뒤에 만들지 않는다.
+
+  - round: 2
+    at: "2026-11-06T16:30:00+09:00"
+    gate: "PASS"
+    reviewer: "Quinn(QA 하위 세션, 모델 claude-opus-5-5, effort max), *run-story 1.2 1.3 remote to Done run의 역할 작업"
+    depth: deep
+    base_commit: "b7cf1628b9f016ecfffdcc71f3615a1f4b2e0222"
+    head_commit: "546c2d0781dc174f51ccf9aa877ab475c153a4d1"
+    scope: "후속 회차, 같은 검토자 세션. 비교는 1회차 head b7cf162에서 546c2d0까지이고 그 가운데 19daa1d는 QA 기록만 담는다. 바뀐 제품: src/units.js(950789b1dc7, 구현 개정 9ede139와 주석의 3009f33). 바뀐 시험: test/units.test.js(ab84c5f25f6). 바뀐 문서: Story의 Status, Change Log, Dev Agent Record와 새 기록 dev-qa-r1, dev-3.1, dev-3.2, dev-3.3, dev-dod-2. Story의 AC, Tasks, Dev Notes, Testing, PO Validation, QA Results는 바뀌지 않았다. 바뀌지 않음을 확인: src/engine.js, src/number-format.js, test/engine.test.js, test/number-format.test.js, package.json, README.md, docs/prd.md, docs/architecture.md, docs/planning, ci, .github, 앞선 기록 문서. 커밋하지 않은 변경 없음. 규칙 파일은 1회차 시작 뒤에 바뀌지 않았다(파일 시각). 제품 코드가 바뀌어 표, 오라클, 변이, 경계 점검을 현재 코드로 다시 돌렸고 1회차 결과를 잇지 않았다."
+    verification:
+      automated:
+        - "node --test: 프로젝트 루트, HEAD 546c2d0, Node.js v24.22.1. 55개 통과, 실패 0(단위 변환 20, 기존 35). 1.2-UNIT-001 ~ 1.2-UNIT-013의 시험과 새 시험 둘, 기존 시험."
+        - "1.2-INSP-001: Story의 가져오기 검색이 src/units.js에서 일치 없이 끝남, 종료 상태 1."
+        - "1.2-UNIT-014: git diff --quiet 40e1a6b -- src/engine.js src/number-format.js test/engine.test.js test/number-format.test.js 종료 상태 0."
+        - "표 대조: Story의 글에서 표 1, 2, 3을 읽어 기대 호출 643개를 만들고 기록용 사본에서 전달 시험을 실행했다. 빠진 호출 0, 기대 밖의 호출 36(새 시험의 행 25와 앞 회차의 11). 값 행 13개의 289호출이 현재 모듈에서 모두 Story의 같은 값 판정을 통과한다."
+        - "새 시험의 행: 압력 행과 온도 행을 D-2와 SI 접두어의 유리수로 대조해 가장 큰 상대 차이 2.6e-17과 8.0e-17. 압력 행의 넷 모두 파스칼로는 범위 밖이고, F 값은 최대값의 5분의 1, C와 K 값은 9분의 1을 넘어 두 주석이 맞다."
+        - "독립 오라클(1회차와 같은 씨앗과 표본, 28만 호출): 1e-12 안 277925, 참값이 범위를 넘는 Infinity 1329(1회차와 같음), 참값이 범위 안인 Infinity 0(1회차 984), 정규 범위 아래의 결과가 허용 폭을 넘는 경우 736, 절대 영도 입력에서 결과 0과 입력의 이진 오차가 다른 경우 10, 그 밖의 어긋남 0, 예기치 않은 오류 0."
+        - "범위 끝 쓸기: 참값이 넘칠 수 있는 27쌍에서 경계 앞뒤 200개의 수, 10425호출. 유한하고 허용 폭 안 4997, 참값이 한계를 넘는 Infinity 5423, 허용 폭 밖의 유한한 결과 0. 어긋남 다섯: 참값이 한계 아래인 Infinity 셋(0.065, 0.433, 0.744 ulp 아래), 참값이 한계 위인 Number.MAX_VALUE 둘(0.375, 0.954 ulp 위). 표 3의 세 입력은 Infinity, Infinity, -Infinity."
+        - "절대 영도 경계: 각 단위의 하한부터 위로 배정밀도 수 넷을 세 단위로 변환해 목표 단위의 하한 아래인 결과 0건. T-5는 시험으로 통과."
+        - "수작업 변이 91개: 잡힘 81, 통과 10. 통과 9는 계약이 허용하는 구현이고(허용 오차 안의 psi와 반올림, C→F의 5로 먼저 나눔, 같은 단위 반환 제거, 비의 역수로 나눔, 얼린 공유 목록, TypeError를 잇는 오류, name을 가진 오류, 넘침의 ConversionError) 나머지 1은 TEST-003이다. 기준 단위를 거치는 변이는 압력 시험에서, 5나 9를 먼저 곱하는 변이는 온도 시험에서, 5 / 9와 9로 먼저 나누는 변이는 T-5에서 실패한다."
+        - "같은 단위 반환을 지운 사본: 전달 시험 20개 통과. 길이, 압력, C는 값이 바뀌지 않고, 허용 폭을 넘게 바뀌는 입력은 K 0.023 이하와 F 0.0015 이하뿐이다."
+        - "적대 입력 17개가 모두 ConversionError. units는 호출마다 새 배열. Dev Notes의 값 여덟 개는 제품을 거치지 않는 산술이고 Node.js가 같아 1회차 결과를 잇는다."
+        - "check-stage.sh records 종료 상태 0, po-record 종료 상태 0, check-stage.sh future --story 1.2 종료 상태 0, check-instructions.sh 종료 상태 0, node ci/screen-rule.check.mjs 종료 상태 0(src/screen.js가 없어 판정 없음, 필수 점검 아님). check-gate.sh는 저장 전 게이트의 사본에서 'Status: must return to InProgress after a FAIL gate, not Review'로 종료 상태 1이고, 저장 뒤 종료 상태 0이다."
+      manual:
+        - "agent-review, 1.2-INSP-002: src/units.js를 끝까지 다시 읽음. 가져오기, 입출력, 전역 접근이 없고 모듈 변수는 선언 뒤 바뀌지 않으며 AC 1에 없는 단위와 별칭이 없다. 통과."
+        - "agent-review, 1.2-INSP-003: 누적 변경을 docs/architecture.md의 기술 구성, 소스 트리, 설계 원칙, D-2, README.md와 다시 대조. 공개 인터페이스가 같고 온도 식은 수학적으로 같으며 단위 값이 그대로다. dev-dod-2의 no-change 재점검과 같은 결론이다. 통과."
+        - "agent-review, TDD 증거: dev-3.1, dev-3.2의 표를 Dev의 원시 출력과 대조. RED 20개 중 2개 실패와 두 메시지, GREEN 20/20, 전체 55개, 파일 시각의 순서(구현 전 재확인, RED, GREEN, Cleaner, 재점검), 오라클 12791 -> 0과 144 -> 122, 변형 7개와 5개의 결과, 검토자 파일 35개와 123개가 기록과 같다."
+        - "agent-review, Dev 기록 전체: dev-qa-r1, dev-3.1, dev-3.2, dev-3.3, dev-dod-2와 Completion Notes를 끝까지 읽음. 수와 사실이 위 실행과 맞다. po-r1의 '같은 단위 지름길' 읽기도 그 표에 있다."
+        - "agent-review, 주석 위생: 기준 b7cf162 대비 바뀐 주석과 시험 이름을 모두 읽음. 실제 동작, 단언과 맞다."
+        - "user-only 시나리오는 없다."
+    findings:
+      new: 1
+      resolved: 5
+      partial: 0
+      not_fixed: 0
+    external_reviews: []
+    adversarial_checks:
+      - id: REL-001
+        verdict: CONFIRMED
+        evidence: "QA 주 검토자, 수정을 깨 보려는 점검. 유리수 오라클의 같은 표본에서 해당 건수 0, 범위 끝 27쌍 쓸기에서 남는 어긋남이 모두 1 ulp 안이다. 수정이 맞음을 확인했고 남는 부분의 판단은 회차 note에 있다."
+        severity_change: "없음"
+      - id: TEST-003
+        verdict: CONFIRMED
+        evidence: "QA 주 검토자, 변이 사본에서 전달 시험 20개 통과, 같은 사본에서 convert(1e307, 'mm', 'cm')가 Infinity. 전달 모듈은 1e+306."
+        severity_change: "없음"
+    dev_dispute_review:
+      - claim: "TEST-001의 점검 문구(같은 단위 반환을 지운 변형에서 남긴 행이 실패)는 Story가 시험하지 않기로 한 0 근처 입력을 건드리지 않고는 만족할 수 없어 문자 그대로는 맞지 않고, 지적의 기준은 만족한다."
+        verdict: accepted
+        evidence: "같은 단위 반환을 지운 사본에서 허용 폭을 넘는 입력은 K 0.023 이하와 F 0.0015 이하뿐이고, Dev Notes가 '결과가 0에 가까우면 ... Dev가 행을 더할 때도 쓰지 않는다'고 하며, po-r1이 지름길 없는 구현을 허용한 읽기로 돌렸다. 점검 문구는 '주석이 말한 대로'이고 새 주석은 그 변형의 실패를 말하지 않는다. 그 문구는 REL-001 전 코드를 전제한 QA의 제안이었다."
+      - claim: "REL-001, TEST-002, DOC-001, DOC-002에 이의를 내지 않고 모두 고친다. DEV-1의 처리를 future에서 fix로 바꾼다."
+        verdict: accepted
+        evidence: "dev-qa-r1의 결정 목록과 처리 줄이 일치하고, 각 수정을 위 점검으로 확인했다. 앞선 DEV-1 항목은 고쳐 쓰지 않고 새 항목에서 정정했다."
+    deviations: []
+    note: >-
+      적용 정책과 기준선: 1회차와 같은 규칙 본문이고 파일이 바뀌지 않았다. 두 대상 파일의 바뀐 줄만 새 내용이고 기존 잔여물이 없다.
+      깊이 deep의 까닭: 후속 회차의 범위(data/finding-classification.md 섹션 Later rounds)이지만 제품의 환산 코드가 바뀌었으므로 표, 오라클, 변이, 경계 점검을 현재 코드로 다시 돌렸다.
+      전체 검토 조건: 해당 없음. AC, 범위, Task 구조, 수용된 설계 결정이 바뀌지 않았다. 환산 방식의 변경은 Architecture와 결정 기록에 없는 구현 선택이고 D-2의 값과 식은 같다. 고치려 한 지적이 남지 않았고 닫았던 지적이 되살아나지 않았으며 앞 회차가 통과시킨 것을 뒤집은 지적이 없다. 이 세션은 문맥 사용량을 볼 수 없고 읽기가 잘린 일은 없다.
+      회차 결론: 활성 Required, Recommended가 없고 필수 점검이 모두 끝났으며 AC 1 ~ 4가 충족되어 gate는 PASS다. Status는 Review로 두고 Done은 별도 QA 작업이다. Optional TEST-003의 처리 줄이 Done 전에 필요하다. 미완료 점검과 pending, contract 지적은 없다.
+      REL-001을 PARTIAL로 보지 않은 까닭: 지적의 원인은 기준 단위를 거치는 중간 값의 넘침이고 입력의 폭은 약 1e5배까지였는데 이 원인이 없어졌다. 남은 어긋남은 비의 반올림 때문이고 범위 끝의 1 ulp 안(27쌍, 경계 앞뒤 200개의 수에서 다섯 건)에만 있다. 수용된 문서는 배정밀도 계산의 반올림 오차를 허용 폭으로 다루고 그 끝에서 유한과 무한이 갈리는 경계를 정하지 않으며, 그 결과를 맞다 틀리다 하려면 범위 끝의 정확한 반올림이라는 계약에 없는 요구를 가정해야 한다. 그래서 3단계의 기준이 아니고 4단계의 실패도 아니다. 아래 리드 13.
+      넘겨받은 질문의 분류. 질문 자체가 막는 것은 없고 pending 지적이 없다.
+      리드 12(Dev 질문 2, 같은 단위 반환의 분기): 재현했다. 분기를 지운 사본에서 시험 20개가 통과한다. 분기를 지키는 행은 허용 폭을 넘는 입력(K 0.023 이하, F 0.0015 이하)으로만 만들 수 있고 그 입력은 Dev Notes가 쓰지 말라고 한 구간이다. 분기를 둔 구현과 지운 구현 모두 계획이 허용한 읽기이고(po-r1) 어느 쪽도 잘못된 결과가 아니어서 막지 않는다. 확인하는 것: PO1-N4를 정할 때 프로젝트 소유자의 유지 여부. Dev의 질문 1(TEST-001의 점검 문구)은 dev_dispute_review에서 받아들였다.
+      리드 13(Dev 질문 3, 범위 끝 1 ulp): 재현했다. convert(1.2394657852469996e306, 'MPa', 'psi')와 convert(4.566140562550282e303, 'km', 'in')가 참값이 한계 아래인데 Infinity이고, convert(5.479368675060339e307, 'm', 'ft')가 참값이 한계 위인데 Number.MAX_VALUE다. JSDoc이 '반올림 오차 안에서는 무한대나 가장 큰 double'이라고 적어 맞다. 막지 않는다. 확인하는 것: PO1-N1을 정할 때 PM 또는 프로젝트 소유자의 결정.
+      1회차의 리드 1 ~ 11은 입력과 근거가 같아 그대로 잇는다. 리드 1(PO1-N1), 리드 4(PO1-N4)는 위 수치를 현재 코드로 다시 보았다. 리드 4의 온도 값은 그대로이고 convert(5e-322, 'mm', 'cm')는 이제 5e-323이며, F→K의 일부 입력(참 결과 약 0.03 K)이 이번 수정으로 허용 폭 밖이 되었다는 Dev의 기록도 같은 구간이다. 리드 5의 name은 현재 코드에서 다시 실행해 같다.
+      수집 뒤 버린 후보: dev-3.1의 조각별 GREEN이 없는 점은 같은 원인의 결함 하나에 재현 둘과 수정 하나로 CC-TDD-005의 순서에 맞고, Dev가 적었으며, 두 수정이 섞이지 않음을 위 변이가 시험별로 보인다. 숫자 리터럴에서 온도 행의 5.555555555555556e307 둘은 기대 값이 같을 뿐 독립이고(1단계에서 제외, 3단계), 1e308이 다른 시험에 다시 나오는 것도 같다. FAHRENHEIT_PER_CELSIUS의 9 / 5는 2단계다. 주석의 'near the largest double'은 1e308에도 맞는 정도의 말이다. dev-3.2의 '마지막 자리'는 0.1 K의 차이가 열네째 자리여서 덜 정확하지만 그 문장의 사실은 맞고 판단에 영향이 없다. 'first call' 레이블은 진단 정보를 줄일 뿐 거짓이 아니다. 배율 단위와 온도 단위의 항목 모양이 다른 점은 같은 종류만 convertTo에 닿도록 convert가 먼저 판정해 안전하고 판단 정도의 문제다.
+
+# -- 판정 이력 --
+history:
+  - at: "2026-11-06T15:28:00+09:00"
+    round: 1
+    gate: "FAIL"
+    note: "첫 전체 검토. Required 2, Recommended 1, Optional 2. 필수 시나리오는 모두 통과. Status Review -> InProgress."
+  - at: "2026-11-06T16:30:00+09:00"
+    round: 2
+    gate: "PASS"
+    note: "후속 회차. REL-001, TEST-001, TEST-002, DOC-001, DOC-002 닫음. 새 Optional TEST-003. 활성 Required, Recommended 없음. Status Review 유지, Done은 별도 QA 작업."
