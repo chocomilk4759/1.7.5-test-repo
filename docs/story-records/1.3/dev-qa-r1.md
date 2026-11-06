@@ -3,7 +3,7 @@
 - Story: [1.3](../../stories/1.3.story.md)
 - Entry: Dev `review-qa`(`tasks/apply-qa-fixes.md`)의 QA 라운드 1 분석과 결정 목록. 구현이 없는 기록 인계다
 - 작성자와 실제 실행자: Dev 하위 세션 James, 모델 `claude-sonnet-5-5`(시스템이 알려 준 값), `*run-story 1.2 1.3 remote to Done` run의 역할 작업. effort는 시스템이 숫자 30으로만 알려 주어 설정의 이름(`xhigh`)과의 대응을 확인하지 못했다
-- 시각: 2026-11-06, 분석과 결정 19:01 ~ 19:09 +0900(이 기록의 저장과 커밋은 그 뒤)
+- 시각: 2026-11-06, 분석과 결정 19:01 ~ 19:08 +0900(이 기록의 마지막 저장 19:08, 커밋 19:09)
 - 입력 기준: 브랜치 `story/1.3`, HEAD `479029d`(QA 1회차 기록 커밋), 작업 트리 깨끗, Status Review. 입력은 gate `docs/qa/gates/1.3.yml`(라운드 1, PASS), Story의 QA Results와 Dev Agent Record, 기록 문서 qa-r1이다. 별도 평가 문서와 추가 검토는 없다(QA Results와 qa-r1이 추가 검토자가 없다고 적는다). `src/screen.js`와 `test/screen.test.js`의 `git hash-object` 값은 `bbd96bea4be3`, `3ed20611195c`로 QA 라운드 1이 적은 값과 같다
 
 ## 읽은 규칙과 절차
