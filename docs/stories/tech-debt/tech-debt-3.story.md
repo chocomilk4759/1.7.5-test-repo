@@ -2,7 +2,7 @@
 
 ## Status
 
-Review
+Done
 
 ## Story
 
@@ -586,3 +586,33 @@ Review — PASS이고 활성 지적은 Optional 넷뿐이다. Done 전에 Dev가
 
 Gate: PASS → docs/qa/gates/tech-debt-3-story-1-3-dev.yml
 Round: 1
+
+### Completion Date: 2026-11-07
+
+### Completed By: Quinn(QA 하위 세션, `claude-opus-5-5`, effort `max`는 실행 계획의 값이고 이 세션이 따로 확인하지 못했다), `*run-story tech-debt-3 remote to Done` run의 역할 작업, 회차 1의 세션을 잇지 않은 새 세션. 점검을 이 세션이 직접 실행했고 추가 검토자는 없다
+
+### Completion Inputs and Result
+
+브랜치 `story/tech-debt-3-story-1-3-dev`, HEAD 8c87662, 커밋하지 않은 변경 없음, 기준선 20256e4(`main`과 `origin/main`의 로컬 ref가 같고 fetch하지 않았다). 회차 1이 검토한 head a676f8e와 HEAD 사이에 바뀐 경로는 gate, Story, qa-r1, dev-qa-r1뿐이고 `src/`, `test/`, `ci/`, `.github/`, `package.json`, `README.md`, 수용 문서, Story 1.3의 파일과 기록은 기준선과 같다. Story에서 바뀐 섹션은 회차 1이 더한 QA Results와 Dev가 더한 Change Log, Dev Agent Record뿐이고 지운 줄이 없다. 기록만의 변경이어서 회차 1의 검토 근거가 그대로이고 새 회차가 필요 없다.
+
+결과는 Done이다. `tasks/local-story-done.md`의 조건을 현재 파일과 실행 결과로 모두 확인했다.
+
+- 판정: gate PASS(회차 1), 활성 Required와 Recommended 지적 없음, 경로 줄과 미완료 점검 없음. 활성 지적은 처리 결정이 있는 Optional 넷이다. `comment_hygiene.status`는 PASS이고 바뀐 production과 test 줄이 없으며 아홉 파일의 후보 검색을 다시 실행해 일치가 없다.
+- 점검: Status 변경 전 `check-done.sh` 종료 상태 0, `check-gate.sh`, `check-stage.sh records`, `qa-record`, `po-record`, `future --story tech-debt-3` 종료 상태 0. tech-debt-3-INT-001은 프로젝트 루트의 `node --test` 76개 통과(실패 0, 취소와 건너뜀 0, Node.js v24.22.1), `node ci/screen-rule.check.mjs` 종료 상태 0이다. tech-debt-3-INSP-001은 표 1의 29와 4, 지운 줄 넷, 섹션, 기록 문서 11개와 더한 5개, 표 2의 세 개정과 HEAD에서 같은 네 줄이 표와 같다. tech-debt-3-INSP-004는 바뀐 11개 경로가 모두 "바꾸는 경로" 행에 있고 `git status --porcelain`과 `--diff-filter=MD 2e86847`이 출력 없음이며 표 3의 해시가 같다(잰 범위는 Git이 보는 경로). tech-debt-3-INSP-002, tech-debt-3-INSP-003, tech-debt-3-INSP-005는 저장된 글을 다시 읽어 통과다.
+- 기록: Task와 SubTask의 체크박스가 모두 닫혔고 QA 수정 단위가 없으며 File List에 빠진 경로가 없다. 없는 경로는 이 점검의 qa-done뿐이다. Dev의 기록 커밋 8c87662은 구현이 없는 기록 인계이고 회차 1이 보지 않은 입력이어서, DOC-002 ~ DOC-005의 값(A 여덟, 다섯, 열 줄, 소스 트리 표 다섯 행과 두 경로, 세 개정의 섹션별 수, 서수의 자리)과 대조 표의 수를 저장소에서 직접 다시 내어 모두 같음을 확인했다.
+- 처리 결정: DOC-002, DOC-003, DOC-004(각각 Optional, 심각도 low, 계약 안, 소유자 Dev)와 DOC-005(Optional, 심각도 low, 확신 medium, 계약 안, 소유자 Dev)의 마지막 처리 줄이 `future`이고, 지적과 출처, 적용하지 않는 까닭, 필요한 일을 적은 future 기록이 Completion Notes에 있다. 권한은 `tasks/run-story.md`가 실행 요청에 둔 "recording the Optional and future findings that the Story does not apply as future records in the Story"다. 분류는 잇는다: 가리키는 글과 기준이 회차 1 뒤 바뀌지 않았고 새 증거가 없다. 병합 뒤 PO 점검이 네 기록을 PO1-N1과 함께 future-work 항목으로 옮긴다.
+- DOC-005에 합친 관찰: `dev-qa-r1`의 섹션 "처리 줄이 없는 나머지 항목의 보관 위치"의 행 이름("`recommendations.immediate` 첫째", "monitor 셋째" 들)이 gate의 목록 항목을 서수로 가리킨다. 같은 행에 항목의 말이 함께 있고 입력 기준 421a7c1의 gate를 가리켜 자리를 잘못 찾는 일이 없어 DOC-005와 같은 읽기다. 새 지적으로 세지 않았고 gate를 바꾸지 않았다. 병합 뒤 점검이 DOC-005의 기록과 함께 읽는다.
+- 허락: PO Validation 1회 항목의 실행 요청 줄의 단계 `through Done remote`가 Done을 덮는다. 사용자의 글: "이번 호출은 이 Story의 Done과 요청까지이고 Story는 병합하지 않습니다." 병합 여부는 메인 세션이 읽은 사실이다: 이 Story 브랜치의 요청이 없고 원격 브랜치도 아직 없어 병합되지 않았다.
+- 임시 자료: 이어가기 로그의 이 run과 이 Story 항목을 실제 파일과 양쪽으로 대조했고 기록된 자료는 아무것도 지우지 않았다. 항목이 덮지 않던 파일은 이 완료 점검의 파일뿐이고 로그에 더했다. 이 Story의 것이 아닌 2026-11-06 09:00의 다섯 파일은 그대로 두고 메인 세션에 보고했다.
+- 전달 점검: 수용된 문서에 배포나 환경의 의무가 없어 이어 갈 일이 없다. CI의 두 명령은 로컬에서 실행했고 서비스의 결과는 이 작업이 읽지 않았다.
+- 한계: CRAP은 코드를 바꾸지 않아 측정 대상과 제안이 없다. 이 작업은 네트워크를 쓰지 않아 이슈 #24와 호스팅 서비스의 CI를 읽지 않았다. 프로젝트 밖 원문 조사는 사용자의 말로 이 호출에서 면제되었고 이 작업은 프로젝트 밖 자료를 읽지 않았다. 이 면제는 `AGENTS.md`의 조사 요건을 채운 것이 아니다.
+
+Merge risk: revertible — squash는 Story 파일, gate, 기록 문서 10개의 새 파일 12개만 더하고 제품 코드, 시험, CI, 설정, 의존성을 바꾸지 않으며 데이터, 저장 형식, 제품의 외부 부작용이 없다. 되돌리면 트리가 기준선과 같아지고 두 문장의 정정과 이 Story의 기록이 함께 없어진다. 병합 뒤 PO 점검이 Story 파일에 줄을 더한 뒤라면 되돌리기는 그 파일 하나의 충돌을 풀어야 하고 그 점검의 future-work 항목은 남는다. 계획 커밋 20256e4는 squash에 들지 않아 그 커밋이 지운 future-work 항목은 돌아오지 않고 그 Closed items 줄은 없어진 Story 경로를 가리킨 채 남는다
+
+### Status Action
+
+Done — 이 작업은 push, fetch, 요청, 병합을 하지 않았다. 다음은 메인 세션이 별도의 Dev 작업으로 시작하는 `*publish-story tech-debt-3`(`tasks/publish-story.md`)로, Done 커밋의 push와 ready 요청이다. 이번 호출의 단계는 Done이어서 서버 병합은 없고, 병합은 사용자가 지시하는 Dev `*merge-story tech-debt-3 remote`다. 그 확인 뒤에 PO의 병합 뒤 점검과 임시 자료 정리가 뒤따른다. `docs/planning/future-work.md`에 지금 트리아지를 기다리는 항목은 없다. 완료 점검은 끝난 일이며 새 개발 요청이 아니다.
+
+### Record
+
+[qa-done](../../story-records/tech-debt-3/qa-done.md)
