@@ -620,3 +620,45 @@ DoD: READY
 in-flight-comments-ledger: []
 
 ## QA Results
+
+### Review Date: 2026-11-07
+
+### Reviewed By: Quinn(QA 하위 세션, `claude-opus-5-5`, effort `max`), `*run-story bug-2 remote to Done` run의 역할 작업. 구현을 쓰지 않은 검토자의 실제 LLM 검토이며 추가 검토자는 없다
+
+### Reviewed Inputs and Scope
+
+회차 1, 전체 검토, 깊이 `deep`. 브랜치 `story/bug-2`, 기준 `main` 9aea191, HEAD 4c7fb2f, 커밋하지 않은 변경 없음. 제품과 시험은 `src/engine.js`, `test/engine.test.js`, `test/screen.test.js`의 변경(구현 개정 4a69ac7, 그 뒤 두 폴더 변경 없음)이고, 문서는 Story와 dev-1.1, dev-2.1, dev-dod-1이다. 수용된 입력은 Story의 AC와 Testing, 사용자의 두 결정, `docs/prd.md`, `docs/architecture.md`, D-1이다.
+
+직접 실행한 점검: 프로젝트 루트의 `node --test` 76개 통과(10회 반복 모두 같음, Node.js v24.22.1), `node ci/screen-rule.check.mjs` 종료 상태 0, bug-2-INSP-002 종료 상태 0, 시나리오 11개 전부, 기준선 시험과 HEAD 엔진의 사본(실패는 지운 행의 시험 하나), HEAD 시험과 기준선 엔진의 사본(5개 실패), 변이 30개(21개 잡힘, 통과 9개 가운데 8개는 Story가 읽기에 맡기거나 받는 변형, 1개는 TEST-001), 처리할 수 없는 깊이의 입력 14가지와 n = 2000 ~ 20000의 탐침. AC 1 ~ 5와 회귀 기준을 충족하고 제품 결함을 찾지 못했다. CRAP은 `quality.crap.commands`가 비어 측정하지 않음이다. 한계: 이 호출은 호스팅 서비스를 읽지 않아 이슈 #17과 CI 실행을 보지 않았고, 스택 크기를 바꾼 실행은 Worker 하나만 보았으며 다른 런타임은 보지 않았다.
+
+### Finding Disposition Summary
+
+- Required: 0 활성. 승인된 면제로 닫은 ARCH-001 하나를 아래에 적는다
+- Recommended: 0
+- Optional: 2
+
+### Finding Routes
+
+- ARCH-001, Required, 심각도 medium, `verdict: WAIVED`로 닫음. 규칙 `AGENTS.md` 섹션 Research for uncertainty and core implementation decisions의 참고 자료 다섯 개 이상 조사와 `.bmad-core/tasks/research-decision.md` step 2, step 7. 설계 "재귀 파서를 그대로 두고, 스택 넘침의 `RangeError`를 `evaluate` 경계에서 잡아 `CalculationError`로 바꿈"이 그 조사 없이 정해져 `src/engine.js`의 `evaluate`에 구현되었다. 경로는 PO 회차의 `pending`, 소유자 사용자였고 답을 받았다. 승인은 사용자의 글이다(2026-11-07, 메인 세션의 질문에 대한 선택): "조사 없이 이 설계를 수용". 설명: "네트워크 조건은 그대로 둡니다. 조사 없이 이 설계와 그 위험을 받아들인다고 결정합니다. SM이 이 결정과 빠진 자료를 Story에 적고, Story는 조사 요건을 채웠다고 적지 않습니다. 남는 위험: 스택 크기를 바꾼 실행과 다른 런타임의 동작이 확인되지 않습니다." 범위는 이 Story의 이 설계뿐이다. QA의 판단: 이 답은 `tasks/run-story.md` 섹션 Stop, hold and carry on의 "accepts a rule or convention violation"에 들어 `tasks/qa-gate.md`의 waiver 꼴로 적는다. 규칙이 적용되고, Story의 글이 조사가 없다고 적어 위반이 확인되며, 답이 그것을 알고 받아 PO1-B1의 잡음을 끝냈고, 조사는 AC, 부모 요구, Story가 이름 붙인 필수 점검이 아니다. 조사 요건은 채워지지 않았고 이 면제가 덮는 AC는 없다. 근거는 [qa-r1](../../story-records/bug-2/qa-r1.md)의 섹션 "사용자의 결정과 면제 판단"에 있다.
+- 활성 Required와 Recommended: 없다.
+- TEST-001, Optional, 심각도 low, 계약 안, 소유자 Dev: G-4의 "`D`의 까닭이 빈 글자가 아니고"를 보는 단언이 까닭을 빈 글자로 쓴 변이를 가리지 못한다(76개 통과). 전달된 까닭은 맞다.
+- DOC-001, Optional, 심각도 low, 계약 안, 소유자 Dev: dev-1.1의 시각 "첫 RED 02:09"(저장 출력은 02:07:12)와 검토자 변형의 나열이 실제와 다르다. 순서와 그 밖의 값은 맞다.
+- 미완료 점검: 없다.
+- 넘겨받은 질문: Dev와 Cleaner가 넘긴 질문은 없다. PO1-N1 ~ PO1-N6, PO2-N1은 PO Validation에 그대로 있고 병합 뒤 점검이 옮긴다. 이 회차가 찾은 같은 사실은 그 지적에 합쳤고, PO1-N4, PO1-N5의 사실을 다시 재어 같음을 확인했다.
+
+### Comment Hygiene Report
+
+`classifier_run`은 체크리스트 §1.1, §1.2, §1.3, §1.4, §1.7의 후보 검색과 바뀐 주석 전부, 새 시험 이름 8개의 읽기이고, 범위는 `src/engine.js`, `test/engine.test.js`, `test/screen.test.js`의 추가 줄 224줄, 기준은 9aea191이다. `tracking_id_leaks` 0, `forbidden_patterns` 모두 0, `in_flight_lifecycle`은 표시와 원장 항목 없음으로 `pending_at_review` 0, `whitelist_preserved`는 기대 0, 관찰 0으로 PASS다. 주석과 시험 이름이 실제 동작, 단언과 맞고 기존 시험 잔여물이 없다. 판정은 PASS이고 면제는 위생과 상관없다.
+
+### Status Action
+
+Review — 승인된 WAIVED이고 활성 지적은 Optional 둘뿐이다. Done 전에 Dev가 TEST-001, DOC-001의 처리를 정해 Completion Notes에 처리 줄을 남겨야 한다(`check-done.sh`가 요구한다). 이 호출은 Status를 바꾸지 않았고 Done을 하지 않았다. Done은 별도의 QA 작업(`local-story-done.md`)이다.
+
+### Record
+
+[qa-r1](../../story-records/bug-2/qa-r1.md)
+
+### Gate Status
+
+Gate: WAIVED → docs/qa/gates/bug-2.yml
+Round: 1
