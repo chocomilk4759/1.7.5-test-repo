@@ -19,7 +19,7 @@
 - 필요한 일: 답대로 `Parser`가 중첩을 세어 고정된 수 1000을 넘으면 `CalculationError`를 던지게 하고 `evaluate`의 `try`와 `catch`를 지우며 JSDoc과 시험을 맞춘다. 결함 수정이므로 RED를 먼저 보인다(CC-TDD-005). `src/engine.js`에 글자 `RangeError`를 주석까지 남기지 않고, 글자만 피하는 고침(TEST-002의 세 변형)은 수정으로 받지 않는다. 어느 Story로 할지는 트리아지가 정한다. `node --test`, `node ci/screen-rule.check.mjs`, `node ci/engine-rule.check.mjs`가 통과하고 요청의 필수 점검 `test`가 통과하면 끝난다.
 - 책임: 사용자(계획, 되돌리기), SM(계획의 글), Dev(구현), QA(리뷰), PO(새 계획의 검증)
 
-Planning: undecided
+Planning: unplanned
 Source Story: bug-2
 
 ## 결과 복사
@@ -57,7 +57,7 @@ Planning: unplanned
 - 더한 처리: Story는 적용하지 않았다. PO 검증 1회의 사본에서 위치 0, 첫 `(`나 `-`, 식 길이가 모두 통과해 합격 판정이 같고, 어느 글자인지 정하려면 새 결정이 필요해 계약 밖이다.
 - 더한 일: 위치 규칙을 정할 때 이 오류도 함께 정한다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 일이 이 위치의 코드를 없애고, 그 답을 잰 사본은 수를 넘은 자리의 커서를 위치로 썼으므로(`P(100000)`의 위치 1001) 그 계획과 함께 본다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 Source Story: 1.3
 Source Story: bug-2
@@ -105,7 +105,7 @@ Source Story: 1.1
 - 더한 처리: Story는 적용하지 않았다. 지금의 답(`TypeError`)에서 판정이 하나이고 수용되지 않은 뒤의 변경을 가정하지 않았다. 계약 밖이다.
 - 더한 일: 오류 클래스를 정할 때 함께 본다. po-r1의 제안은 답이 `CalculationError`이면 그 변경의 계획이 Story bug-2 Testing 표 4의 T-1과 위 시험을 다시 정하는 것이다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 Source Story: 1.3
 Source Story: bug-2
@@ -129,7 +129,7 @@ Source Story: bug-2
 - 더한 처리: Story는 적용하지 않았다. 언어를 정하려면 새 결정이 필요해 계약 밖이다.
 - 더한 일: 이 항목의 답을 새 까닭에도 적용한다. 낱말이 정해질 때 항목 "[Tech-Debt] 까닭이 빈 글자인 변형을 시험이 가리지 못함"의 단언도 함께 본다(QA의 제안).
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 Source Story: 1.3
 Source Story: bug-2
@@ -157,7 +157,7 @@ Source Story: bug-2
 - 더한 처리: DOC-002는 Optional이고 범위 밖이다. Story가 다시 열린 채 병합되어 Dev의 처리 줄이 없고 지적은 로컬 브랜치의 gate에만 있다.
 - 더한 일: 위 남은 일에 `ci/engine-rule.check.mjs`의 규칙과 까닭, 수 1000의 값과 뜻을 더한다(Architect, PM). 규칙의 까닭은 어디에도 적혀 있지 않아 규칙을 더한 사람의 말이 필요하다. 재발 비교의 처리: 지금도 필수 점검과 병합 작업의 사본 검증이 잡으므로, 막았을 첫 장치는 자동 점검이 아니라 규칙 줄이다. 코딩 표준 절에 "CI에 규칙을 더하는 커밋은 이 절에 규칙과 까닭을 적고 열린 요청과 Done Story에 닿는지 먼저 본다"를 두는 것이 제안이다. 항목 "[Tech-Debt] 엔진 규칙의 점검이 글자 검색임"도 함께 본다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 Source Story: 1.2
 Source Story: 1.3
@@ -392,7 +392,7 @@ Source Story: 1.2
 - 더한 출처: Story bug-2의 병합 뒤 점검(2026-11-07)이 앞선 병합 Story 1.1, 1.2, 1.3과 대조한 재발. Story bug-2의 QA TEST-001(`docs/qa/gates/bug-2.yml`의 `top_issues`), Cleaner F-3(`docs/story-records/bug-2/dev-1.1.md`의 섹션 "Cleaner 결과"), QA 회차 2의 TEST-002(`git show story/bug-2:docs/qa/gates/bug-2.yml`의 `top_issues`)
 - 더한 내용: 같은 기준이고 결함도 같다. 까닭을 빈 글자로 쓴 변형이 시험 76개를 통과한다(TEST-001, F-3). 제품은 맞고 고칠 일은 항목 "[Tech-Debt] 까닭이 빈 글자인 변형을 시험이 가리지 못함"이 든다. TEST-002는 같은 gate 범주의 같은 꼴이고 대상이 CI 규칙이다. 글자만 피한 사본 셋이 시험 76개와 두 규칙을 통과하고, 고칠 일은 항목 "[Tech-Debt] 엔진 규칙의 점검이 글자 검색임"이 든다. `testing.mutationCommands`가 여전히 비어 있어 이번에도 Cleaner 검토자와 QA의 손 변이(회차 1은 30개 가운데 21개를 시험이 잡았다)에서야 드러났으므로 막았을 첫 장치와 필요한 일은 그대로다. TEST-002는 `src/`의 변이로 드러나지 않으므로 그 도구를 고를 때 따로 본다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 Source Story: 1.3
 Source Story: bug-2
@@ -408,7 +408,7 @@ Source Story: bug-2
 - 더한 출처: Story bug-2의 병합 뒤 점검(2026-11-07)이 앞선 병합 Story 1.1, 1.2, 1.3과 대조한 재발. Story bug-2의 Cleaner F-1, F-3(`docs/story-records/bug-2/dev-1.1.md`의 섹션 "Cleaner 결과")
 - 더한 내용: 같은 기준이다. 시험 이름 `gives the same message for an expression nested too deeply on every call and whatever the call stack holds`가 단언보다 강했고(F-1), 단언의 글 `the message holds more than a position`이 실제 판정과 달랐다(F-3). 둘 다 Story에서 고쳤다. Story bug-2의 Dev Notes의 프로젝트 규칙 적용에 이 항목의 제안과 같은 문장 "시험 이름과 주석은 시험이 실제로 닿고 단언하는 것을 말해야 하고(CC-CMT-010)"가 있었는데도 Cleaner 검토에서 나왔다. QA 회차 1은 고친 뒤의 시험에서 위반을 찾지 못했다. 그 탐색 포인터는 Dev가 쓸 때 막지 못했고 Cleaner 검토가 잡았으므로, 막았을 첫 장치를 고를 때 이 결과를 함께 본다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 Source Story: 1.3
 Source Story: bug-2
@@ -437,7 +437,7 @@ Source Story: 1.3
 - 더한 출처: Story bug-2의 병합 뒤 점검(2026-11-07)이 앞선 병합 Story 1.1, 1.2, 1.3과 대조한 재발. Story bug-2의 QA DOC-001(`docs/qa/gates/bug-2.yml`의 `top_issues`). 정정할 일은 항목 "[Tech-Debt] Story bug-2 Dev 기록의 두 문장"이 든다
 - 더한 내용: 같은 기준과 gate 범주 DOC이다. DOC-001은 순서와 값은 맞고 시각 하나와 나열 하나가 다른 Optional이다. Story bug-2의 Dev Notes의 "이전 Story"에 위 제안과 같은 문장 "기록은 실제 출력과 대조해 적고, 모든 입력을 말하는 문장에는 잰 범위를 함께 적는다"가 있었는데도 되풀이되었다. 그 탐색 포인터는 막지 못했다. 위 필요한 일의 끝을 포인터로 둘지 트리아지가 다시 본다. 사실 주장의 참은 자동 점검이 가리지 못하고 규칙(CL-GLD-OPS-005, CC-DOC-009)은 이미 있다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 Source Story: 1.3
 Source Story: bug-2
@@ -461,7 +461,7 @@ Source Story: 1.2
 - 더한 출처: Story bug-2의 병합 뒤 점검(2026-11-07)이 앞선 병합 Story 1.1, 1.2, 1.3과 대조한 재발. Story bug-2의 Cleaner F-4(`docs/story-records/bug-2/dev-1.1.md`의 섹션 "Cleaner 결과")
 - 더한 내용: 같은 기준이다. 위치 시험의 지역 상수 `widened`가 뜻을 말하지 않았고 Cleaner에서 이름을 지웠다. Story bug-2의 Dev Notes의 프로젝트 규칙 적용에 이 항목의 제안과 같은 문장 "이름은 담은 것을 말해야 한다(`.bmad-core/data/development-quality.md`의 Cleaner 점검 목록)"가 있었는데도 Cleaner 검토에서 나왔다. 그 탐색 포인터는 막지 못했으므로 위 필요한 일을 트리아지가 다시 본다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.2
 Source Story: bug-2
 
@@ -510,7 +510,8 @@ Source Story: 1.3
 - 필요한 일: 두 문장을 위 사실로 정정한다. 앞선 기록(dev-dod-2, dev-qa-r2)은 고쳐 쓰지 않고 코드와 시험은 바꾸지 않는다. Dev의 기록이 정한 자리는 Completion Notes의 새 항목인데, Story가 병합되어 다시 열리지 않으므로 이 정정을 담을 계획이 따로 필요하다.
 - 책임: Dev
 
-Planning: unplanned
+Planning: undecided
+Plan: [Tech-Debt] 유형 Story, docs/stories/tech-debt/ 아래(키는 SM의 draft-standalone가 정한다) — SM — 2026-11-07
 Source Story: 1.3
 
 ## [Tech-Debt] 재발: 같은 코드와 글자를 여러 곳에 적음
@@ -522,7 +523,7 @@ Source Story: 1.3
 - 더한 출처: Story bug-2의 병합 뒤 점검(2026-11-07)이 앞선 병합 Story 1.1, 1.2, 1.3과 대조한 재발. Story bug-2의 Cleaner F-4(`docs/story-records/bug-2/dev-1.1.md`의 섹션 "Cleaner 결과")
 - 더한 내용: 같은 기준이다. 위치 시험이 `parenthesized`와 같은 꼴의 입력을 따로 만들었고(지역 상수 `widened`), Cleaner에서 그 도우미의 선택 인자로 줄였다. `testing.lintCommands`가 여전히 비어 있어 Cleaner 검토에서야 드러났으므로 막았을 첫 장치와 필요한 일은 그대로다.
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.3
 Source Story: bug-2
 
@@ -545,7 +546,7 @@ Source Story: 1.3
 - 필요한 일: po-r1의 제안은 설계 원칙에 스택 한계에 달린 결과의 예외를 적는 것이다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 답(깊이를 세어 1000을 넘으면 오류)이 구현되면, 호출자 스택이 잰 범위 안인 동안 결과가 스택 상태에 달리지 않아(잰 범위와 카운터의 구조에서 온 QA의 추론) 이 항목의 전제가 바뀐다. 그 일 뒤에 남는 것을 정하면 끝난다.
 - 책임: Architect
 
-Planning: undecided
+Planning: unplanned
 Source Story: bug-2
 
 ## 스택 크기를 바꾼 실행과 스택을 거의 다 쓴 호출
@@ -557,7 +558,7 @@ Source Story: bug-2
 - 필요한 일: po-r1의 제안은 짧은 식이 깊이 오류로 번역되는 경우까지 수용 문서에 적고 까닭 글자가 깊이만 말하게 둘지 정하는 것이다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 답이 구현되면 `catch`가 없어져 결과가 바뀐다. 사용자가 고른 선택지의 설명은 "호출자가 스택을 많이 쓰면 RangeError가 그대로 나갑니다"이고, QA가 잰 사본은 호출자 6000프레임까지 `P(1000)` 값 1, 7000프레임부터 `RangeError`, 호출자 10000프레임의 `P(1)`도 `RangeError`다. 그 일 뒤의 결과를 수용 문서에 적을지 정하면 끝난다.
 - 책임: Architect
 
-Planning: undecided
+Planning: unplanned
 Source Story: bug-2
 
 ## 깊은 입력의 결정을 둘 자리
@@ -569,7 +570,7 @@ Source Story: bug-2
 - 필요한 일: po-r1의 제안은 후보 D-3으로 결정 기록에 옮길지 정하는 것이다. 설계 수용의 결정을 공유 근거로 쓰려면 항목 "조사 없이 받은 설계의 남은 일"이 먼저다(po-r2의 갱신). 위 새 답이 결정의 내용을 바꾸므로 옮길 글은 그 일의 결과로 정한다.
 - 책임: PM
 
-Planning: undecided
+Planning: unplanned
 Source Story: bug-2
 
 ## 조사 없이 받은 설계의 남은 일
@@ -581,7 +582,7 @@ Source Story: bug-2
 - 필요한 일: 이 설계를 다른 Story나 결정 기록의 공유 근거로 쓸 때, 또는 외부 자료를 읽을 수 있는 호출에서 빠진 자료를 읽을지 사용자가 정한다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 일을 맡는 계획이 새 설계의 조사 요건을 어떻게 다룰지도 정한다.
 - 책임: Architect(조사), 사용자(읽을지의 결정)
 
-Planning: undecided
+Planning: unplanned
 Source Story: bug-2
 
 ## [Tech-Debt] 까닭이 빈 글자인 변형을 시험이 가리지 못함
@@ -592,7 +593,7 @@ Source Story: bug-2
 - 필요한 일: 각 까닭에서 공통 꼬리 ` at position`을 걷어낸 나머지가 비어 있지 않은지 같은 시험에서 본다. 낱말을 시험에 적지 않고 제품 코드는 바꾸지 않는다. 이 단언을 더한 사본은 전달된 엔진에서 76개 통과, 빈 까닭의 엔진에서 이 시험 하나가 실패한다. 저울질할 점은 Cleaner F-3이 접미사를 걷어내는 일을 구현을 되풀이하는 기계로 보아 단언의 글만 고친 것이고, `testing-tdd`의 "restates the implementation"과 함께 따진다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 일이 같은 시험 파일을 바꾸고, 항목 "오류 메시지의 언어와 꼴"의 답이 낱말을 정한다. 변형이 그 시험에서 실패하면 끝난다.
 - 책임: Dev
 
-Planning: undecided
+Planning: unplanned
 Source Story: bug-2
 
 ## [Tech-Debt] Story bug-2 Dev 기록의 두 문장
@@ -603,7 +604,7 @@ Source Story: bug-2
 - 필요한 일: 두 문장을 위 사실로 정정한다. 앞선 기록(dev-1.1)은 고쳐 쓰지 않고 코드와 시험은 바꾸지 않는다. Dev의 기록이 정한 자리는 Completion Notes의 새 항목인데, Story가 병합되어 다시 열리지 않으므로 이 정정을 담을 계획이 따로 필요하다.
 - 책임: Dev
 
-Planning: undecided
+Planning: unplanned
 Source Story: bug-2
 
 ## [Tech-Debt] 엔진 규칙의 점검이 글자 검색임
@@ -614,5 +615,5 @@ Source Story: bug-2
 - 필요한 일: 규칙을 남기고 뜻까지 지키려면 규칙의 소유자가 점검의 방법을 정한다. 항목 "[Bug] 엔진이 CI 규칙을 어겨 필수 점검 test가 실패함"의 일에서는 점검이 못 가리므로 글자만 피하는 고침을 읽기로 막는다. 정해진 방법이 위 세 사본을 잡거나, 잡지 않기로 한 까닭이 코딩 표준 절에 적히면 끝난다.
 - 책임: 규칙의 소유자를 적은 글이 없다. Architect(`docs/conventions/Common/CODING_CONVENTION.md`의 "A rule that fits only this project goes into the Architecture's coding standards section, which the Architect owns"), 프로젝트 소유자(규칙을 더한 커밋 0528169의 까닭과 점검 방법의 승인)
 
-Planning: undecided
+Planning: unplanned
 Source Story: bug-2
