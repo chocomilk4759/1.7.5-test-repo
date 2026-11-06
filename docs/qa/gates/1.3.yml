@@ -1,0 +1,230 @@
+# Story 1.3 계산기 화면의 품질 게이트. 회차는 review_rounds 안의 데이터이고, 근거의 서술은 회차 기록 문서 qa-r1에 있다.
+
+# -- 현재 판정 --
+schema: 2
+story: "1.3"
+story_title: "계산기 화면"
+gate: "PASS"
+status_reason: "AC 1 ~ 3과 필수 시나리오 15개를 현재 코드와 실행으로 확인했고 막는 지적이 없다. 남은 활성 지적은 Optional TEST-001(제품은 맞고 틀린 변형 둘을 시험이 잡지 못함) 하나다."
+reviewer: "Quinn(QA 하위 세션, 모델 claude-opus-5-5, effort max), *run-story 1.2 1.3 remote to Done run의 역할 작업"
+updated: "2026-11-06T18:52:00+09:00"
+round: 1
+
+# 승인된 면제는 없다
+waiver: { active: false }
+
+# -- 활성 지적 --
+top_issues:
+  - id: TEST-001
+    severity: low
+    disposition: optional
+    confidence: high
+    suggested_owner: dev
+    finding: "`evaluate`에 받은 글자를 그대로 넘긴다는 규칙(N-3, 표 2의 E-4, E-5)의 시험이 틀린 변형 둘을 놓친다. 끝의 U+0020을 지우고 넘기는 변형과 CR을 지우고 넘기는 변형이 전달 시험 13개와 CI 규칙을 모두 통과한다. E-4의 행 중 뒤 공백이 있는 `7 + a`는 뒤 공백을 지워도 `a`의 위치가 4로 같아 이 변형을 가리지 못하고, E-5의 행에는 CR이 없다. 전달된 코드는 `evaluate(expression)`이어서 맞다."
+    failure_scenario: "뒤의 수정이 이 꼴로 입력을 손보면 뒤 공백 둘이 있는 `7 +`의 줄이 위치 5 대신 위치 3을 말하고, `1`과 `+ 2` 사이에 CR이 있는 식이 오류 줄 대신 CR이 든 값 줄이 되어도 시험이 통과한다."
+    suggested_action: "처리를 정한다. 적용하면 시험 `reports an error at its position in the expression as received`에 뒤 공백 둘이 있는 `7 +`를, 시험 `does not take white space other than a space for a space`에 `1`과 `+ 2` 사이에 CR이 있는 식을 더하며 제품 코드는 바꿀 일이 없다. 적용하지 않으면 `tasks/apply-qa-fixes.md`대로 future 기록과 처리 줄을 남긴다. 계약 안이다."
+    refs:
+      - "src/screen.js, `renderScreen`의 `evaluate(expression)`"
+      - "test/screen.test.js, 시험 `reports an error at its position in the expression as received`, `does not take white space other than a space for a space`"
+      - "docs/stories/1.3.story.md, Testing 표 2의 E-4, E-5와 1.3-UNIT-005의 실패 기준"
+    first_round: 1
+    verification: "변이 사본 pass-no-trailing-u0020과 pass-no-carriage-returns에서 전달 시험 13개가 통과하고 CI 규칙이 종료 상태 0이다. 그 사본에서 뒤 공백 둘이 있는 `7 +`는 position 3의 오류 줄이고 CR이 든 식은 값 줄이다. 전달 모듈은 같은 두 입력에 position 5와 position 1의 오류 줄을 돌려준다."
+
+# -- 닫힌 지적과 처분 --
+resolved_issues: []
+
+# -- 위험 집계와 통제 --
+risk_summary:
+  # 프로젝트에 정한 위험 척도가 없어 결과의 크기와 가능성을 글로 판단했다. 근거는 qa-r1의 위험 표에 있다.
+  totals: { critical: 0, high: 0, medium: 1, low: 5 }
+  recommendations:
+    must_fix: []
+    monitor:
+      - "아주 깊은 중첩(N-6, PO1-N6): 사용자가 입력한 글자로 `renderScreen`이 RangeError를 던진다. AC 2가 정한 결과이고 화면을 쓰는 호출자가 아직 없다. 답이 오면 T-2의 기대와 엔진이 함께 바뀐다."
+      - "공백의 종류(N-1, PO1-N1): U+3000만 있는 입력이 오류 줄이다. 표 3 U-1이 받는다. 답이 오면 표를 줄인다."
+      - "`{식}`의 앞뒤 공백(N-2, PO1-N2): 앞뒤 공백이 있는 식의 줄은 등호 앞 공백이 둘이다. 표 3 U-2가 받는다."
+      - "오류 메시지의 언어(N-4, PO1-N4): 오류 줄에 영어 까닭이 그대로 보인다. 답이 메시지를 줄이면 `7 +` 줄의 길이 단언도 바뀐다."
+      - "받은 글자와 받은 오류의 전달: TEST-001과 PO1-N10의 틀린 변형은 시험이 잡지 못하고 읽기만 잡는다."
+      - "폭을 넘는 줄(N-8, PO1-N8): 표시 장치가 없는 지금은 영향이 없다. 처리와 Architecture의 틈은 future-work 항목에 남는다."
+
+# -- 주석 정책과 수명 점검 --
+comment_hygiene:
+  status: "PASS"
+  status_reason: "src/screen.js와 test/screen.test.js의 추가 줄에 추적 번호, 규칙과 QA ID, 편집 표시, 기계 고유 경로, IN-FLIGHT가 없다. 기준 40e1a6b에 없는 새 파일이고, 주석과 시험 이름을 모두 읽어 실제 동작과 단언에 맞음을 확인했다."
+
+  policy_reference:
+    coding_convention: "docs/conventions/Common/sections/golden-rules.md"
+    comment_policy: ".bmad-core/tasks/code-comment-style.md"
+    lifecycle_policy: ".bmad-core/tasks/in-flight-comment-lifecycle.md"
+
+  classifier_run:
+    script: "체크리스트 §1.1, §1.2(QA 접두, 시나리오 번호, PO와 SM 메모 번호, 표의 행 번호, 결정과 Cleaner 번호), §1.3, §1.4, §1.7의 grep 후보 검색을 기준 40e1a6b 대비 src/screen.js, test/screen.test.js의 추가 줄에 실행했다. 모두 일치 없음. 두 파일의 주석 전부와 시험 이름 13개를 읽어 코드와 단언에 대조했다."
+    mode: "agent-review에 grep 후보 수집을 더함"
+    guard_window: null
+    executed_at: "2026-11-06T18:44:00+09:00"
+    output_dir: "(inline)"
+
+  tracking_id_leaks:
+    count: 0
+    locations: []
+    threshold:
+      pass: 0
+      fail: "1+"
+
+  build_guard_critical:
+    count: 0
+    locations: []
+    handling: "not_applicable"
+
+  hotspot_pair_commit_compliance:
+    applicable: false
+    hotspot_files_touched: []
+    pair_commits_verified: []
+    forbidden_split_detected: []
+    status: "N/A"
+
+  in_flight_lifecycle:
+    total_created_during_story: 0
+    total_resolved: 0
+    pending_at_review: 0
+    pending_after_story_done: 0
+    orphan_from_prior_stories: 0
+    ledger_reference: "story_file::dev-agent-record::in-flight-comments-ledger"
+    status: "PASS"
+
+  forbidden_patterns:
+    rule_id_citations:
+      count: 0
+      locations: []
+    external_paths:
+      count: 0
+      locations: []
+    qa_gate_id_leaks:
+      count: 0
+      locations: []
+
+  access_specifier_compliance:
+    applicable: false
+    access_specifier_lines_changed_in_diff: 0
+    expected: 0
+    status: "PASS"
+
+  whitelist_preserved:
+    count: 0
+    expected: 0
+    items: []
+    status: "PASS"
+
+  tests_directory_findings:
+    count: 0
+    note: "기존 시험 잔여물이 없다. test/screen.test.js는 기준 40e1a6b에 없는 새 파일이고 test/engine.test.js, test/number-format.test.js는 바뀌지 않았다."
+
+  gate_decision_rules:
+    priority_order:
+      - "classify raw hygiene conditions below; retain counts/status for actually waived occurrences"
+      - "whitelist_preserved.status == FAIL -> FAIL"
+      - "access_specifier_compliance.status == FAIL -> FAIL"
+      - "tracking_id_leaks.count > 0 -> FAIL"
+      - "forbidden_patterns.rule_id_citations.count > 0 or forbidden_patterns.qa_gate_id_leaks.count > 0 -> FAIL"
+      - "forbidden_patterns.external_paths.count > 0 -> apply effective rule and active issue disposition"
+      - "in_flight_lifecycle.pending_after_story_done > 0 -> FAIL"
+      - "in_flight_lifecycle.pending_at_review > 0 -> FAIL"
+      - "hotspot_pair_commit_compliance.status == FAIL -> FAIL"
+      - "in_flight_lifecycle.orphan_from_prior_stories > 0 -> CONCERNS"
+      - "build_guard_critical.count > 0 and handling == manual_review_required -> CONCERNS"
+      - "tests_directory_findings.count > 0 -> historical residue only, no gate impact (CL-GLD-OPS-003)"
+      - "other active comment issues -> apply the top_issues disposition from tasks/qa-gate.md Evidence classification"
+      - "all raw conditions passed -> comment_hygiene.status PASS"
+      - "comment_hygiene.status CONCERNS or FAIL -> held by an active Required/Recommended issue or an applicable waiver; the overall gate is not PASS"
+      - "overall gate: unwaived active Required/Recommended conditions retain normal impact; covered conditions follow qa-gate.md's scoped WAIVED contract"
+
+# -- 점검 요약 --
+quality_score: 100
+expires: null
+
+evidence:
+  tests_reviewed: 13
+  risks_identified: 6
+  trace:
+    ac_covered: ["AC 1", "AC 2", "AC 3"]
+    ac_gaps: []
+    ac_partial: []
+
+# -- 품질 속성과 근거 --
+nfr_validation:
+  security:
+    status: "PASS"
+    notes: "적용되는 기준은 CC-JS-004의 경계 검증이다. 문자열이 아닌 입력 8가지가 `evaluate`의 TypeError로 거절되고 어떤 것도 글자로 바뀌지 않는다. 식은 `evaluate`만 해석하며 `eval`과 `Function`이 없다. 값 줄의 `{식}`은 문법이 받은 글자만이고 오류 줄은 엔진의 정해진 까닭과 위치뿐이다. 입출력, 비밀, 환경 변수가 없다."
+  performance:
+    status: "N/A"
+    notes: "수용된 성능 기준과 이 변경에 닿는 실행 비용 규칙이 없어 기준을 만들지 않았다. 참고로 공백 판정 정규식은 공백 100만, 200만, 400만 글자 뒤의 다른 글자에 3.3, 5.9, 10.4 ms로 길이에 비례했다."
+  reliability:
+    status: "PASS"
+    notes: "AC 2가 정한 두 갈래를 확인했다. 표의 오류 입력 21행은 오류 줄이고, 표의 다른 오류 8행은 `evaluate`와 같은 클래스와 메시지로 던지며, 코드는 `throw error;`로 잡은 객체를 그대로 던진다. 씨앗을 고정한 문자열 30만 개에서 던짐, 줄바꿈 글자, 두 번 부를 때의 차이, 명세와의 어긋남이 0건이다. 깊은 중첩의 던짐은 AC 2의 결과이고 위험에 적었다."
+  maintainability:
+    status: "PASS"
+    notes: "공개 심볼 둘 뒤에 분기 넷을 둔 작은 모듈이고 공개 인터페이스로만 시험한다. 변이 67개 가운데 56개가 시험이나 CI 규칙에서 잡혔고, 통과 11개는 TEST-001 둘, PO1-N10 셋, 계획이 읽기에 맡긴 넷, 표 3이 받는 읽기 둘이다. CRAP은 quality.crap.commands가 비어 측정하지 않음이고 통과도 차단도 아니다."
+
+# -- 바로 할 일과 뒤의 일 --
+recommendations:
+  immediate:
+    - "Dev: Done 전에 Optional TEST-001의 처리를 정해 Completion Notes에 처리 줄을 남긴다. 이 회차는 이것을 정하지 않았고 구현을 허락하지 않는다."
+  future:
+    - "PO1-N1 ~ PO1-N12: Story의 PO Validation에 있고 병합 뒤 PO 점검이 옮긴다. 각 항목의 이 회차 분류는 아래 회차 note에 있다."
+    - "메시지 언어의 답(PO1-N4)이 까닭을 짧게 바꾸면 시험 `returns a line longer than the display whole`의 `7 +` 길이 단언이 실패한다. 까닭을 짧게 한 엔진 사본에서 그 시험 하나만 실패했다. 그 항목의 필요한 일에 함께 적는다."
+    - "저작권과 SPDX 값: 사용자 답대로 정하지 않아 요약 줄만 두었다. 기존 future-work 항목 `[Tech-Debt] 새 파일의 저작권과 SPDX 값`이 들고 있고 이 Story를 막지 않는다."
+    - "CRAP 측정: 기존 future-work 항목 `[Tech-Debt] CRAP 측정 경로`가 들고 있다."
+
+# -- 회차별 검토 근거 --
+review_rounds:
+  - round: 1
+    at: "2026-11-06T18:52:00+09:00"
+    gate: "PASS"
+    reviewer: "Quinn(QA 하위 세션, 모델 claude-opus-5-5, effort max), *run-story 1.2 1.3 remote to Done run의 역할 작업"
+    depth: deep
+    base_commit: "40e1a6b2fef2c8ce7af538f885b4d966593d8df9"
+    head_commit: "5ca0d47a9f5a7d7efba405175659b98006626e51"
+    scope: "전체 검토. 브랜치 story/1.3, main 40e1a6b에서 5ca0d47까지, 커밋하지 않은 변경 없음. 제품과 시험: 새 파일 src/screen.js, test/screen.test.js(구현 개정 aac1c5a, 그 뒤 두 파일 변경 없음, git hash-object 값 bbd96bea4be3, 3ed20611195c). 문서: Story, sm-1, po-r1, dev-1.1, dev-2.1, dev-dod-1. 깊이 근거: 첫 회차이고 새 공개 모듈이며 CI만 보는 규칙과 미결 계획 결정이 걸려 있어 계획 밖의 오라클, 변이, 속성 실행을 더했다."
+    verification:
+      automated:
+        - "node --test: 프로젝트 루트, HEAD 5ca0d47, Node.js v24.22.1. 48개 통과, 실패 0(화면 13, 기존 35). 1.3-UNIT-001 ~ 1.3-UNIT-010의 시험과 1.3-UNIT-011의 시험 부분."
+        - "1.3-UNIT-011의 diff 부분: git diff --quiet 40e1a6b -- src/engine.js src/number-format.js test/engine.test.js test/number-format.test.js ci/screen-rule.check.mjs .github/workflows/ci.yml 종료 상태 0."
+        - "1.3-INT-001: git ls-files --error-unmatch src/screen.js로 파일이 있음을 확인하고 node ci/screen-rule.check.mjs 종료 상태 0, 출력 없음. 값을 41로 바꾼 사본은 종료 상태 1과 메시지 src/screen.js must export SCREEN_WIDTH = 40, got 41이어서 점검이 실제로 판정한다."
+        - "1.3-INSP-001: Story의 가져오기 검색 명령을 저장된 글에서 그대로 뽑아 실행, 종료 상태 0, 출력 없음."
+        - "표 대조: Story의 표 1, 2, 3의 64행을 기록용 사본에서 전달 시험으로 실행해 빠진 행 0, 표 1의 23행은 기대 글자와 같음."
+        - "독립 오라클(제품과 코드를 나누지 않는 BigInt 유리수 계산과 12자리 반올림): 표 1의 23행에서 오라클, Story, 전달 모듈이 모두 같음."
+        - "수작업 변이 67개: 시험에서 54개 실패, CI 규칙에서만 2개 실패, 통과 11개. 통과의 내역은 note에 있다."
+        - "속성 실행: 씨앗을 고정한 길이 0 ~ 8의 문자열 30만 개(빈 글자 38220, 값 줄 10461, 오류 줄 251319). 던짐, 줄바꿈 글자(LF, CR, U+2028, U+2029), 두 번 부를 때의 차이, `evaluate`와의 어긋남 0건."
+        - "AC 1 ~ 3의 글이 docs/prd.md와 같음(diff). 두 파일에 U+00A0, U+3000의 실제 바이트 0, CR 0."
+        - "check-instructions.sh 종료 상태 0, check-stage.sh records 종료 상태 0, po-record 종료 상태 0, future --story 1.3 종료 상태 0, deps 종료 상태 0. check-stage.sh review는 이미 Review인 Status 하나만 보고했다(Dev의 전환 뒤 상태라 정상)."
+      manual:
+        - "agent-review, 1.3-INSP-002: src/screen.js를 끝까지 읽음. 결과는 `evaluate`와 `formatNumber(value)`로 만들고, 입출력과 전역 접근이 없으며, 모듈 수준 바인딩은 상수 `SCREEN_WIDTH`뿐이고 정규식은 g, y 플래그가 없다. `SCREEN_WIDTH`는 선언에만 나오고 줄을 자르거나 접는 코드가 없다. 잡은 오류는 `throw error;`다. 통과."
+        - "agent-review, 1.3-INSP-003: 누적 변경을 docs/architecture.md의 기술 구성, 소스 트리, 설계 원칙, D-1, README.md와 대조. 어긋남이 없고 `SCREEN_WIDTH`가 소스 트리 행에 없는 틈은 Task 2.1이 고치지 않기로 정했으며 dev-2.1의 no-change 결론과 같다. 통과."
+        - "agent-review, TDD 증거: dev-1.1의 조각 표를 Dev의 원시 출력과 대조. 시험 수, 실패 수, 첫 실패 값이 표와 같고 파일 시각의 순서가 RED, GREEN, Cleaner, 재점검이다. 기준 통과 조각의 RED가 없다는 사실이 기록에 그대로 있고 사후 민감도 점검 18개의 결과 요약이 표와 같다."
+        - "agent-review, 주석 위생: 두 파일의 주석과 시험 이름을 모두 읽음. 위반 없음."
+        - "user-only 시나리오는 없다."
+    findings:
+      new: 1
+      resolved: 0
+      partial: 0
+      not_fixed: 0
+    external_reviews: []
+    adversarial_checks:
+      - id: TEST-001
+        verdict: CONFIRMED
+        evidence: "Quinn(QA), test/screen.test.js와 src/screen.js의 변이 사본. 끝의 U+0020이나 CR을 지우고 넘기는 변이가 시험 13개와 CI 규칙을 통과하고, 그 사본의 결과가 전달 모듈과 다르다. 전달 코드에는 이 변형이 없다."
+        severity_change: "없음"
+      - id: PO1-N10
+        verdict: CONFIRMED
+        evidence: "Quinn(QA), 변이 사본. 같은 클래스와 메시지로 새 오류를 던지는 변이 셋(그대로, cause를 더함, stack을 복사함)이 시험 13개를 통과한다. 메시지를 바꾸거나 Error로 바꾸면 실패한다. 전달 코드는 `throw error;`이고 이 판정은 1.3-INSP-002의 읽기가 한다."
+        severity_change: "없음"
+    dev_dispute_review: []
+    deviations: []
+    note: "적용 정책: 현재 comments, documentation, testing-tdd 본문과 data/finding-classification.md. 두 파일 모두 기준 40e1a6b에 없어 기존 잔여물이 없다. 결론: 모든 AC와 필수 점검이 통과했고 Required와 Recommended가 없어 PASS, Status는 Review이며 Done은 이 호출의 일이 아니다. 넘겨받은 질문의 리드(모두 직접 확인했고 막는 단계 없음, pending 없음): Q1, SM N-1, PO1-N1 공백의 종류: 탭, LF, CR LF, U+00A0, U+3000만 있는 글자는 오류 줄이고 표 3 U-1이 받으며 JavaScript trim 변이도 통과해 판정이 같다. 계획 결정이고 step 4에서 막지 않는다. 답은 PM, SM. Q2, SM N-2, PO1-N2 앞뒤 공백: 받은 그대로 보여 등호 앞 공백이 둘이고 표 3 U-2가 받으며 다듬는 변이도 통과한다. 답은 PM, SM. Q3, SM N-3, PO1-N3 넘기는 글자: 코드는 받은 글자를 넘기고 앞 공백 입력의 위치가 받은 글자의 위치다. AC 1, AC 2를 그대로 읽은 것이어서 미결이 아니고 확인은 PM의 몫이다. Q4, SM N-4, PO1-N4 메시지: 영어 까닭이 그대로 보인다. AC 2의 메시지가 엔진의 메시지이고 답은 엔진의 별도 계획이다. Q5, SM N-5, PO1-N5 문자열이 아닌 입력: 표의 7가지와 String 객체가 TypeError로 나간다. AC 2가 지금 결과를 정한다. Q6, SM N-6, PO1-N6 깊은 중첩: RangeError로 나간다. AC 2의 결과이고 위험 medium으로 monitor에 둔다. Q7, SM N-7, PO1-N7 name: Error이고 코드는 클래스로 가려 답과 무관하다. Q8, SM N-8, PO1-N8 Architecture의 틈: `SCREEN_WIDTH`, Change Log 절, 코딩 표준 절이 없다. Task 2.1이 고치지 않기로 정했고 메인 세션의 답이 그 항목에 남겼다. PO1-N9: Dev가 뼈대 상태와 조각 8의 상태에서 종료 상태 1과 메시지를 보았고 저장 출력이 같아 남은 효과가 없다. PO1-N10과 Dev 보고의 시험 틈: 재현했다. 판정 방법이 같은 오류를 constructor와 message로 정하고 목록에 든 실패가 아니어서 step 3의 기준이 아니며 코드는 맞아 step 4도 아니다. 자동 판별은 대역이나 V8 스택 글에 기대어 testing-tdd가 제외하므로 1.3-INSP-002의 읽기로 둔다. PO1-N11: 1.3-UNIT-011의 수준이 unit이고 합격 판정이 같다. PO1-N12: a81b56a는 어느 브랜치에도 없고 main의 병합은 81c547c다. 범위 밖이다. Dev의 git ls-remote 읽기: Dev 보고에만 있어 흔적을 확인할 수 없고 Story의 산출물을 바꾸지 않아 범위 밖이다. 메인 세션이 최종 보고에 적는다. 저작권과 SPDX: 사용자 답대로 값을 만들지 않았고 CC-CMT-001의 처리와 같다. 이 호출이 네트워크를 쓰지 않아 이슈 8의 실제 상태와 호스팅 CI 실행은 보지 않았다. 필수 점검이 아니고 게시 단계의 확인이 답한다. 변이 통과 11개의 내역: TEST-001 둘, PO1-N10 셋, 표 3이 받는 읽기 둘(JavaScript trim 판정, 다듬은 표시), 계획이 1.3-INSP-002의 읽기에 맡긴 넷(값 줄과 오류 줄을 60글자에서 자름, 줄 캐시, 호출 수 변수). 기각과 합침: 숫자 리터럴 40, 308, 100000은 Numeric literals 2단계(이름 있는 상수), 표의 42와 0은 3단계(시험 입력)이고 DISPLAY_WIDTH는 1단계의 문장대로 제품 값의 반복이 아니다. `errorLineOf`가 기대를 `evaluate`에서 얻는 것은 AC 2의 메시지가 그 식의 메시지여서 구현의 재계산이 아니고, 접두와 메시지를 바꾼 변이가 모두 실패한다. 시험 이름 `throws what evaluate throws when that is not a calculation error`는 판정 방법의 같은 오류와 같은 뜻이고 코드에 대해 참이어서 CC-CMT-010의 거짓 주장이 아니다. `7 +` 줄의 길이 단언은 Story의 E-2가 전제를 적었고 틀릴 때 조용히 지나가지 않으며 엔진 변경은 뒤의 변경이어서 PO1-N4에 합쳤다. 커밋 5ca0d47의 시각 정정은 Dev 자기 기록의 정체 정보를 같은 작업 안에서 고친 것이고 결과를 바꾸지 않으며 고친 값이 커밋 시각과 맞다. dev-1.1의 `rethrow-*`(실제 폴더는 `rebuild-*`)와 File List의 설명(Status, Change Log를 빠뜨림)은 사실이 맞고 표현만 덜 정확하며 완전한 목록으로 쓰지 않았다. 80칸을 넘는 시험 이름 줄 다섯은 CC-JS-002의 선호 폭이고 줄바꿈할 수 없다. JSDoc의 `오류: `는 AC 2의 표시 글자 인용이다. 공백 정의가 엔진과 겹치는 것은 엔진에 공개 심볼이 없고 N-1이 미결이라 지금 합칠 수 없다. `let value;`는 try를 evaluate로 좁히려는 재바인딩이어서 CC-JS-001에 맞다. CRAP은 측정하지 않음이며 제안은 기존 항목이 들고 있다."
+
+# -- 판정 이력 --
+history:
+  - at: "2026-11-06T18:52:00+09:00"
+    round: 1
+    gate: "PASS"
+    note: "첫 회차 전체 검토. 막는 지적 없음, Optional TEST-001 활성, Done은 별도 작업."
