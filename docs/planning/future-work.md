@@ -9,7 +9,6 @@
 - 책임: PM
 
 Planning: unplanned
-Revisit: 2026-10-15
 
 ## 압력 단위 별칭
 
@@ -28,7 +27,7 @@ Planning: unplanned
 - 필요한 일: 위치 규칙을 결정 기록에 적는다. 문법 오류와 계산 오류가 함께 있는 식(`7 / 0 + a`)에서 어느 쪽이 먼저인지도 함께 정한다. 답이 엔진의 선택과 다르면 `src/engine.js`와 `test/engine.test.js`의 시험 "names the stray character when a closing parenthesis was expected"를 바꾼다. 시험이 정한 규칙을 고정하면 끝난다.
 - 책임: 프로젝트 소유자
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## AC 3의 목록에 없는 문법 오류
@@ -40,7 +39,7 @@ Source Story: 1.1
 - 필요한 일: AC 보강이나 D-1과 같은 해석 결정으로 "문법에 맞지 않는 식은 `CalculationError`"를 수용 문서에 적는다(po-r1의 제안). 답이 다르면 Testing 표 2의 E-7, E-8과 시험, 엔진을 그 답에 맞춘다.
 - 책임: PM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## 공백의 종류와 자리, 숫자의 범위
@@ -52,7 +51,7 @@ Source Story: 1.1
 - 필요한 일: 공백의 종류와 자리, 숫자의 범위를 해석 결정이나 AC 보강으로 정한다. po-r1의 제안은 공백을 U+0020, `\t`, `\n`, `\r`로 하고 숫자를 ASCII로 하는 것이다. 답이 엔진의 선택과 다르면 `src/engine.js`를 바꾸고, 표 3의 결과를 하나로 줄인 시험을 둔다.
 - 책임: PM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## 문자열이 아닌 입력
@@ -64,7 +63,7 @@ Source Story: 1.1
 - 필요한 일: 오류 클래스를 해석 결정으로 정한다. po-r1의 제안은 D-2와 같은 방향의 `CalculationError`, 위치 0이다. 답이 `TypeError`가 아니면 엔진을 바꾸고 시험이 그 클래스를 고정한다.
 - 책임: PM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## 오류 메시지의 언어와 꼴
@@ -76,7 +75,7 @@ Source Story: 1.1
 - 필요한 일: Story 1.3 초안 전에 메시지의 언어와 꼴을 정한다. 답이 영어가 아니면 `src/engine.js`의 까닭 글자를 바꾼다.
 - 책임: PM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## 아주 깊은 중첩
@@ -88,7 +87,7 @@ Source Story: 1.1
 - 필요한 일: Story 1.3 초안 전에 처리할 수 없는 깊이의 결과를 정한다. po-r1의 제안은 숫자 한도 없이 "처리할 수 없는 깊이면 `CalculationError`"다. 정해지면 엔진과 JSDoc을 맞추고, 값 또는 그 결과를 받는 시험을 둔다.
 - 책임: PM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## CI 규칙이 계획 문서에 없음
@@ -100,7 +99,7 @@ Source Story: 1.1
 - 필요한 일: Story 1.3 초안 전에 `docs/architecture.md`에 코딩 표준 절과 Change Log 절을 두고, `SCREEN_WIDTH`와 그 폭을 넘는 줄의 처리를 Story 1.3의 범위에 넣을지 정한다. Story 1.3이 `SCREEN_WIDTH`를 모르면 `node ci/screen-rule.check.mjs`에서 실패한다.
 - 책임: Architect, PM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## 위치 판정 방법의 문장과 {범위} 행
@@ -112,7 +111,7 @@ Source Story: 1.1
 - 필요한 일: po-r1의 수정안은 세 행의 작은 수를 식 길이보다 큰 수로 바꾸거나 문장을 후보를 든 행으로 한정하는 것이다.
 - 책임: SM, Dev
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## 공백 자리의 서술과 E-11의 한 행
@@ -124,7 +123,7 @@ Source Story: 1.1
 - 필요한 일: po-r1의 수정안은 문장을 "표 1에 없는 자리"로 좁히고 E-11 첫 행을 앞 공백이 없는 식으로 바꾸는 것이다. "공백의 종류와 자리, 숫자의 범위"의 답이 오면 함께 해소된다.
 - 책임: SM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## "미결 계획 결정: 없다"의 표현
@@ -135,7 +134,7 @@ Source Story: 1.1
 - 필요한 일: po-r1의 수정안은 문장을 "계획 결정 N-1, N-3이 남아 있으나 두 읽기의 합격 판정이 같아 막지 않는다"로 고치는 것이다.
 - 책임: SM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## 조각 순서와 우선순위
@@ -147,7 +146,7 @@ Source Story: 1.1
 - 필요한 일: po-r1의 수정안은 1.1-UNIT-004와 1.1-UNIT-006을 1.1-UNIT-013 바로 뒤로 옮기는 것이다.
 - 책임: SM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## [Tech-Debt] CalculationError의 name
@@ -158,7 +157,7 @@ Source Story: 1.1
 - 필요한 일: `CalculationError`에 이름을 줄지 정하고, 준다면 시험 한 행을 더한다. QA의 제안은 Story 1.3 초안 전에 정하는 것이다. 같은 결정이 `docs/architecture.md`의 소스 트리가 정한 `ConversionError`(Story 1.2)에도 닿는다.
 - 책임: Dev(gate의 제안 소유자)
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## [Tech-Debt] CRAP 측정 경로
@@ -169,7 +168,7 @@ Source Story: 1.1
 - 필요한 일: `.bmad-core/data/quality-tooling.md`에 따라 JavaScript의 측정 경로와 한도를 정하고 `quality.crap.commands`를 설정한다. 설정된 명령이 그 코드를 측정하면 끝난다.
 - 책임: 프로젝트 소유자(측정 경로와 도구의 승인)
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## [Tech-Debt] 새 파일의 저작권과 SPDX 값
@@ -180,7 +179,7 @@ Source Story: 1.1
 - 필요한 일: 프로젝트 소유자가 값을 주면 머리글에 넣는다. Story 1.2와 1.3이 만드는 파일도 같은 입력을 기다린다.
 - 책임: 프로젝트 소유자
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
 
 ## Story 1.3의 공백 판정과 식 표시
@@ -191,5 +190,5 @@ Source Story: 1.1
 - 필요한 일: Story 1.3 초안 전에 AC 3의 "공백"과 AC 1의 `{식}`의 꼴을 정한다. Story 1.3의 Testing이 탭, 줄바꿈, U+00A0만 있는 식과 앞뒤 공백이 있는 식의 결과를 하나로 고정하면 끝난다.
 - 책임: PM, SM
 
-Planning: undecided
+Planning: unplanned
 Source Story: 1.1
