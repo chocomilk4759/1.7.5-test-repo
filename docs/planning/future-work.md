@@ -502,18 +502,6 @@ Source Story: 1.3
 Planning: unplanned
 Source Story: 1.3
 
-## [Tech-Debt] Story 1.3 Dev 기록의 두 문장
-
-- 출처: Story 1.3 QA 회차 3(2026-11-06)의 DOC-001(Optional, 계약 안). `docs/qa/gates/1.3.yml`의 `top_issues`, `docs/stories/1.3.story.md`의 Completion Notes와 처리 줄 `DOC-001 future`, `docs/story-records/1.3/qa-r3.md`의 섹션 "분류의 근거: DOC-001", `docs/story-records/1.3/dev-qa-r3.md`의 섹션 "DOC-001 Dev 기록의 두 문장이 저장된 Story와 다르다"
-- 내용: `docs/story-records/1.3/dev-dod-2.md`의 프로젝트 정책 점검 행 "현재 작업과 사실, 편집 이력은 지정된 기록에"는 Story를 e71238d와 비교해 "지운 줄이 없음을 확인했다"고 적는데, `git diff e71238d 6701dcd -- docs/stories/1.3.story.md`의 지운 줄은 Status의 `InProgress`와 File List의 세 줄이다. `docs/story-records/1.3/dev-qa-r2.md`의 REQ-002 분석은 "현재 계획의 글(Dev Notes, Testing, 표)에는 40이 없다"고 적는데, Dev Notes의 "폭 결정을 코드에 옮기는 일"과 Testing에 옛 규칙의 값이나 실패 메시지의 40이 네 곳 있다. 두 문장이 말하려는 사실(앞선 기록을 고쳐 쓰지 않았다, 계획이 요구하는 값은 48이다)은 맞고 제품, 시험, 필수 점검에 닿지 않는다.
-- 처리와 까닭: Dev가 적용하지 않고 future로 기록했다. QA가 비차단(심각도 low)으로 분류했고, 그 라운드는 메인 세션의 지시로 코드와 시험을 바꾸지 않았으며, `fix`로 두면 `check-done.sh`가 QA 회차의 닫음을 Done 전에 요구한다.
-- 필요한 일: 두 문장을 위 사실로 정정한다. 앞선 기록(dev-dod-2, dev-qa-r2)은 고쳐 쓰지 않고 코드와 시험은 바꾸지 않는다. Dev의 기록이 정한 자리는 Completion Notes의 새 항목인데, Story가 병합되어 다시 열리지 않으므로 이 정정을 담을 계획이 따로 필요하다.
-- 책임: Dev
-
-Planning: undecided
-Plan: [Tech-Debt] 유형 Story, docs/stories/tech-debt/ 아래(키는 SM의 draft-standalone가 정한다) — SM — 2026-11-07
-Source Story: 1.3
-
 ## [Tech-Debt] 재발: 같은 코드와 글자를 여러 곳에 적음
 
 - 출처: Story 1.3의 병합 뒤 점검(2026-11-06)이 앞선 병합 Story 1.1, 1.2와 대조한 재발. Story 1.1의 Cleaner F10, F11(`docs/story-records/1.1/dev-1.1.md`의 섹션 "지적과 처분"). Story 1.3의 Cleaner F-2, F-3(`docs/story-records/1.3/dev-1.1.md`의 섹션 "Cleaner 결과")
@@ -617,3 +605,7 @@ Source Story: bug-2
 
 Planning: unplanned
 Source Story: bug-2
+
+## Closed items
+
+- [Tech-Debt] Story 1.3 Dev 기록의 두 문장: 유형 Story `tech-debt-3`(`docs/stories/tech-debt/tech-debt-3.story.md`)에 배정, 2026-11-07
